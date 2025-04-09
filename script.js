@@ -731,77 +731,13 @@ async function showPresentationView(songsToShow) {
 
 
 
-/** Отображение деталей песни (текст, ключ, BPM, плеер) */
+// --- UI UPDATE FUNCTIONS ---
 function displaySongDetails(songData, index, key) {
-    if (!playerContainer || !playerSection || !songContent) {
-        console.error("Отсутствуют необходимые DOM элементы для displaySongDetails."); return;
-    }
-    if (!songData) {
-        console.warn("Нет данных песни для отображения.");
-        playerContainer.innerHTML = '';
-        playerSection.style.display = 'none';
-        songContent.innerHTML = '<h2>Выберите песню</h2><pre></pre>';
-        // Сбросить BPM, Holychords и т.д.
-        bpmDisplay.textContent = 'N/A';
-        holychordsButton.style.display = 'none';
-        holychordsButton.href = '#';
-        keySelect.value = chords[0]; // Сброс на C
-        keySelect.dataset.index = '';
-        return;
-    }
-
-    // Получаем данные
-    const currentKey = key || songData[2] || chords[0]; // Тек. ключ (переданный или из данных, или C)
-    const bpm = songData[4] || 'N/A';
-    const lyrics = songData[1] || '';
-    const sourceUrl = songData[3] || '#';
-    const songTitle = songData[0] || 'Без названия';
-    const youtubeLink = songData[5]; // Ссылка YouTube
-
-    // Обновляем BPM
-    updateBPM(bpm); // Вызываем функцию обновления (если она влияет на метроном)
-    bpmDisplay.textContent = bpm;
-
-    // Обновляем Holychords
-    if (sourceUrl && sourceUrl.trim() !== '' && sourceUrl.trim() !== '#') {
-        holychordsButton.href = sourceUrl;
-        holychordsButton.style.display = 'inline-block';
-    } else {
-        holychordsButton.href = '#';
-        holychordsButton.style.display = 'none';
-    }
-
-// --- Обрабатываем и подсвечиваем текст ---
-   const processedOriginalLyrics = processLyrics(lyrics); // <--- ВОССТАНОВИЛИ ВЫЗОВ
-const highlightedOriginalLyrics = highlightChords(processedOriginalLyrics); // Используем обработанный текст
-
-   // --- Обновляем ОСНОВНОЕ содержимое (Название + Текст) ---
-songContent.innerHTML = `
-    <h2>${songTitle} — <span class="math-inline">\{currentKey\}</h2\>
-        <pre>${highlightedOriginalLyrics}</pre>
-    `;
-
-    // Устанавливаем селектор тональности и индекс для транспонирования
-    keySelect.value = currentKey;
-    keySelect.dataset.index = index; // Важно для updateTransposedLyrics
-
-    // Применяем транспонирование, если нужно
-    updateTransposedLyrics();
-
-
-    // Обновляем YouTube плеер
-    const videoId = extractYouTubeVideoId(youtubeLink);
-    if (videoId) {
-        console.log("Найден YouTube Video ID:", videoId);
-        playerContainer.innerHTML = `
-            <iframe width="100%" height="315" src="https://www.youtube.com/embed/${videoId}?autoplay=0&modestbranding=1&rel=0"
-                    frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-            </iframe>`;
-        playerSection.style.display = 'block';
-    } else {
-        playerContainer.innerHTML = '';
-        playerSection.style.display = 'none';
-    }
+    // ---> ИСПРАВЛЕНА ОШИБКА СИНТАКСИСА <---
+    if(!playerContainer||!playerSection||!songContent){console.error("Missing DOM elements");return;} if(!songData){songContent.innerHTML='<h2>Выберите песню</h2><pre></pre>';playerContainer.innerHTML='';playerSection.style.display='none';bpmDisplay.textContent='N/A';holychordsButton.style.display='none';holychordsButton.href='#';keySelect.value=chords[0];keySelect.dataset.index='';return;} const cK=key||songData[2]||chords[0];const bpm=songData[4]||'N/A';const lyrics=songData[1]||'';const srcUrl=songData[3]||'#';const title=songData[0]||'Без названия';const ytLink=songData[5]; updateBPM(bpm);bpmDisplay.textContent=bpm; if(srcUrl&&srcUrl.trim()!==''&&srcUrl.trim()!=='#'){holychordsButton.href=srcUrl;holychordsButton.style.display='inline-block';}else{holychordsButton.href='#';holychordsButton.style.display='none';} const pLyrics=processLyrics(lyrics);const hLyrics=highlightChords(pLyrics);
+    // ИСПРАВЛЕННАЯ СТРОКА:
+    songContent.innerHTML = `<h2>${title} — <span class="math-inline">\{cK\}</h2\><pre\></span>{hLyrics}</pre>`;
+    keySelect.value=cK;keySelect.dataset.index=index;updateTransposedLyrics();const vId=extractYouTubeVideoId(ytLink);if(vId){playerContainer.innerHTML=`<iframe width="100%" height="315" src="https://www.youtube.com/embed/${vId}?autoplay=0&modestbranding=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;playerSection.style.display='block';}else{playerContainer.innerHTML='';playerSection.style.display='none';}
 }
 
 /** Обновление текста песни при смене тональности в keySelect */
