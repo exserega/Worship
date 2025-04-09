@@ -775,6 +775,49 @@ async function loadSheetSongs() {
     }
 }
 
+
+// --- Функция добавления/обновления песни в репертуаре вокалиста (ВОССТАНОВЛЕНА) ---
+async function addToRepertoire() {
+    console.log("Вызвана функция addToRepertoire");
+    if (!currentVocalistId) {
+        alert("Пожалуйста, сначала выберите вокалиста из списка."); return;
+    }
+    const sheetName = SHEETS[sheetSelect.value];
+    const songIndex = songSelect.value;
+    if (!sheetName || !songIndex || songIndex === "" || !cachedData[sheetName]?.[songIndex]) {
+         alert("Пожалуйста, сначала выберите песню для добавления в репертуар."); return;
+    }
+    const songData = cachedData[sheetName][songIndex];
+    const songName = songData[0];
+    const preferredKey = keySelect.value;
+    console.log(`Добавляем в репертуар для <span class="math-inline">\{currentVocalistName \|\| currentVocalistId\}\: Песня "</span>{songName}", Тон: ${preferredKey}`);
+
+    const repertoireDocId = `<span class="math-inline">\{sheetName\}\_</span>{songIndex}`; // Кастомный ID для документа
+    const dataToSave = {
+        sheet: sheetName,
+        index: songIndex,
+        name: songName,
+        preferredKey: preferredKey
+        // Возможно, стоит добавить временную метку для сортировки или информации
+        // addedAt: serverTimestamp() // Если раскомментируете, не забудьте импорт serverTimestamp
+    };
+    console.log("Данные для сохранения в репертуар:", dataToSave);
+
+    try {
+        // Используем setDoc, чтобы перезаписать, если песня уже есть (например, для смены тональности)
+        await setDoc(doc(db, "vocalists", currentVocalistId, "repertoire", repertoireDocId), dataToSave);
+        console.log(`Песня "${songName}" успешно добавлена/обновлена в репертуаре.`);
+        alert(`Песня "<span class="math-inline">\{songName\}" \(</span>{preferredKey}) добавлена/обновлена в репертуаре ${currentVocalistName || currentVocalistId}.`);
+        // Список в панели репертуара обновится автоматически через onSnapshot в loadRepertoire
+    } catch (error) {
+        console.error("Ошибка при добавлении/обновлении песни в репертуаре:", error);
+        alert("Произошла ошибка при сохранении песни в репертуар.");
+    }
+}
+
+
+
+
 /** Обновление размера шрифта текста песни */
 function updateFontSize() {
     const lyricsElement = songContent?.querySelector('pre'); // Добавлена проверка songContent
