@@ -1088,268 +1088,94 @@ function toggleMetronome(bpm) {
 
 // --- EVENT LISTENER SETUP ---
 
-/** Инициализация всех слушателей событий */
+// --- EVENT LISTENER SETUP (ИСПРАВЛЕНО) ---
 function setupEventListeners() {
     console.log("Настройка слушателей событий...");
-
-    // Выбор листа
-    if (sheetSelect) {
-        sheetSelect.addEventListener('change', async () => {
-             console.log("Выбран лист:", sheetSelect.value);
-             searchInput.value = ''; // Сбрасываем поиск
-             searchResults.innerHTML = ''; // Очищаем результаты поиска
-             await loadSheetSongs(); // Загружаем песни для листа
-             // Сбрасываем отображение песни? Или отображаем первую? Пока сбрасываем.
-             displaySongDetails(null); // Очищаем детали песни
-        });
-    }
-
-
-/ Клик по заголовку "Общий список" для входа в режим презентации
-    if (sharedListHeading) {
-         sharedListHeading.addEventListener('click', () => {
-              console.log("Клик по заголовку Общий список");
-              if (currentSharedListData && currentSharedListData.length > 0) {
-                   // Закрываем боковые панели, если открыты
-                   if (favoritesPanel?.classList.contains('open')) favoritesPanel.classList.remove('open');
-                   if (repertoirePanel?.classList.contains('open')) repertoirePanel.classList.remove('open');
-                   // Показываем презентацию
-                   showPresentationView(currentSharedListData);
-              } else {
-                   alert("Общий список пуст. Добавьте песни для презентации.");
-              }
-         });
-    } else {
-        console.warn("Заголовок shared-list-heading не найден.");
-    }
-
-    // Клик по кнопке закрытия презентации
-    if (presentationCloseBtn && presentationOverlay) {
-         presentationCloseBtn.addEventListener('click', () => {
-              presentationOverlay.classList.remove('visible');
-               // Выход из полноэкранного режима, если он был включен
-               if (document.fullscreenElement) {
-                   document.exitFullscreen();
-               }
-         });
-    }
-
-    // Опционально: Клик по кнопке Fullscreen
-    /*
-    const presentationFullscreenBtn = document.getElementById('presentation-fullscreen-btn');
-    if (presentationFullscreenBtn && presentationOverlay) {
-        presentationFullscreenBtn.addEventListener('click', () => {
-            if (!document.fullscreenElement) {
-                presentationOverlay.requestFullscreen().catch(err => {
-                    alert(`Ошибка входа в полноэкранный режим: <span class="math-inline">\{err\.message\} \(</span>{err.name})`);
-                });
-            } else {
-                document.exitFullscreen();
-            }
-        });
-    }
-    */
-
-// ... остальные слушатели ...
-
-    // Выбор песни
-    if (songSelect) {
-        songSelect.addEventListener('change', () => {
-             const sheetName = SHEETS[sheetSelect.value];
-             const songIndex = songSelect.value; // Индекс все еще строка
-             console.log(`Выбрана песня: индекс ${songIndex} в листе ${sheetName}`);
-             if (!sheetName || !songIndex || songIndex === "" || !cachedData[sheetName] || !cachedData[sheetName][songIndex]) {
-                  displaySongDetails(null); // Очищаем, если что-то не так
-                  return;
-             }
-             displaySongDetails(cachedData[sheetName][songIndex], songIndex); // Отображаем выбранную песню
-        });
-    }
-
-    // Поиск песни
-    if (searchInput) {
-        // Используем 'input' для реакции на каждое изменение
-        searchInput.addEventListener('input', () => searchSongs(searchInput.value));
-        // Скрытие результатов поиска при потере фокуса (опционально)
-         searchInput.addEventListener('blur', () => {
-             // Небольшая задержка, чтобы успел сработать клик по результату
-             setTimeout(() => {
-                  if (searchResults) searchResults.innerHTML = '';
-             }, 200);
-         });
-    }
-
-    // Изменение тональности
-    if (keySelect) {
-        keySelect.addEventListener('change', updateTransposedLyrics);
-    }
-
-    // Масштабирование текста
-    if (zoomInButton) zoomInButton.addEventListener('click', () => { currentFontSize += 2; updateFontSize(); });
-    if (zoomOutButton) zoomOutButton.addEventListener('click', () => { if (currentFontSize > MIN_FONT_SIZE) { currentFontSize -= 2; updateFontSize(); }});
-
-    // Кнопка "Разделить текст"
-    if (splitTextButton && songContent) {
-        splitTextButton.addEventListener('click', () => {
-            const lyricsElement = songContent.querySelector('pre');
-            if (!lyricsElement || !lyricsElement.textContent?.trim()) {
-                alert('Текст песни отсутствует или пуст.'); return;
-            }
-            songContent.classList.toggle('split-columns');
-            splitTextButton.textContent = songContent.classList.contains('split-columns') ? 'Объединить текст' : 'Разделить текст';
-        });
-    } else {
-         console.warn("Элементы 'split-text-button' или 'song-content' не найдены.");
-    }
-
-    // Кнопка "В избранное" (локальное)
-    if (favoriteButton) {
-        favoriteButton.addEventListener('click', () => {
-             const sheetName = SHEETS[sheetSelect.value];
-             const songIndex = songSelect.value;
-             if (!sheetName || !songIndex || songIndex === "") { alert("Сначала выберите песню."); return; }
-             const songData = cachedData[sheetName]?.[songIndex];
-             if (!songData) { alert("Ошибка: данные песни не найдены."); return; }
-
-             const song = {
-                 name: songData[0], sheet: sheetName, index: songIndex, key: keySelect.value // Сохраняем текущую тональность
-             };
-             // favorites = JSON.parse(localStorage.getItem('favorites')) || []; // Обновляем перед проверкой
-             if (!favorites.some(fav => fav.sheet === song.sheet && fav.index === song.index)) {
-                 favorites.push(song);
-                 localStorage.setItem('favorites', JSON.stringify(favorites));
-                 console.log("Добавлено в избранное:", song);
-                 if (favoritesPanel.classList.contains('open')) loadFavorites(); // Обновляем список, если панель открыта
-                 alert(`Песня "${song.name}" (${song.key}) добавлена в избранное.`);
-             } else {
-                 alert('Эта песня уже в избранном!');
-             }
-        });
-    }
-
-    // Кнопка "В общий список" (Firestore)
-    if (addToListButton) {
-        addToListButton.addEventListener('click', () => {
-            const sheetName = SHEETS[sheetSelect.value];
-            const songIndex = songSelect.value;
-            if (!sheetName || !songIndex || songIndex === "" || !cachedData[sheetName] || !cachedData[sheetName][songIndex]) {
-                 alert("Сначала выберите песню для добавления."); return;
-            }
-            const songData = cachedData[sheetName][songIndex];
-            addToSharedList(songData); // Вызываем async функцию
-        });
-    }
-
-    // Кнопка "В мой репертуар" (Firestore)
-    if (addToRepertoireButton) {
-        addToRepertoireButton.addEventListener('click', addToRepertoire);
-    }
-
-    // Выбор вокалиста
-    if (vocalistSelect) {
-        vocalistSelect.addEventListener('change', (event) => {
-            currentVocalistId = event.target.value;
-            const selectedIndex = event.target.selectedIndex;
-            currentVocalistName = selectedIndex > 0 ? event.target.options[selectedIndex].text : null;
-            console.log(`Выбран вокалист: ${currentVocalistName || 'никто'} (ID: ${currentVocalistId})`);
-            loadRepertoire(currentVocalistId); // Загружаем репертуар при выборе
-        });
-    }
-
-   // Кнопка открытия/закрытия панели "Списки" (ИСПРАВЛЕННЫЙ обработчик)
+    if(sheetSelect)sheetSelect.addEventListener('change',async()=>{console.log("Sheet selected:",sheetSelect.value);searchInput.value='';searchResults.innerHTML='';await loadSheetSongs();displaySongDetails(null);});
+    if(songSelect)songSelect.addEventListener('change',()=>{const sn=SHEETS[sheetSelect.value];const si=songSelect.value;console.log(`Song selected: ${si} in ${sn}`);if(!sn||!si||si===""||!cachedData[sn]?.[si]){displaySongDetails(null);return;}displaySongDetails(cachedData[sn][si],si);});
+    if(searchInput){searchInput.addEventListener('input',()=>searchSongs(searchInput.value));searchInput.addEventListener('blur',()=>{setTimeout(()=>{if(searchResults)searchResults.innerHTML='';},200);});}
+    if(keySelect)keySelect.addEventListener('change',updateTransposedLyrics);
+    if(zoomInButton)zoomInButton.addEventListener('click',()=>{currentFontSize+=2;updateFontSize();});
+    if(zoomOutButton)zoomOutButton.addEventListener('click',()=>{if(currentFontSize>MIN_FONT_SIZE){currentFontSize-=2;updateFontSize();}});
+    if(splitTextButton&&songContent){splitTextButton.addEventListener('click',()=>{const le=songContent.querySelector('pre');if(!le||!le.textContent?.trim()){alert('Нет текста.');return;}songContent.classList.toggle('split-columns');splitTextButton.textContent=songContent.classList.contains('split-columns')?'Объединить':'Разделить';});}
+    if(favoriteButton){favoriteButton.addEventListener('click',()=>{const sn=SHEETS[sheetSelect.value];const si=songSelect.value;if(!sn||!si||si===""){alert("Выберите песню.");return;}const sd=cachedData[sn]?.[si];if(!sd){alert("Нет данных.");return;}const song={name:sd[0],sheet:sn,index:si,key:keySelect.value};if(!favorites.some(f=>f.sheet===song.sheet&&f.index===song.index)){favorites.push(song);localStorage.setItem('favorites',JSON.stringify(favorites));if(favoritesPanel.classList.contains('open'))loadFavorites();alert(`"<span class="math-inline">\{song\.name\}" \(</span>{song.key}) добавлена.`);}else{alert('Уже в избранном!');}});}
+    if(addToListButton){addToListButton.addEventListener('click',()=>{const sn=SHEETS[sheetSelect.value];const si=songSelect.value;if(!sn||!si||si===""||!cachedData[sn]?.[si]){alert("Выберите песню.");return;}const sd=cachedData[sn][si];addToSharedList(sd);});}
+    if(addToRepertoireButton)addToRepertoireButton.addEventListener('click',addToRepertoire);
+    if(vocalistSelect)vocalistSelect.addEventListener('change',(e)=>{currentVocalistId=e.target.value;const idx=e.target.selectedIndex;currentVocalistName=idx>0?e.target.options[idx].text:null;console.log(`Vocalist: <span class="math-inline">\{currentVocalistName\|\|'none'\}\(</span>{currentVocalistId})`);loadRepertoire(currentVocalistId);});
+    // --- ЕДИНСТВЕННЫЕ ОБРАБОТЧИКИ ДЛЯ КНОПОК ПАНЕЛЕЙ ---
     if (toggleFavoritesButton && favoritesPanel) {
         toggleFavoritesButton.addEventListener('click', () => {
-            console.log("--- КЛИК: Кнопка 'Списки' (Правильный обработчик) ---"); // Обновленный лог
+            console.log("--- КЛИК: Кнопка 'Списки' (Правильный обработчик) ---");
             const isOpen = favoritesPanel.classList.toggle('open');
-            console.log("Панель 'Списки' .open:", favoritesPanel.classList.contains('open')); // Проверка класса
-
-            if (isOpen) { // Если панель открылась
-                // Закрываем панель репертуара, если она была открыта
-                if (repertoirePanel && repertoirePanel.classList.contains('open')) {
-                    repertoirePanel.classList.remove('open');
-                    console.log("Панель 'Репертуар' принудительно закрыта.");
-                }
-                loadGroupPanel(); // Загружаем содержимое этой панели
-            } else { // Если панель закрылась
-                console.log("Панель 'Списки' была закрыта этим кликом.");
-            }
+            console.log("Списки .open:", favoritesPanel.classList.contains('open'));
+            if (isOpen) {
+                if (repertoirePanel?.classList.contains('open')) repertoirePanel.classList.remove('open');
+                loadGroupPanel();
+            } else { console.log("Списки закрыты"); }
         });
-        console.log("Правильный слушатель для кнопки 'Списки' добавлен.");
-    } else {
-        console.error("Не найдены элементы для кнопки 'Списки' (toggleFavoritesButton или favoritesPanel)");
-    }
+        console.log("Listener for 'Списки' ADDED ONCE");
+    } else { console.error("Could not find elements for 'Списки' toggle"); }
 
-    // Кнопка метронома
-    if (metronomeButton) {
-         metronomeButton.addEventListener('click', async () => {
-             // Гарантируем инициализацию и загрузку аудио
-              if (!audioContext) setupAudioContext();
-              if (!audioContext) return; // Если создать не удалось
-              resumeAudioContext(); // Возобновляем перед действием
-              if (!audioBuffer) await loadAudioFile(); // Ждем загрузки файла, если его нет
-
-              const bpmText = bpmDisplay.textContent;
-              const bpm = parseInt(bpmText, 10);
-
-              if (!isNaN(bpm) && bpm > 0) {
-                  toggleMetronome(bpm); // Включаем/выключаем
-              } else {
-                  alert('BPM не указан или некорректен.');
-                  if(isMetronomeActive) toggleMetronome(0); // Выключаем, если был включен с неверным BPM
-              }
-         });
-     } else {
-          console.warn("Кнопка метронома не найдена.");
-     }
-
-    // Редактирование BPM
-    if (bpmDisplay) {
-        bpmDisplay.addEventListener('blur', () => { // При потере фокуса после редактирования
-            const newBPMText = bpmDisplay.textContent;
-            const newBPM = parseInt(newBPMText, 10);
-
-            if (!isNaN(newBPM) && newBPM > 0) {
-                updateBPM(newBPM); // Обновляем значение и, возможно, метроном
-            } else {
-                alert('Введите корректное числовое значение BPM.');
-                 // Восстанавливаем предыдущее значение или ставим 'N/A'? Зависит от UX.
-                 // Пока просто оставим некорректное или N/A.
-                 updateBPM(null); // Устанавливаем N/A
-            }
+    if (toggleRepertoireButton && repertoirePanel) {
+        toggleRepertoireButton.addEventListener('click', () => {
+            console.log("--- КЛИК: Кнопка 'Репертуар' (Правильный обработчик) ---");
+            const isOpen = repertoirePanel.classList.toggle('open');
+            console.log("Репертуар .open:", repertoirePanel.classList.contains('open'));
+            if (isOpen) {
+                if (favoritesPanel?.classList.contains('open')) favoritesPanel.classList.remove('open');
+                loadRepertoire(currentVocalistId);
+            } else { console.log("Репертуар закрыт"); }
         });
-    }
-
-    // Клик по ссылке Holychords (для предотвращения перехода по пустой ссылке)
-    if (holychordsButton) {
-         holychordsButton.addEventListener('click', (event) => {
-             if (!holychordsButton.href || holychordsButton.href.endsWith('#')) {
-                 event.preventDefault();
-                 alert('Ссылка на Holychords отсутствует для этой песни.');
+        console.log("Listener for 'Репертуар' ADDED ONCE");
+    } else { console.error("Could not find elements for 'Репертуар' toggle"); }
+    // --- КОНЕЦ ОБРАБОТЧИКОВ ДЛЯ КНОПОК ПАНЕЛЕЙ ---
+     // Клик по заголовку "Общий список" для входа в режим презентации
+     if (sharedListHeading) {
+        sharedListHeading.addEventListener('click', () => {
+             console.log("Клик по заголовку Общий список");
+             if (currentSharedListData && currentSharedListData.length > 0) {
+                  // Закрываем боковые панели, если открыты
+                  if (favoritesPanel?.classList.contains('open')) favoritesPanel.classList.remove('open');
+                  if (repertoirePanel?.classList.contains('open')) repertoirePanel.classList.remove('open');
+                  // Показываем презентацию
+                  showPresentationView(currentSharedListData);
+             } else {
+                  alert("Общий список пуст. Добавьте песни для презентации.");
              }
-         });
-     }
+        });
+   } else {
+       console.warn("Заголовок shared-list-heading не найден.");
+   }
 
-     // Дополнительные слушатели, если нужны...
-     console.log("Настройка слушателей событий завершена.");
+   // Клик по кнопке закрытия презентации
+   if (presentationCloseBtn && presentationOverlay) {
+        presentationCloseBtn.addEventListener('click', () => {
+             presentationOverlay.classList.remove('visible');
+              // Выход из полноэкранного режима, если он был включен
+              if (document.fullscreenElement) {
+                  document.exitFullscreen();
+              }
+        });
+   }
+
+    if(metronomeButton){metronomeButton.addEventListener('click',async()=>{if(!audioContext)setupAudioContext();if(!audioContext)return;resumeAudioContext();if(!audioBuffer)await loadAudioFile();const bt=bpmDisplay.textContent;const b=parseInt(bt,10);if(!isNaN(b)&&b>0){toggleMetronome(b);}else{alert('BPM неверный.');if(isMetronomeActive)toggleMetronome(0);}});}}
+    if(bpmDisplay)bpmDisplay.addEventListener('blur',()=>{const nt=bpmDisplay.textContent;const nb=parseInt(nt,10);if(!isNaN(nb)&&nb>0){updateBPM(nb);}else{alert('Введите число BPM.');updateBPM(null);}});
+    if(holychordsButton)holychordsButton.addEventListener('click',(e)=>{if(!holychordsButton.href||holychordsButton.href.endsWith('#')){e.preventDefault();alert('Нет ссылки Holychords.');}});
+    console.log("Event listeners setup complete.");
 }
 
-// --- INITIALIZATION ---
+/ --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log("DOM полностью загружен и разобран.");
-
-    // Проверяем наличие основных контейнеров
-    if (!favoritesList || !sharedSongsList || !repertoirePanelList || !vocalistSelect || !repertoirePanel) {
-         console.error("Один или несколько ключевых контейнеров для списков не найдены! Проверьте HTML.");
-         // Возможно, стоит показать сообщение пользователю
-         return; // Прерываем инициализацию, если нет ключевых элементов
-    }
-
-    // Настраиваем слушатели событий
-    setupEventListeners();
-
-    // Первоначальная загрузка данных
-    await loadAllSheetsData(); // Ждем загрузки всех данных перед дальнейшими действиями
-    await loadVocalists();     // Загружаем вокалистов
-
-    console.log("Инициализация приложения завершена.");
+    console.log("DOM loaded.");
+     if (!favoritesPanel || !repertoirePanel) { // Простая проверка на панели
+          console.error("Ключевые панели не найдены в HTML!");
+          alert("Ошибка инициализации интерфейса!");
+          return;
+     }
+    setupEventListeners(); // <-- ВЫЗЫВАЕМ НАСТРОЙКУ СЛУШАТЕЛЕЙ ЗДЕСЬ ОДИН РАЗ
+    await loadAllSheetsData();
+    await loadVocalists();
+    // Убрали display = 'none' - панели скрыты через CSS transform
+    displaySongDetails(null);
+    console.log("App initialization complete.");
 });
