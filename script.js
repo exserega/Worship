@@ -46,6 +46,7 @@ const storage = getStorage(app);
 const sharedListCollection = collection(db, "sharedList"); // Reference to the shared list collection
 
 // --- GLOBAL STATE ---
+let currentRepertoireUnsubscribe = null; // <--- ДОБАВИТЬ ЭТУ ПЕРЕМЕННУЮ
 let cachedData = {}; // Кэш данных из Google Sheets ({ sheetName: [rows...] })
 let favorites = JSON.parse(localStorage.getItem('favorites')) || []; // Избранные песни
 let currentVocalistId = null; // ID выбранного вокалиста
@@ -308,148 +309,169 @@ async function deleteFromSharedList(docId) {
     }
 }
 
-// --- Функция загрузки и ДВОЙНОЙ ГРУППИРОВКИ репертуара вокалиста ---
+// === ИЗМЕНЕНИЯ В script.js ===
+
+// --- GLOBAL STATE ---
+
+
+// --- Функция загрузки репертуара (с отпиской от предыдущего слушателя) ---
 function loadRepertoire(vocalistId) {
-    // Используем новые ID элементов панели репертуара
-    const listContainer = repertoirePanelList; // Должна быть глобальная переменная или получена здесь
-    const sectionContainer = repertoirePanel; // Должна быть глобальная переменная или получена здесь
-    const nameSpan = repertoirePanelVocalistName; // Должна быть глобальная переменная или получена здесь
+    const listContainer = repertoirePanelList;
+    const sectionContainer = repertoirePanel;
 
-    if (!listContainer || !sectionContainer || !nameSpan) {
-         console.error("Не найдены UI элементы для панели репертуара.");
-         // Убедитесь, что переменные repertoirePanelList, repertoirePanel, repertoirePanelVocalistName
-         // объявлены глобально или передаются в функцию, если они не найдены.
-         // Проверьте ID элементов в HTML и в объявлении переменных JS.
-         return;
-    }
-
-    listContainer.innerHTML = ''; // Очищаем
-
-    if (!vocalistId) {
-        nameSpan.textContent = '-- Выберите вокалиста --';
-        listContainer.innerHTML = '<div class="empty-message">Выберите вокалиста для просмотра репертуара.</div>';
-        sectionContainer.style.display = 'none'; // Скрываем секцию, если вокалист не выбран
+    if (!listContainer || !sectionContainer) {
+        console.error("Не найдены UI элементы для панели репертуара...");
         return;
     }
 
-    // Показываем панель (если она была скрыта) и имя вокалиста
-    sectionContainer.style.display = 'block'; // Показываем секцию
-    nameSpan.textContent = currentVocalistName || vocalistId; // Обновляем имя в заголовке панели
+    // ---> 1. ОТПИСКА ОТ ПРЕДЫДУЩЕГО СЛУШАТЕЛЯ <---
+    if (currentRepertoireUnsubscribe) {
+        console.log("loadRepertoire: Отписка от предыдущего слушателя репертуара.");
+        try {
+            currentRepertoireUnsubscribe(); // Вызываем функцию отписки
+        } catch (unsubError) {
+            console.error("Ошибка при отписке от слушателя репертуара:", unsubError);
+        } finally {
+             currentRepertoireUnsubscribe = null; // Сбрасываем в любом случае
+        }
+    }
+    // ---> КОНЕЦ ОТПИСКИ <---
+
+    listContainer.innerHTML = ''; // Очищаем в любом случае
+
+    if (!vocalistId) {
+        listContainer.innerHTML = '<div class="empty-message">Выберите вокалиста для просмотра репертуара.</div>';
+        return; // Выходим, новый слушатель не нужен
+    }
+
+    // Показываем сообщение "Загрузка..." только если есть ID вокалиста
     listContainer.innerHTML = '<div>Загрузка репертуара...</div>';
 
+    // Проверка существования контейнера (на всякий случай)
+    console.log("loadRepertoire: listContainer exists:", !!listContainer, "is in document:", document.body.contains(listContainer));
+
     const repertoireColRef = collection(db, "vocalists", vocalistId, "repertoire");
-    const q = query(repertoireColRef); // Запрос без сортировки здесь
+    const q = query(repertoireColRef);
 
-    console.log(`loadRepertoire: Установка слушателя для ${vocalistId} (с группировкой)`);
+    console.log(`loadRepertoire: Установка НОВОГО слушателя для ${vocalistId} (с группировкой)`);
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-        // Перестраховка: получаем контейнер снова на случай, если DOM изменился
-        const currentListContainer = document.getElementById('repertoire-panel-list');
-        if (!currentListContainer) {
-            console.error("Контейнер #repertoire-panel-list исчез во время работы onSnapshot!");
+    // ---> 2. УСТАНАВЛИВАЕМ НОВЫЙ СЛУШАТЕЛЬ И СОХРАНЯЕМ ОТПИСКУ <---
+    currentRepertoireUnsubscribe = onSnapshot(q, (snapshot) => {
+        // Оставляем логи для проверки
+        console.log(`>>> Firestore onSnapshot для ${vocalistId} СРАБОТАЛ. Получено документов: ${snapshot.size}`);
+
+        // Важно! Проверяем, относится ли этот колбэк к ТЕКУЩЕМУ выбранному вокалисту
+        // Это может предотвратить обновление старыми данными, если пользователь быстро переключает вокалистов
+        if (vocalistId !== currentVocalistId) {
+            console.warn(`onSnapshot: Получен снимок для ${vocalistId}, но текущий вокалист уже ${currentVocalistId}. Игнорируем.`);
             return;
         }
-        currentListContainer.innerHTML = ''; // Очищаем перед отрисовкой
+
+        const currentListContainer = document.getElementById('repertoire-panel-list');
+        if (!currentListContainer) {
+            console.error("!!! Контейнер #repertoire-panel-list исчез во время работы onSnapshot!");
+            // Отписываемся, если контейнер пропал
+             if (currentRepertoireUnsubscribe) {
+                 currentRepertoireUnsubscribe();
+                 currentRepertoireUnsubscribe = null;
+             }
+            return;
+        }
+        console.log("   Очистка контейнера перед отрисовкой...");
+        currentListContainer.innerHTML = '';
 
         if (snapshot.empty) {
+            console.log("   Снимок пуст, репертуар не найден.");
             currentListContainer.innerHTML = '<div class="empty-message">Репертуар пуст.</div>';
             return;
         }
-
-        // --- ЛОГИКА ГРУППИРОВКИ ---
+        console.log("   Начинаем группировку и отрисовку песен...");
+        // --- ЛОГИКА ГРУППИРОВКИ И ВЫВОДА --- (Остается БЕЗ ИЗМЕНЕНИЙ)
         const groupedByKeys = {};
         snapshot.docs.forEach((doc) => {
-            const song = doc.data();
-            const key = song.preferredKey || "N/A";
-            const sheet = song.sheet || "Unknown Sheet";
-            if (!groupedByKeys[key]) groupedByKeys[key] = {};
-            if (!groupedByKeys[key][sheet]) groupedByKeys[key][sheet] = [];
-            groupedByKeys[key][sheet].push({ ...song, repertoireDocId: doc.id });
-        });
-        // --- КОНЕЦ ГРУППИРОВКИ ---
-
-        // --- СОРТИРОВКА И ВЫВОД ---
-        const sortedKeys = Object.keys(groupedByKeys).sort((a, b) => {
-            const indexA = chords.indexOf(a);
-            const indexB = chords.indexOf(b);
-            if (indexA === -1) return 1;
-            if (indexB === -1) return -1;
-            return indexA - indexB;
+             const song = doc.data();
+             const key = song.preferredKey || "N/A";
+             const sheet = song.sheet || "Unknown Sheet";
+             if (!groupedByKeys[key]) groupedByKeys[key] = {};
+             if (!groupedByKeys[key][sheet]) groupedByKeys[key][sheet] = [];
+             groupedByKeys[key][sheet].push({ ...song, repertoireDocId: doc.id }); // Сохраняем ID для удаления
         });
 
+        const sortedKeys = Object.keys(groupedByKeys).sort((a, b) => { /*...*/ }); // Сортировка тональностей
         sortedKeys.forEach(key => {
-            const keyHeading = document.createElement('div');
-            keyHeading.className = 'repertoire-key-heading';
-            keyHeading.textContent = `Тональность: ${key}`;
-            currentListContainer.appendChild(keyHeading);
-
-            const sheetsInKey = groupedByKeys[key];
-            const sortedSheets = Object.keys(sheetsInKey).sort((a, b) => a.localeCompare(b));
-
-            sortedSheets.forEach(sheet => {
-                const sheetHeading = document.createElement('div');
-                sheetHeading.className = 'repertoire-sheet-heading';
-                const shortSheetName = Object.keys(SHEETS).find(sKey => SHEETS[sKey] === sheet) || sheet;
-                sheetHeading.textContent = shortSheetName;
-                currentListContainer.appendChild(sheetHeading);
-
-                const songsInSheet = sheetsInKey[sheet];
-                songsInSheet.sort((a, b) => a.name.localeCompare(b.name));
-
-                songsInSheet.forEach(songWithId => {
-                    const song = songWithId;
-                    const repertoireDocId = song.repertoireDocId;
-                    const listItem = document.createElement('div');
-                    listItem.className = 'repertoire-item';
-
-                    const songInfo = document.createElement('span');
-                    songInfo.className = 'song-name';
-                    songInfo.textContent = song.name;
-                    listItem.appendChild(songInfo);
-
-                    const removeBtn = document.createElement('button');
-                    // Используем иконку Font Awesome вместо текста
-                    removeBtn.innerHTML = '<i class="fas fa-times"></i>'; // Иконка крестика
-                    removeBtn.className = 'remove-button';
-                    removeBtn.title = 'Удалить из репертуара';
-                    removeBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        removeFromRepertoire(vocalistId, repertoireDocId);
-                    });
-                    listItem.appendChild(removeBtn);
-
-                    listItem.addEventListener('click', async () => {
-                         if (!cachedData[song.sheet]?.[song.index]) {
-                             await fetchSheetData(song.sheet);
-                             if (!cachedData[song.sheet]?.[song.index]) {
-                                 alert('Не удалось найти исходные данные песни.'); return;
-                             }
-                         }
+             const keyHeading = document.createElement('div');
+             keyHeading.className = 'repertoire-key-heading';
+             keyHeading.textContent = `Тональность: ${key}`;
+             currentListContainer.appendChild(keyHeading);
+             const sheetsInKey = groupedByKeys[key];
+             const sortedSheets = Object.keys(sheetsInKey).sort((a, b) => a.localeCompare(b)); // Сортировка листов
+             sortedSheets.forEach(sheet => {
+                 const sheetHeading = document.createElement('div');
+                 sheetHeading.className = 'repertoire-sheet-heading';
+                 const shortSheetName = Object.keys(SHEETS).find(sKey => SHEETS[sKey] === sheet) || sheet;
+                 sheetHeading.textContent = shortSheetName;
+                 currentListContainer.appendChild(sheetHeading);
+                 const songsInSheet = sheetsInKey[sheet];
+                 songsInSheet.sort((a, b) => a.name.localeCompare(b.name)); // Сортировка песен
+                 songsInSheet.forEach(songWithId => {
+                     const song = songWithId;
+                     const repertoireDocId = song.repertoireDocId; // ID для удаления
+                     const listItem = document.createElement('div');
+                     listItem.className = 'repertoire-item';
+                     const songInfo = document.createElement('span');
+                     songInfo.className = 'song-name';
+                     songInfo.textContent = song.name;
+                     listItem.appendChild(songInfo);
+                     const removeBtn = document.createElement('button');
+                     removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                     removeBtn.className = 'remove-button';
+                     removeBtn.title = 'Удалить из репертуара';
+                     removeBtn.addEventListener('click', (e) => {
+                         e.stopPropagation();
+                         removeFromRepertoire(vocalistId, repertoireDocId);
+                     });
+                     listItem.appendChild(removeBtn);
+                     listItem.addEventListener('click', async () => {
+                         // ... (загрузка песни при клике) ...
+                         if (!cachedData[song.sheet]?.[song.index]) await fetchSheetData(song.sheet);
+                         if (!cachedData[song.sheet]?.[song.index]) { alert('Не удалось найти данные песни.'); return; }
                          const originalSongData = cachedData[song.sheet][song.index];
                          const sheetNameValue = Object.keys(SHEETS).find(sKey => SHEETS[sKey] === song.sheet);
                          if(sheetNameValue) sheetSelect.value = sheetNameValue;
                          await loadSheetSongs();
                          songSelect.value = song.index;
                          displaySongDetails(originalSongData, song.index, song.preferredKey);
-                         if (repertoirePanel) repertoirePanel.classList.remove('open'); // Закрываем панель репертуара
-                         if (favoritesPanel) favoritesPanel.classList.remove('open'); // Закрываем и панель списков
-                    });
-                    currentListContainer.appendChild(listItem);
-                }); // Конец песен
-            }); // Конец листов
-        }); // Конец тональностей
+                         if (repertoirePanel) repertoirePanel.classList.remove('open');
+                         if (favoritesPanel) favoritesPanel.classList.remove('open');
+                     });
+                     currentListContainer.appendChild(listItem);
+                 });
+             });
+        });
+        console.log("   Отрисовка песен ЗАВЕРШЕНА.");
 
-    }, (error) => { // Обработчик ошибок onSnapshot
-        const currentListContainer = document.getElementById('repertoire-panel-list');
-        if (currentListContainer) {
-             currentListContainer.innerHTML = '<div class="empty-message">Ошибка загрузки репертуара.</div>';
+    }, (error) => {
+        // ---> ОБРАБОТЧИК ОШИБОК <---
+        console.error(`!!! ОШИБКА Firestore onSnapshot для репертуара ${vocalistId}:`, error);
+        // Проверяем, актуальна ли ошибка для текущего вокалиста
+        if (vocalistId === currentVocalistId) {
+            const currentListContainer = document.getElementById('repertoire-panel-list');
+            if (currentListContainer) {
+                currentListContainer.innerHTML = '<div class="empty-message">Ошибка загрузки репертуара.</div>';
+            }
+        } else {
+            console.warn(`Ошибка onSnapshot для ${vocalistId} проигнорирована, т.к. текущий вокалист ${currentVocalistId}.`);
         }
-        console.error(`Ошибка при прослушивании репертуара для ${vocalistId}:`, error);
+        // Отписываемся при ошибке, только если это ошибка текущего слушателя
+        if (vocalistId === currentVocalistId && currentRepertoireUnsubscribe) {
+             console.log("Отписка из-за ошибки onSnapshot.");
+             currentRepertoireUnsubscribe();
+             currentRepertoireUnsubscribe = null;
+        }
     });
+}
 
-    // Здесь можно сохранить функцию отписки, если она понадобится
-    // Пример: sectionContainer.dataset.unsubscribe = unsubscribe;
-} // <--- ВОТ ЗДЕСЬ ЗАКАНЧИВАЕТСЯ ФУНКЦИЯ loadRepertoire
+// --- (Остальной код script.js без изменений) ---
 
 /** Добавление/Обновление песни в репертуаре вокалиста (Firestore) */
 async function addToRepertoire() {
@@ -668,6 +690,12 @@ function extractYouTubeVideoId(url) {
         return null;
     }
     return videoId; // Вернет ID или null
+}
+
+
+function isMobileView() {
+    // Используем ту же точку останова (breakpoint), что и в CSS (@media (max-width: 480px))
+    return window.innerWidth <= 480;
 }
 
 
@@ -1048,65 +1076,104 @@ async function loadAudioFile() {
     }
 }
 
-/** Воспроизведение одного щелчка метронома */
-function playClick() {
-    if (!audioContext || !audioBuffer) {
-        console.error("Невозможно воспроизвести щелчок: AudioContext или аудио буфер не готовы.");
-        // Попробовать загрузить снова? Или просто остановить метроном?
-        if(isMetronomeActive) toggleMetronome(0); // Останавливаем
-        return;
-    }
-    resumeAudioContext(); // Важно перед каждым воспроизведением
 
-    const beatsPerMeasure = parseInt(timeSignatureSelect.value, 10) || 4; // Значение из select (4/4, 3/4 и т.д.)
 
-    const source = audioContext.createBufferSource();
-    source.buffer = audioBuffer;
-    const gainNode = audioContext.createGain();
-
-    // Акцент на первую долю
-    gainNode.gain.setValueAtTime(currentBeat % beatsPerMeasure === 0 ? 1.0 : 0.6, audioContext.currentTime);
-
-    source.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    source.start(audioContext.currentTime);
-
-    // Обновляем счетчик долей
-    currentBeat = (currentBeat + 1) % beatsPerMeasure;
-}
-
-/** Включение/выключение метронома */
+// --- Обновленная функция toggleMetronome (с логами) ---
 function toggleMetronome(bpm) {
+    const playIcon = '<i class="fas fa-play"></i>';
+    const stopIcon = '<i class="fas fa-stop"></i>';
+    const playText = '<span class="button-text">Включить метроном</span>';
+    const stopText = '<span class="button-text">Выключить метроном</span>';
+
+    if (!metronomeButton) return;
+
     if (isMetronomeActive) {
-        // Выключение
+        // --- Выключение ---
+        console.log("Metronome: Stopping. Interval ID:", metronomeInterval); // ЛОГ
         clearInterval(metronomeInterval);
         metronomeInterval = null;
         isMetronomeActive = false;
-        currentBeat = 0; // Сбрасываем счетчик долей
-        if(metronomeButton) metronomeButton.textContent = '▶️ Включить метроном';
-        console.log("Метроном выключен.");
+        currentBeat = 0;
+        metronomeButton.innerHTML = playIcon + (isMobileView() ? '' : playText);
+        metronomeButton.setAttribute('aria-label', 'Включить метроном');
+        console.log("Metronome: Stopped."); // ЛОГ
     } else if (bpm > 0) {
-        // Включение
+        // --- Включение ---
+        console.log("Metronome: Attempting to start with BPM:", bpm); // ЛОГ
         if (!audioContext || !audioBuffer) {
-             console.warn("Метроном не может быть запущен: аудио не готово.");
-             alert("Звук метронома еще не загружен, подождите.");
-             // Попытка загрузить асинхронно и запустить позже? Проще попросить пользователя нажать еще раз.
-             loadAudioFile(); // Запускаем загрузку на всякий случай
-             return;
+            console.warn("Metronome: Cannot start, audio not ready."); // ЛОГ
+            alert("Звук метронома еще не загружен, подождите.");
+            loadAudioFile();
+            return;
         }
         const intervalMilliseconds = 60000 / bpm;
         if (intervalMilliseconds <= 0 || !isFinite(intervalMilliseconds)) {
-             console.error("Неверный интервал метронома:", intervalMilliseconds);
-             return;
+            console.error("Metronome: Invalid interval calculated:", intervalMilliseconds); // ЛОГ
+            return;
         }
-        currentBeat = 0; // Начинаем с первой доли
-        metronomeInterval = setInterval(playClick, intervalMilliseconds);
-        isMetronomeActive = true;
-        if(metronomeButton) metronomeButton.textContent = '⏹️ Выключить метроном';
-        console.log(`Метроном включен: ${bpm} BPM`);
-        playClick(); // Сразу играем первый удар
+        currentBeat = 0;
+
+
+// --- Обновленная функция playClick (с логами и try-catch) ---
+function playClick() {
+    console.log("--> playClick called. Beat:", currentBeat, "Context state:", audioContext?.state); // ЛОГ ВХОДА
+
+    if (!audioContext || !audioBuffer) {
+        console.error("!!! playClick stopping: AudioContext or audio buffer not ready."); // ЛОГ ОШИБКИ
+        if(isMetronomeActive) toggleMetronome(0); // Останавливаем
+        return;
+    }
+
+    if (audioContext.state === 'suspended') {
+        console.warn("playClick: AudioContext is suspended, attempting to resume..."); // ЛОГ ПРИОСТАНОВКИ
+        resumeAudioContext(); // Пытаемся возобновить
+        // Может потребоваться небольшая задержка перед воспроизведением после resume,
+        // но сначала попробуем без нее.
+    }
+
+    const beatsPerMeasure = parseInt(timeSignatureSelect.value, 10) || 4;
+
+    try {
+        console.log("   playClick: Creating BufferSource..."); // ЛОГ
+        const source = audioContext.createBufferSource();
+        source.buffer = audioBuffer;
+        const gainNode = audioContext.createGain();
+        gainNode.gain.setValueAtTime(currentBeat % beatsPerMeasure === 0 ? 1.0 : 0.6, audioContext.currentTime);
+
+        source.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        console.log("   playClick: Calling source.start()..."); // ЛОГ
+        source.start(audioContext.currentTime);
+        source.onended = () => { // Добавим для информации
+             console.log("   playClick: source ended.");
+        };
+
+        currentBeat = (currentBeat + 1) % beatsPerMeasure;
+        console.log("   playClick finished. Next beat:", currentBeat); // ЛОГ УСПЕХА
+
+    } catch (error) {
+        console.error("!!! Error during playClick execution:", error); // ЛОГ ИСКЛЮЧЕНИЯ
+        if(isMetronomeActive) toggleMetronome(0); // Останавливаем при ошибке
     }
 }
+
+
+
+        // --- ЗАПУСК ИНТЕРВАЛА ---
+        metronomeInterval = setInterval(playClick, intervalMilliseconds);
+        isMetronomeActive = true;
+        console.log("Metronome: Started. Interval ID:", metronomeInterval, "Interval (ms):", intervalMilliseconds); // ЛОГ
+        metronomeButton.innerHTML = stopIcon + (isMobileView() ? '' : stopText);
+        metronomeButton.setAttribute('aria-label', 'Выключить метроном');
+        console.log("Metronome: Playing first click manually..."); // ЛОГ
+        playClick(); // Сразу играем первый удар
+        console.log("Metronome: First click function call finished.");// ЛОГ
+    } else {
+         console.log("Metronome: Start requested with invalid BPM:", bpm); // ЛОГ
+    }
+}
+
 
 
 // --- EVENT LISTENER SETUP ---
@@ -1157,6 +1224,24 @@ function setupEventListeners() {
     });
 
     if(splitTextButton && songContent) {
+        const splitIcon = '<i class="fas fa-columns"></i>';
+        const mergeIcon = '<i class="fas fa-align-justify"></i>'; // Иконка для "Объединить"
+        // Текстовые части для десктопа
+        const splitText = '<span class="button-text">Разделить текст</span>';
+        const mergeText = '<span class="button-text">Объединить колонки</span>';
+
+        // Функция для обновления кнопки
+        const updateSplitButton = () => {
+            const isSplit = songContent.classList.contains('split-columns');
+            const currentIcon = isSplit ? mergeIcon : splitIcon;
+            const currentTextSpan = isSplit ? mergeText : splitText;
+            // Устанавливаем контент В ЗАВИСИМОСТИ от ширины экрана
+            const content = currentIcon + (isMobileView() ? '' : currentTextSpan);
+            splitTextButton.innerHTML = content;
+            splitTextButton.setAttribute('aria-label', isSplit ? 'Объединить колонки' : 'Разделить текст');
+        };
+
+        // Обработчик клика
         splitTextButton.addEventListener('click', () => {
             const lyricsElement = songContent.querySelector('pre');
             if (!lyricsElement || !lyricsElement.textContent?.trim()) {
@@ -1164,7 +1249,18 @@ function setupEventListeners() {
                 return;
             }
             songContent.classList.toggle('split-columns');
-            splitTextButton.textContent = songContent.classList.contains('split-columns') ? 'Объединить колонки' : 'Разделить на 2 колонки';
+            updateSplitButton(); // Обновляем кнопку
+        });
+
+        // Установим начальное состояние кнопки при загрузке
+        updateSplitButton();
+
+        // Добавим слушатель на изменение размера окна, чтобы кнопка обновлялась
+        // (опционально, но улучшает UX если пользователь меняет размер окна)
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(updateSplitButton, 150); // Обновляем с небольшой задержкой
         });
     }
 
