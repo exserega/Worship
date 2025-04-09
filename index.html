@@ -6,13 +6,12 @@
     <title>Agape Worship</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    </head>
+</head>
 <body>
 
 <header>
-    <button id="toggle-repertoire" class="toggle-button repertoire-toggle">Репертуар</button>
     <h1>Agape Worship</h1>
-    <button id="toggle-favorites" class="toggle-button lists-toggle">Список</button> </header>
+</header>
 
 <main class="container">
     <section class="controls">
@@ -38,12 +37,6 @@
             </select>
         </div>
         <div class="control-group">
-            <label for="vocalist-select">Вокалист:</label>
-            <select id="vocalist-select">
-                <option value="">-- Выберите вокалиста --</option>
-            </select>
-        </div>
-        <div class="control-group">
             <label for="key-select">Тональность:</label>
             <select id="key-select">
                 <option value="C">C</option>
@@ -59,9 +52,17 @@
                 <option value="A#">A#</option>
                 <option value="H">H</option>
             </select>
-            <div class="font-size-controls"> Масштаб
-                <button id="zoom-in">+</button>
-                <button id="zoom-out">-</button>
+            <button id="split-text-button" aria-label="Разделить текст" class="control-group-button">
+                <i class="fas fa-columns"></i>
+                <span class="button-text">Разделить текст</span>
+            </button>
+            <div class="font-size-controls">
+                 <button id="zoom-out" aria-label="Уменьшить масштаб">
+                    <i class="fas fa-search-minus"></i>
+                </button>
+                <button id="zoom-in" aria-label="Увеличить масштаб">
+                    <i class="fas fa-search-plus"></i>
+                </button>
             </div>
         </div>
     </section>
@@ -74,7 +75,6 @@
     <div class="control-buttons">
         <button id="favorite-button" aria-label="Добавить в избранное">❤️ Мой список</button>
         <button id="add-to-list-button" aria-label="Добавить в список">📝 Общий список</button>
-        <button id="split-text-button" aria-label="Разделить текст">Разделить текст</button>
     </div>
 
     <div class="controls-footer">
@@ -88,25 +88,37 @@
             </select>
             <span>BPM: </span>
             <span id="bpm-display" contenteditable="true">N/A</span>
-            <button id="metronome-button">▶️ Включить метроном</button>
+            <button id="metronome-button" aria-label="Включить метроном">
+                 <i class="fas fa-play"></i>
+                 <span class="button-text">Включить метроном</span>
+            </button>
         </div>
         <a id="holychords-button" href="#" target="_blank">Holychords</a>
         <button id="add-to-repertoire-button" aria-label="Добавить в мой репертуар">🎤 В мой репертуар</button>
     </div>
-</main>
-
-<aside id="favorites-panel" class="side-panel favorites-panel"> <div id="my-list" class="list-section">
+</main> <aside id="favorites-panel" class="side-panel favorites-panel">
+    <div id="my-list" class="list-section">
         <h3>Мой список</h3>
-        <div id="favorites-list" class="list-container"></div> </div>
+        <div id="favorites-list" class="list-container"></div>
+    </div>
     <div id="shared-list" class="list-section">
-        <h3 id="shared-list-heading">Общий список</h3> <div id="shared-songs-list" class="list-container"></div>
-</div>
-        <div id="shared-songs-list" class="list-container"></div> </div>
+        <h3 id="shared-list-heading">Общий список</h3>
+        <div id="shared-songs-list" class="list-container"></div>
+    </div>
 </aside>
 
-<aside id="repertoire-panel" class="side-panel repertoire-panel"> <h3 id="repertoire-panel-title">Репертуар: <span id="repertoire-panel-vocalist-name">-- Выберите вокалиста --</span></h3>
-    <div id="repertoire-panel-list" class="list-container repertoire-list-container"> <div class="empty-message">Выберите вокалиста для просмотра репертуара.</div>
+<aside id="repertoire-panel" class="side-panel repertoire-panel">
+    <h3 class="panel-header">Репертуар</h3>
+
+    <div class="repertoire-vocalist-selector">
+        <label for="vocalist-select">Вокалист:</label> <select id="vocalist-select">
+            <option value="">-- Выберите вокалиста --</option>
+            </select>
     </div>
+
+    <div id="repertoire-panel-list" class="repertoire-list-container">
+        <div class="empty-message">Выберите вокалиста для просмотра репертуара.</div>
+        </div>
 </aside>
 <div id="presentation-overlay" class="presentation-overlay">
     <button id="presentation-close-btn" class="presentation-close-btn" title="Закрыть режим презентации">&times;</button>
@@ -121,6 +133,17 @@
 </section>
 
 <div id="loading-indicator">Загрузка...</div>
+
+<nav class="mobile-bottom-nav">
+    <button id="toggle-favorites" class="mobile-nav-button">
+        <i class="fas fa-list"></i>
+        <span>Список</span>
+    </button>
+    <button id="toggle-repertoire" class="mobile-nav-button">
+        <i class="fas fa-users"></i>
+        <span>Репертуар</span>
+    </button>
+</nav>
 
 <script type="module" src="script.js"></script>
 </body>
