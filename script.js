@@ -589,40 +589,36 @@ async function showPresentationView(songsToShow) {
     let loadedCount = 0;
     const totalCount = songsToShow.length;
     const loadingCountSpan = document.getElementById('presentation-loading-count');
-    // ИСПРАВЛЕНО: Правильная интерполяция и текст
-    if(loadingCountSpan) loadingCountSpan.textContent = `(0/${totalCount})`;
+    // Правильная интерполяция и текст
+    if (loadingCountSpan) loadingCountSpan.textContent = `(0/${totalCount})`;
 
     let contentHtml = ''; // Собираем весь HTML здесь
 
     for (const song of songsToShow) {
-        // Проверяем наличие данных в кэше
         if (!cachedData[song.sheet]?.[song.index]) {
-            // ИСПРАВЛЕНО: Правильная интерполяция
+            // Правильная интерполяция
             console.log(`Presentation: Fetching data for ${song.name} (${song.sheet})`);
-            await fetchSheetData(song.sheet); // Дозагружаем, если нет
+            await fetchSheetData(song.sheet);
         }
 
         const originalSongData = cachedData[song.sheet]?.[song.index];
         if (!originalSongData) {
             console.error(`Presentation: Failed to get original data for ${song.name}`);
             contentHtml += `<div class="presentation-song"><h2>${song.name} - ОШИБКА ЗАГРУЗКИ</h2></div>`;
-            continue; // Пропускаем песню, если данных нет
+            continue;
         }
 
         const songTitle = originalSongData[0];
         const originalLyrics = originalSongData[1] || '';
-        const originalKey = originalSongData[2] || chords[0]; // Оригинальный ключ
+        const originalKey = originalSongData[2] || chords[0];
         const targetKey = song.key; // Ключ из общего списка
 
-        // Транспонирование
         const transposition = getTransposition(originalKey, targetKey);
         const transposedLyrics = transposeLyrics(originalLyrics, transposition);
-
-        // Обработка и подсветка
         const processedLyrics = processLyrics(transposedLyrics);
         const highlightedLyrics = highlightChords(processedLyrics);
 
-        // ИСПРАВЛЕНО: Добавляем HTML для песни с правильной интерполяцией и тегами
+        // ИСПРАВЛЕНО: HTML для песни с правильной интерполяцией и тегами
         contentHtml += `
             <div class="presentation-song">
                 <h2>${songTitle} — ${targetKey}</h2>
@@ -630,28 +626,26 @@ async function showPresentationView(songsToShow) {
             </div>
         `;
 
-        // Обновляем счетчик загрузки
         loadedCount++;
         // ИСПРАВЛЕНО: Правильная интерполяция
-        if(loadingCountSpan) loadingCountSpan.textContent = `(${loadedCount}/${totalCount})`;
+        if (loadingCountSpan) loadingCountSpan.textContent = `(${loadedCount}/${totalCount})`;
     }
 
-    presentationContent.innerHTML = contentHtml; // Вставляем весь готовый HTML
-    presentationOverlay.classList.add('visible'); // Показываем оверлей
-    presentationOverlay.scrollTop = 0; // Прокручиваем наверх при открытии
+    presentationContent.innerHTML = contentHtml;
+    presentationOverlay.classList.add('visible');
+    presentationOverlay.scrollTop = 0;
 }
 
 // --- UI UPDATE FUNCTIONS ---
+/** Отображение деталей песни (текст, ключ, BPM, плеер) - ИСПРАВЛЕН СИНТАКСИС */
 function displaySongDetails(songData, index, key) {
-    // ---> ИСПРАВЛЕНА ОШИБКА СИНТАКСИСА ВНУТРИ ЭТОЙ ФУНКЦИИ <---
-    if(!playerContainer||!playerSection||!songContent){console.error("Missing DOM elements");return;}
-    if(!songData){
-        songContent.innerHTML='<h2>Выберите песню</h2><pre></pre>';
-        playerContainer.innerHTML='';
-        playerSection.style.display='none';
-        if(bpmDisplay) bpmDisplay.textContent='N/A';
-        if(holychordsButton) { holychordsButton.style.display='none'; holychordsButton.href='#'; }
-        if(keySelect) { keySelect.value=chords[0]; keySelect.dataset.index=''; }
+    if (!playerContainer || !playerSection || !songContent) { console.error("Missing DOM elements for display."); return; }
+    if (!songData) {
+        songContent.innerHTML = '<h2>Выберите песню</h2><pre></pre>';
+        playerContainer.innerHTML = ''; playerSection.style.display = 'none';
+        if (bpmDisplay) bpmDisplay.textContent = 'N/A';
+        if (holychordsButton) { holychordsButton.style.display = 'none'; holychordsButton.href = '#'; }
+        if (keySelect) { keySelect.value = chords[0]; keySelect.dataset.index = ''; }
         return;
     }
     const cK = key || songData[2] || chords[0];
@@ -661,35 +655,32 @@ function displaySongDetails(songData, index, key) {
     const title = songData[0] || 'Без названия';
     const ytLink = songData[5];
 
-    if(bpmDisplay) { updateBPM(bpm); bpmDisplay.textContent = bpm; }
+    if (bpmDisplay) { updateBPM(bpm); bpmDisplay.textContent = bpm; }
 
-    if(holychordsButton) {
-        if(srcUrl && srcUrl.trim() !== '' && srcUrl.trim() !== '#'){
-            holychordsButton.href = srcUrl;
-            holychordsButton.style.display = 'inline-block';
+    if (holychordsButton) {
+        if (srcUrl && srcUrl.trim() !== '' && srcUrl.trim() !== '#') {
+            holychordsButton.href = srcUrl; holychordsButton.style.display = 'inline-block';
         } else {
-            holychordsButton.href = '#';
-            holychordsButton.style.display = 'none';
+            holychordsButton.href = '#'; holychordsButton.style.display = 'none';
         }
     }
 
     const pLyrics = processLyrics(lyrics);
     const hLyrics = highlightChords(pLyrics);
 
-    // ИСПРАВЛЕННАЯ СТРОКА: Правильная интерполяция и HTML
+    // ИСПРАВЛЕННАЯ СТРОКА ОКОНЧАТЕЛЬНО:
     songContent.innerHTML = `<h2>${title} — ${cK}</h2><pre>${hLyrics}</pre>`;
 
-    if(keySelect) { keySelect.value = cK; keySelect.dataset.index = index; }
-    updateTransposedLyrics(); // Обновляем текст с учетом новой/оригинальной тональности
+    if (keySelect) { keySelect.value = cK; keySelect.dataset.index = index; }
+    updateTransposedLyrics();
 
     const vId = extractYouTubeVideoId(ytLink);
-    if(vId && playerContainer && playerSection){
-        // ИСПРАВЛЕННАЯ СТРОКА: Правильная интерполяция и URL YouTube
+    if (vId && playerContainer && playerSection) {
+         // ИСПРАВЛЕНО: Правильная вставка ID видео
         playerContainer.innerHTML = `<iframe width="100%" height="315" src="https://www.youtube.com/embed/${vId}?autoplay=0&modestbranding=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
         playerSection.style.display = 'block';
     } else if (playerContainer && playerSection) {
-        playerContainer.innerHTML = '';
-        playerSection.style.display = 'none';
+        playerContainer.innerHTML = ''; playerSection.style.display = 'none';
     }
 }
 
