@@ -129,25 +129,57 @@ input:focus, select:focus {
 }
 
 #sheet-select, #song-select { width: auto; flex-grow: 1; min-width: 140px;}
-#search-input { width: 100%; }
-#search-results { position: relative; width: 100%; }
-#search-results .search-result {
-    position: absolute; /* Позиционирование под полем ввода */
+.control-group:has(#search-input) {
+    position: relative; /* Делаем родителя относительным для позиционирования списка */
+}
+
+/* Контейнер для списка результатов */
+#search-results {
+    position: absolute; /* Позиционируем абсолютно под инпутом */
+    top: 100%; /* Сразу под родительским элементом (инпутом/лейблом) */
     left: 0;
-    right: 0; /* Растягиваем на всю ширину */
-    background-color: var(--container-background-color);
+    right: 0;
+    width: 100%; /* На всю ширину родителя */
+    max-height: 200px; /* Максимальная высота списка */
+    overflow-y: auto;  /* Добавляем вертикальный скролл, если не помещается */
+    background-color: var(--container-background-color); /* Фон списка */
     border: 1px solid var(--border-color);
-    border-top: none; /* Убираем верхнюю границу, чтобы примыкало к инпуту */
-    padding: 8px 12px;
-    cursor: pointer;
-    z-index: 5; /* Над другими элементами */
-    max-height: 150px; /* Ограничение высоты с прокруткой */
-    overflow-y: auto;
+    border-top: none; /* Убираем верхнюю рамку */
     border-bottom-left-radius: var(--radius); /* Скругляем нижние углы */
     border-bottom-right-radius: var(--radius);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 10; /* Выше других элементов управления */
+    box-shadow: var(--shadow); /* Тень */
+    box-sizing: border-box;
+    margin-top: -1px; /* Небольшое перекрытие с инпутом для сглаживания рамки */
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
-#search-results .search-result:hover { background-color: var(--hover-color); }
+/* Стили для скроллбара внутри результатов поиска */
+#search-results::-webkit-scrollbar { width: 6px; }
+#search-results::-webkit-scrollbar-track { background: var(--hover-color); border-radius: 3px;}
+#search-results::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 3px;}
+
+
+/* Отдельный элемент результата поиска */
+.search-result {
+    /* position: static; (По умолчанию, можно не указывать) */
+    padding: 10px 15px; /* Внутренние отступы */
+    cursor: pointer;
+    color: var(--text-color);
+    border-bottom: 1px solid var(--border-color); /* Разделитель между элементами */
+    transition: background-color 0.2s ease, color 0.3s ease, border-color 0.3s ease;
+    white-space: nowrap; /* Запрещаем перенос текста */
+    overflow: hidden; /* Скрываем то, что не влезло */
+    text-overflow: ellipsis; /* Добавляем троеточие */
+}
+.search-result:last-child {
+    border-bottom: none; /* У последнего элемента убираем разделитель */
+     /* Добавляем скругление к последнему элементу, если он виден */
+    border-bottom-left-radius: var(--radius);
+    border-bottom-right-radius: var(--radius);
+}
+.search-result:hover {
+    background-color: var(--hover-color); /* Цвет фона при наведении */
+}
 
 
 /* --- Buttons --- */
