@@ -136,6 +136,61 @@ button.icon-button.simple:active { background: var(--primary-color); color: #fff
 #favorites-panel.open { transform: translateX(0); }
 #repertoire-panel { right: 0; left: auto; transform: translateX(100%); border-left: 2px solid var(--primary-color); /* overflow: hidden; */ /* Убрал, чтобы тень была видна */} /* Убедимся, что overflow-y здесь нет, он будет на list */
 #repertoire-panel.open { transform: translateX(0); }
+/* --- Стили для Аккордеона Репертуара --- */
+.repertoire-key-heading {
+    /* (Оставляем существующие стили) */
+    cursor: pointer; /* Делаем заголовок кликабельным */
+    display: flex; /* Для выравнивания текста и иконки */
+    justify-content: space-between; /* Текст слева, иконка справа */
+    align-items: center;
+    user-select: none; /* Запретить выделение текста заголовка */
+}
+
+.repertoire-key-heading i.fas {
+    transition: transform 0.3s ease; /* Плавный поворот иконки */
+    margin-left: 10px; /* Небольшой отступ слева от иконки */
+}
+
+/* Контейнер для песен внутри ключа */
+.repertoire-songs-for-key {
+    overflow: hidden; /* Важно для анимации max-height */
+    transition: max-height 0.35s ease-out, opacity 0.3s ease-out, margin-top 0.35s ease-out, margin-bottom 0.35s ease-out; /* Плавное раскрытие/скрытие */
+    max-height: 1000px; /* Достаточно большая высота для раскрытого состояния */
+    opacity: 1;
+    /* Можно добавить небольшие отступы сверху/снизу, когда раскрыто */
+    margin-top: 5px;
+    margin-bottom: 10px;
+    /* border-top: 1px solid var(--border-color); */ /* Можно добавить разделитель */
+}
+
+/* Стили для свернутого состояния */
+.repertoire-songs-for-key.collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    /* border-top: none; */ /* Убираем разделитель, если он был */
+}
+
+/* Поворот иконки при раскрытии (когда НЕТ класса collapsed) */
+.repertoire-key-heading i.fa-chevron-up {
+    transform: rotate(180deg);
+}
+
+/* Небольшой отступ для песен внутри аккордеона */
+.repertoire-songs-for-key .repertoire-item {
+    padding-left: 15px; /* Чуть больше отступ слева для песен */
+}
+.repertoire-songs-for-key .repertoire-item:first-child {
+    border-top: 1px dotted var(--border-color); /* Верхняя граница для первой песни */
+    margin-top: 5px;
+}
+
+/* Дополнительно: Стиль для маленького сообщения об ошибке, если нужно */
+.empty-message.small {
+    font-size: 0.8rem;
+    padding: 8px;
+}
 
 /* Содержимое Левой панели (Списки) */
 .list-section { margin-bottom: 0; flex-shrink: 0;}
@@ -175,10 +230,7 @@ button.icon-button.simple:active { background: var(--primary-color); color: #fff
 #repertoire-panel-list::-webkit-scrollbar-track { background: var(--border-color); border-radius: 3px;}
 #repertoire-panel-list::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 3px;}
 /* Стили для содержимого списка репертуара */
-.repertoire-key-heading { font-size: 0.9rem; font-weight: 600; color: var(--text-color); background-color: var(--input-bg-color); padding: 5px 10px; margin-top: 15px; margin-bottom: 8px; border-radius: 4px; border-left: 3px solid var(--primary-color); position: sticky; top: -1px; z-index: 1; /* Top -1px чтобы перекрыть рамку */ }
 #repertoire-panel-list > .repertoire-key-heading:first-child { margin-top: 0; }
-.repertoire-sheet-heading { font-size: 0.8rem; font-weight: 500; color: var(--label-color); padding: 4px 10px 4px 15px; margin-top: 8px; margin-bottom: 2px; border-top: 1px dotted var(--border-color); }
-.repertoire-key-heading + .repertoire-sheet-heading { border-top: none; margin-top: 4px; }
 #repertoire-panel .repertoire-item { display: flex; justify-content: space-between; align-items: center; padding: 7px 10px 7px 25px; font-size: 0.9rem; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background-color 0.2s ease;}
 #repertoire-panel .repertoire-item:last-child { border-bottom: none; }
 #repertoire-panel .repertoire-item:hover { background-color: #262626; }
