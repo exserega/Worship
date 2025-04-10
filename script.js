@@ -57,6 +57,7 @@ let currentFontSize = DEFAULT_FONT_SIZE; // Текущий размер шриф
 let currentSharedListData = []; // Для режима презентации
 let presentationSongs = []; // Список песен для режима презентации
 let currentPresentationIndex = 0; // Индекс текущей отображаемой песни
+let controlsHideTimeout = null; // ID таймера для автоскрытия панели управления
 
 // Metronome State
 let audioContext;
@@ -802,8 +803,9 @@ async function showPresentationView(songsToShow) {
     // Отображаем первую песню (асинхронно, если нужно догрузить данные)
     await displayCurrentPresentationSong();
 
-    presentationOverlay.classList.add('visible'); // Показываем сам оверлей
-    presentationOverlay.scrollTop = 0;            // Прокручиваем оверлей наверх (на всякий случай)
+ presentationOverlay.classList.add('visible'); // Показываем сам оверлей
+presentationOverlay.scrollTop = 0;
+showPresentationControls(); // <--- ДОБАВИТЬ ЭТУ СТРОКУ
 }
 
 
@@ -897,7 +899,35 @@ function prevPresentationSong() {
         displayCurrentPresentationSong(); // Показываем песню с новым индексом
     }
 }
+// --- Функции для автоскрытия панели управления в презентации ---
 
+const CONTROLS_HIDE_DELAY = 3000; // Время бездействия в миллисекундах (3 секунды)
+
+/** Показывает панель управления и запускает таймер для скрытия */
+function showPresentationControls() {
+    const controls = document.querySelector('.presentation-controls');
+    if (!controls) return; // Если панели нет, выходим
+
+    // 1. Показываем панель (убираем класс скрытия)
+    controls.classList.remove('controls-hidden');
+
+    // 2. Отменяем предыдущий таймер (если он был)
+    clearTimeout(controlsHideTimeout);
+
+    // 3. Запускаем новый таймер, который скроет панель через N секунд
+    controlsHideTimeout = setTimeout(hidePresentationControls, CONTROLS_HIDE_DELAY);
+    // console.log("Таймер скрытия запущен:", controlsHideTimeout); // Для отладки
+}
+
+/** Скрывает панель управления */
+function hidePresentationControls() {
+    const controls = document.querySelector('.presentation-controls');
+    if (controls) {
+        controls.classList.add('controls-hidden'); // Добавляем класс скрытия
+        // console.log("Панель управления скрыта"); // Для отладки
+    }
+}
+// --- Конец функций для автоскрытия ---
 
 // --- Логика для Свайпов в режиме презентации ---
 let touchstartX = 0;
@@ -1619,11 +1649,14 @@ function setupEventListeners() {
     if (presentationCloseBtn && presentationOverlay) {
          presentationCloseBtn.addEventListener('click', () => {
              presentationOverlay.classList.remove('visible');
+              
             document.body.style.overflow = '';
+              
              // Выход из полноэкранного режима, если он был включен
              if (document.fullscreenElement) {
                  document.exitFullscreen().catch(err => console.error(`Error attempting to exit fullscreen: ${err.message} (${err.name})`));
              }
+             clearTimeout(controlsHideTimeout);
          });
     }
 
@@ -1691,10 +1724,18 @@ function setupEventListeners() {
     // Устанавливаем слушатели для свайпов
     setupSwipeListeners();
 
-    console.log("Слушатели для кнопок презентации и свайпов добавлены.");
-    // --- Конец блока для слушателей презентации ---
+  console.log("Слушатели для кнопок презентации и свайпов добавлены."); // Эта строка уже была
 
-} 
+    // Добавляем слушатель на весь оверлей для показа контролов при касании <-- ВСТАВЛЯЕМ СЮДА
+    if (presentationOverlay) {
+        presentationOverlay.addEventListener('touchstart', showPresentationControls, { passive: true });
+        // Примечание: Мы используем 'touchstart' - самое первое касание.
+        // Оно же используется и для свайпов, это нормально.
+        // Функция showPresentationControls сбросит таймер и запустит новый.
+        console.log("Слушатель касания для показа контролов добавлен.");
+    } // <-- КОНЕЦ ВСТАВЛЕННОГО БЛОКА
+
+} //
 
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', async () => {
