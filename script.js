@@ -58,6 +58,7 @@ let currentSharedListData = []; // Для режима презентации
 let presentationSongs = []; // Список песен для режима презентации
 let currentPresentationIndex = 0; // Индекс текущей отображаемой песни
 let controlsHideTimeout = null; // ID таймера для автоскрытия панели управления
+let isPresentationSplit = false; // Состояние разделения текста в презентации
 
 // Metronome State
 let audioContext;
@@ -784,18 +785,19 @@ function isMobileView() {
 
 /** Отображает песни из переданного списка в режиме презентации */
 /** Запускает режим презентации */
+/** Запускает режим презентации */
 async function showPresentationView(songsToShow) {
     // Проверяем, есть ли нужные элементы и песни
     if (!presentationOverlay || !presentationContent || !songsToShow || songsToShow.length === 0) {
          console.error("Не могу показать презентацию: нет оверлея/контента или нет песен.");
-         // Можно показать сообщение пользователю, если нужно
-         // alert("Нет песен в общем списке для показа.");
          return;
     }
     console.log(`Запуск режима презентации с ${songsToShow.length} песнями.`);
 
     presentationSongs = songsToShow;       // Запоминаем список песен
     currentPresentationIndex = 0;      // Начинаем с первой песни (индекс 0)
+    isPresentationSplit = false;         // <-- Сброс состояния разделения при входе
+    updatePresentationSplitButtonState();  // <-- Обновить вид кнопки разделения
 
     // Опционально: Скрываем скролл основной страницы, пока открыт оверлей
     // document.body.style.overflow = 'hidden';
@@ -803,12 +805,12 @@ async function showPresentationView(songsToShow) {
     // Отображаем первую песню (асинхронно, если нужно догрузить данные)
     await displayCurrentPresentationSong();
 
- presentationOverlay.classList.add('visible'); // Показываем сам оверлей
-presentationOverlay.scrollTop = 0;
-showPresentationControls(); // <--- ДОБАВИТЬ ЭТУ СТРОКУ
+    presentationOverlay.classList.add('visible'); // Показываем сам оверлей
+    presentationOverlay.scrollTop = 0;            // Прокручиваем оверлей наверх
+    showPresentationControls();                   // Показываем панель управления (и запускаем таймер скрытия)
 }
 
-
+/** Отображает ТЕКУЩУЮ песню в режиме презентации */
 /** Отображает ТЕКУЩУЮ песню в режиме презентации */
 async function displayCurrentPresentationSong() {
     if (presentationSongs.length === 0 || !presentationContent) return; // Нечего показывать
@@ -818,7 +820,7 @@ async function displayCurrentPresentationSong() {
     if (currentPresentationIndex >= presentationSongs.length) currentPresentationIndex = presentationSongs.length - 1;
 
     const song = presentationSongs[currentPresentationIndex]; // Получаем данные текущей песни из списка
-    console.log(`Презентация: Показываем песню ${currentPresentationIndex + 1}/${presentationSongs.length}: ${song.name}`);
+    console.log(`Презентация: Показываем песню <span class="math-inline">\{currentPresentationIndex \+ 1\}/</span>{presentationSongs.length}: ${song.name}`);
 
     // Временно показываем загрузку
     presentationContent.innerHTML = `<div class="presentation-loading">Загрузка "${song.name}"...</div>`;
@@ -827,7 +829,7 @@ async function displayCurrentPresentationSong() {
         // --- Получение и подготовка данных ---
         // Проверяем кэш, если данных нет - загружаем из Google Sheets
         if (!cachedData[song.sheet]?.[song.index]) {
-            console.log(`Presentation: Загрузка данных для ${song.name} (${song.sheet})`);
+            console.log(`Presentation: Загрузка данных для <span class="math-inline">\{song\.name\} \(</span>{song.sheet})`);
             await fetchSheetData(song.sheet); // Функция fetchSheetData уже есть
         }
         const originalSongData = cachedData[song.sheet]?.[song.index];
@@ -852,36 +854,43 @@ async function displayCurrentPresentationSong() {
         // Оборачиваем в div .presentation-song, чтобы применить стили
         const songHtml = `
             <div class="presentation-song">
-                <h2>${songTitle} — ${targetKey}</h2>
-                <pre>${highlightedLyrics}</pre>
-            </div>
-        `;
-        // Вставляем готовый HTML в контейнер
-        presentationContent.innerHTML = songHtml;
+                <h2>${songTitle} — <span class="math-inline">\{targetKey\}</h2\>
+<pre>{highlightedLyrics}</pre>
+</div>`;
+// Вставляем готовый HTML в контейнер
+presentationContent.innerHTML = songHtml;
 
-        // Прокрутка содержимого песни наверх (если оно само вдруг скроллится)
-         const songElement = presentationContent.querySelector('.presentation-song');
-         if (songElement) songElement.scrollTop = 0;
+      // --- Применение класса разделения ---
+      // Применяем или убираем класс .split-columns в зависимости от сохраненного состояния isPresentationSplit
+      if (presentationContent) { // Доп. проверка на всякий случай
+           presentationContent.classList.toggle('split-columns', isPresentationSplit);
+      }
+      // --- Конец применения класса разделения ---
 
-    } catch (error) {
-        // Если произошла ошибка при загрузке или обработке
-        console.error("Ошибка при отображении песни в презентации:", error);
-        presentationContent.innerHTML = `<div class="presentation-song error"><h2>Ошибка загрузки песни</h2><p>${error.message}</p></div>`;
-    }
 
-    // --- Обновление счетчика песен (например, "3 / 8") ---
-    const counterElement = document.getElementById('pres-counter');
-    if (counterElement) {
-        counterElement.textContent = `${currentPresentationIndex + 1} / ${presentationSongs.length}`;
-    }
+      // Прокрутка содержимого песни наверх (если оно само вдруг скроллится)
+       const songElement = presentationContent.querySelector('.presentation-song');
+       if (songElement) songElement.scrollTop = 0;
 
-    // --- Обновление состояния кнопок "Назад" / "Вперед" ---
-    const prevBtn = document.getElementById('pres-prev-btn');
-    const nextBtn = document.getElementById('pres-next-btn');
-    // Выключаем кнопку "Назад", если это первая песня
-    if (prevBtn) prevBtn.disabled = (currentPresentationIndex === 0);
-    // Выключаем кнопку "Вперед", если это последняя песня
-    if (nextBtn) nextBtn.disabled = (currentPresentationIndex === presentationSongs.length - 1);
+  } catch (error) {
+      // Если произошла ошибка при загрузке или обработке
+      console.error("Ошибка при отображении песни в презентации:", error);
+      presentationContent.innerHTML = `<div class="presentation-song error"><h2>Ошибка загрузки песни</h2><p>${error.message}</p></div>`;
+  }
+
+  // --- Обновление счетчика песен (например, "3 / 8") ---
+  const counterElement = document.getElementById('pres-counter');
+  if (counterElement) {
+      counterElement.textContent = `${currentPresentationIndex + 1} / ${presentationSongs.length}`;
+  }
+
+  // --- Обновление состояния кнопок "Назад" / "Вперед" ---
+  const prevBtn = document.getElementById('pres-prev-btn');
+  const nextBtn = document.getElementById('pres-next-btn');
+  // Выключаем кнопку "Назад", если это первая песня
+  if (prevBtn) prevBtn.disabled = (currentPresentationIndex === 0);
+  // Выключаем кнопку "Вперед", если это последняя песня
+  if (nextBtn) nextBtn.disabled = (currentPresentationIndex === presentationSongs.length - 1);
 }
 
 /** Переключает на СЛЕДУЮЩУЮ песню в презентации */
@@ -926,6 +935,41 @@ function hidePresentationControls() {
         controls.classList.add('controls-hidden'); // Добавляем класс скрытия
         // console.log("Панель управления скрыта"); // Для отладки
     }
+}
+
+/** Переключает режим разделения текста в презентации */
+function togglePresentationSplit() {
+    isPresentationSplit = !isPresentationSplit; // Меняем состояние true/false
+    // Применяем или убираем класс к контейнеру контента
+    if (presentationContent) {
+         presentationContent.classList.toggle('split-columns', isPresentationSplit);
+    }
+    updatePresentationSplitButtonState(); // Обновляем вид кнопки
+}
+
+/** Обновляет иконку и title кнопки разделения в презентации */
+function updatePresentationSplitButtonState() {
+     const presSplitBtn = document.getElementById('pres-split-text-btn');
+     if (!presSplitBtn) return; // Если кнопки нет, выходим
+
+     const splitIcon = 'fa-columns';        // Класс иконки для разделения
+     const mergeIcon = 'fa-align-justify'; // Класс иконки для объединения
+     const splitTitle = 'Разделить текст';
+     const mergeTitle = 'Объединить колонки';
+
+     const iconElement = presSplitBtn.querySelector('i'); // Находим иконку внутри кнопки
+     if (!iconElement) return;
+
+     // Устанавливаем нужную иконку и title в зависимости от состояния
+     if (isPresentationSplit) { // Если сейчас разделено
+         iconElement.classList.remove(splitIcon); // Убираем иконку разделения
+         iconElement.classList.add(mergeIcon);    // Добавляем иконку объединения
+         presSplitBtn.title = mergeTitle;          // Меняем подсказку
+     } else { // Если сейчас не разделено
+         iconElement.classList.remove(mergeIcon);  // Убираем иконку объединения
+         iconElement.classList.add(splitIcon);     // Добавляем иконку разделения
+         presSplitBtn.title = splitTitle;           // Меняем подсказку
+     }
 }
 // --- Конец функций для автоскрытия ---
 
@@ -1464,8 +1508,8 @@ function setupEventListeners() {
         const songIndex = songSelect.value;
         console.log(`Song selected: ${songIndex} in ${sheetName}`);
         if (!sheetName || songIndex === "" || !cachedData[sheetName]?.[songIndex]) {
-            displaySongDetails(null);
-            return;
+             displaySongDetails(null);
+             return;
         }
         displaySongDetails(cachedData[sheetName][songIndex], songIndex);
     });
@@ -1497,66 +1541,48 @@ function setupEventListeners() {
     if(splitTextButton && songContent) {
         const splitIcon = '<i class="fas fa-columns"></i>';
         const mergeIcon = '<i class="fas fa-align-justify"></i>'; // Иконка для "Объединить"
-        // Текстовые части для десктопа
         const splitText = '<span class="button-text">Разделить текст</span>';
         const mergeText = '<span class="button-text">Объединить колонки</span>';
 
-        // Функция для обновления кнопки
-        const updateSplitButton = () => {
+        const updateSplitButton = () => { // Функция обновления основной кнопки разделения
             const isSplit = songContent.classList.contains('split-columns');
             const currentIcon = isSplit ? mergeIcon : splitIcon;
             const currentTextSpan = isSplit ? mergeText : splitText;
-            // Устанавливаем контент В ЗАВИСИМОСТИ от ширины экрана
             const content = currentIcon + (isMobileView() ? '' : currentTextSpan);
             splitTextButton.innerHTML = content;
             splitTextButton.setAttribute('aria-label', isSplit ? 'Объединить колонки' : 'Разделить текст');
         };
 
-        // Обработчик клика
-        splitTextButton.addEventListener('click', () => {
+        splitTextButton.addEventListener('click', () => { // Обработчик основной кнопки
             const lyricsElement = songContent.querySelector('pre');
             if (!lyricsElement || !lyricsElement.textContent?.trim()) {
-                alert('Нет текста песни для разделения.');
-                return;
+                alert('Нет текста песни для разделения.'); return;
             }
             songContent.classList.toggle('split-columns');
-            updateSplitButton(); // Обновляем кнопку
+            updateSplitButton();
         });
+        updateSplitButton(); // Установить начальное состояние
 
-        // Установим начальное состояние кнопки при загрузке
-        updateSplitButton();
-
-        // Добавим слушатель на изменение размера окна, чтобы кнопка обновлялась
-        // (опционально, но улучшает UX если пользователь меняет размер окна)
-        let resizeTimer;
+        let resizeTimer; // Обновление при ресайзе
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(updateSplitButton, 150); // Обновляем с небольшой задержкой
+            resizeTimer = setTimeout(updateSplitButton, 150);
         });
-    }
+    } // Конец if(splitTextButton && songContent)
 
     if(favoriteButton) {
         favoriteButton.addEventListener('click', () => {
             const sheetName = SHEETS[sheetSelect.value];
             const songIndex = songSelect.value;
-            if (!sheetName || songIndex === "") {
-                alert("Пожалуйста, сначала выберите песню.");
-                return;
-            }
+            if (!sheetName || songIndex === "") { alert("Пожалуйста, сначала выберите песню."); return; }
             const songData = cachedData[sheetName]?.[songIndex];
-            if (!songData) {
-                alert("Не найдены данные для выбранной песни.");
-                return;
-            }
+            if (!songData) { alert("Не найдены данные для выбранной песни."); return; }
             const song = { name: songData[0], sheet: sheetName, index: songIndex, key: keySelect.value };
             if (!favorites.some(f => f.sheet === song.sheet && f.index === song.index)) {
                 favorites.push(song);
                 localStorage.setItem('favorites', JSON.stringify(favorites));
-                if (favoritesPanel?.classList.contains('open')) { // Проверка favoritesPanel
-                    loadFavorites(); // Обновляем список, если панель открыта
-                }
-                // ИСПРАВЛЕНО: Правильная интерполяция в alert
-                alert(`"${song.name}" (${song.key}) добавлена в 'Мой список'.`);
+                if (favoritesPanel?.classList.contains('open')) { loadFavorites(); }
+                alert(`"<span class="math-inline">\{song\.name\}" \(</span>{song.key}) добавлена в 'Мой список'.`);
             } else {
                 alert(`Песня "${song.name}" уже есть в 'Моем списке'.`);
             }
@@ -1567,10 +1593,7 @@ function setupEventListeners() {
         addToListButton.addEventListener('click', () => {
             const sheetName = SHEETS[sheetSelect.value];
             const songIndex = songSelect.value;
-            if (!sheetName || songIndex === "" || !cachedData[sheetName]?.[songIndex]) {
-                alert("Пожалуйста, сначала выберите песню.");
-                return;
-            }
+            if (!sheetName || songIndex === "" || !cachedData[sheetName]?.[songIndex]) { alert("Пожалуйста, сначала выберите песню."); return; }
             const songData = cachedData[sheetName][songIndex];
             addToSharedList(songData);
         });
@@ -1582,160 +1605,125 @@ function setupEventListeners() {
         currentVocalistId = e.target.value;
         const selectedIndex = e.target.selectedIndex;
         currentVocalistName = selectedIndex > 0 ? e.target.options[selectedIndex].text : null;
-        // ИСПРАВЛЕНО: Правильная интерполяция в console.log
         console.log(`Vocalist selected: ${currentVocalistName || 'none'} (ID: ${currentVocalistId || 'none'})`);
-        // Загружаем репертуар ВНЕ зависимости от того, открыта ли панель,
-        // чтобы данные были готовы, если пользователь ее откроет.
         loadRepertoire(currentVocalistId);
-        // Если панель репертуара была открыта, она обновится через onSnapshot.
-        // Если была закрыта, она просто загрузит данные в фоне.
     });
 
-    // --- ЕДИНСТВЕННЫЕ ОБРАБОТЧИКИ ДЛЯ КНОПОК ПАНЕЛЕЙ ---
+    // --- Слушатели для кнопок открытия/закрытия панелей ---
     if (toggleFavoritesButton && favoritesPanel) {
         toggleFavoritesButton.addEventListener('click', () => {
-            console.log("--- КЛИК: Кнопка 'Списки' ---");
             const isOpen = favoritesPanel.classList.toggle('open');
-            console.log("Панель 'Списки' открыта:", isOpen);
             if (isOpen) {
-                if (repertoirePanel?.classList.contains('open')) repertoirePanel.classList.remove('open'); // Закрываем другую панель
-                loadGroupPanel(); // Загружаем содержимое (Мой список + Общий список)
+                if (repertoirePanel?.classList.contains('open')) repertoirePanel.classList.remove('open');
+                loadGroupPanel();
             }
         });
-        console.log("Listener for 'Списки' ADDED ONCE");
-    } else {
-        console.error("Could not find elements for 'Списки' toggle button or panel");
-    }
+    } else { console.error("Elements for 'Списки' toggle not found"); }
 
     if (toggleRepertoireButton && repertoirePanel) {
         toggleRepertoireButton.addEventListener('click', () => {
-            console.log("--- КЛИК: Кнопка 'Репертуар' ---");
             const isOpen = repertoirePanel.classList.toggle('open');
-            console.log("Панель 'Репертуар' открыта:", isOpen);
             if (isOpen) {
-                if (favoritesPanel?.classList.contains('open')) favoritesPanel.classList.remove('open'); // Закрываем другую панель
-                // Загрузка репертуара уже вызывается при смене вокалиста,
-                // но вызовем и здесь, чтобы обновить, если были изменения пока панель была закрыта
+                if (favoritesPanel?.classList.contains('open')) favoritesPanel.classList.remove('open');
                  loadRepertoire(currentVocalistId);
-            }
-        });
-        console.log("Listener for 'Репертуар' ADDED ONCE");
-    } else {
-        console.error("Could not find elements for 'Репертуар' toggle button or panel");
-    }
-    // --- КОНЕЦ ОБРАБОТЧИКОВ ДЛЯ КНОПОК ПАНЕЛЕЙ ---
+             }
+         });
+     } else { console.error("Elements for 'Репертуар' toggle not found"); }
 
-     // Клик по заголовку "Общий список" для входа в режим презентации
-    if (sharedListHeading) {
-    sharedListHeading.addEventListener('click', (event) => { // Добавили event сюда
-        event.stopPropagation(); // <-- ДОБАВЛЕНА ЭТА СТРОКА
-        console.log("Клик по заголовку Общий список (событие остановлено)"); // Изменил лог для ясности
-        if (currentSharedListData && currentSharedListData.length > 0) {
-            // Закрываем боковые панели, если открыты
-             if (favoritesPanel?.classList.contains('open')) favoritesPanel.classList.remove('open');
-             if (repertoirePanel?.classList.contains('open')) repertoirePanel.classList.remove('open');
-             // Показываем презентацию
-             showPresentationView(currentSharedListData);
-         } else {
-             alert("Общий список пуст. Добавьте песни для презентации.");
+     // --- Слушатели для режима презентации ---
+     if (sharedListHeading) { // Клик по заголовку для входа
+         sharedListHeading.addEventListener('click', (event) => {
+             event.stopPropagation(); // Предотвращаем другие клики
+             console.log("Клик по заголовку Общий список");
+             if (currentSharedListData && currentSharedListData.length > 0) {
+                 if (favoritesPanel?.classList.contains('open')) favoritesPanel.classList.remove('open');
+                 if (repertoirePanel?.classList.contains('open')) repertoirePanel.classList.remove('open');
+                 showPresentationView(currentSharedListData); // Вызов новой функции
+             } else {
+                 alert("Общий список пуст. Добавьте песни для презентации.");
+             }
+         });
+     } else { console.warn("Заголовок shared-list-heading не найден."); }
+
+     if (presentationCloseBtn && presentationOverlay) { // Кнопка закрытия презентации
+         presentationCloseBtn.addEventListener('click', () => {
+             presentationOverlay.classList.remove('visible');
+             document.body.style.overflow = ''; // Восстанавливаем скролл body
+             clearTimeout(controlsHideTimeout); // Отменяем таймер скрытия контролов
+             if (document.fullscreenElement) { // Выход из полноэкранного режима
+                 document.exitFullscreen().catch(err => console.error(`Error attempting to exit fullscreen: <span class="math-inline">\{err\.message\} \(</span>{err.name})`));
+             }
+         });
+     }
+
+     // --- Слушатели для метронома и BPM ---
+     if(metronomeButton){
+         metronomeButton.addEventListener('click', async () => {
+             if (!audioContext) setupAudioContext();
+             if (!audioContext) return;
+             resumeAudioContext();
+             if (!audioBuffer) await loadAudioFile();
+             const bpmText = bpmDisplay?.textContent;
+             const bpmValue = parseInt(bpmText, 10);
+             if (!isNaN(bpmValue) && bpmValue > 0) {
+                 toggleMetronome(bpmValue);
+             } else {
+                 alert('Не указан или некорректный BPM для запуска метронома.');
+                 if (isMetronomeActive) toggleMetronome(0);
+             }
+         });
+     }
+
+     if(bpmDisplay) { // Редактирование BPM
+         bpmDisplay.addEventListener('blur', () => {
+             const newText = bpmDisplay.textContent;
+             const newBpm = parseInt(newText, 10);
+             if (!isNaN(newBpm) && newBpm > 0) {
+                 updateBPM(newBpm);
+             } else {
+                 alert('Пожалуйста, введите корректное числовое значение BPM.');
+             }
+         });
+         bpmDisplay.addEventListener('input', () => { // Запрет ввода не цифр
+             bpmDisplay.textContent = bpmDisplay.textContent.replace(/[^0-9]/g, '');
+         });
+     }
+
+     // --- Слушатель для Holychords ---
+     if(holychordsButton) holychordsButton.addEventListener('click', (e) => {
+         if (!holychordsButton.href || holychordsButton.href.endsWith('#')) {
+             e.preventDefault();
+             alert('Ссылка на Holychords для этой песни отсутствует.');
          }
      });
 
-    } else {
-        console.warn("Заголовок shared-list-heading не найден.");
-    }
+     console.log("Event listeners setup complete (v2)."); // Обновил лог для ясности
 
-    // Клик по кнопке закрытия презентации
-    if (presentationCloseBtn && presentationOverlay) {
-         presentationCloseBtn.addEventListener('click', () => {
-             presentationOverlay.classList.remove('visible');
-              
-            document.body.style.overflow = '';
-              
-             // Выход из полноэкранного режима, если он был включен
-             if (document.fullscreenElement) {
-                 document.exitFullscreen().catch(err => console.error(`Error attempting to exit fullscreen: ${err.message} (${err.name})`));
-             }
-             clearTimeout(controlsHideTimeout);
-         });
-    }
+     // --- Слушатели для НОВЫХ кнопок презентации и свайпов ---
+     const prevBtn = document.getElementById('pres-prev-btn');
+     const nextBtn = document.getElementById('pres-next-btn');
+     const presSplitBtn = document.getElementById('pres-split-text-btn'); // Получаем новую кнопку
 
-    // ИСПРАВЛЕНО: Убрана лишняя фигурная скобка в конце обработчика
-    if(metronomeButton){
-        metronomeButton.addEventListener('click', async () => {
-            if (!audioContext) setupAudioContext();
-            if (!audioContext) return; // Если не удалось создать контекст
-            resumeAudioContext(); // Пытаемся возобновить перед использованием
-            if (!audioBuffer) await loadAudioFile(); // Ждем загрузки, если буфера нет
-            const bpmText = bpmDisplay?.textContent; // Проверка bpmDisplay
-            const bpmValue = parseInt(bpmText, 10);
-            if (!isNaN(bpmValue) && bpmValue > 0) {
-                toggleMetronome(bpmValue); // Переключаем с текущим BPM
-            } else {
-                alert('Не указан или некорректный BPM для запуска метронома.');
-                if (isMetronomeActive) toggleMetronome(0); // Остановить, если был активен
-            }
-        }); // <-- Здесь была лишняя скобка
-    }
+     if(prevBtn) { prevBtn.addEventListener('click', prevPresentationSong); }
+     if(nextBtn) { nextBtn.addEventListener('click', nextPresentationSong); }
+     if (presSplitBtn) { // Добавляем слушатель для кнопки разделения в презентации
+          presSplitBtn.addEventListener('click', togglePresentationSplit);
+          console.log("Слушатель для кнопки разделения текста в презентации добавлен.");
+      }
 
-    // Редактирование BPM вручную (пример)
-    if(bpmDisplay) {
-        bpmDisplay.addEventListener('blur', () => { // Используем blur вместо keypress для простоты
-            const newText = bpmDisplay.textContent;
-            const newBpm = parseInt(newText, 10);
-            if (!isNaN(newBpm) && newBpm > 0) {
-                updateBPM(newBpm); // Обновляем BPM (и метроном, если активен)
-            } else {
-                alert('Пожалуйста, введите корректное числовое значение BPM.');
-                // Можно вернуть предыдущее значение или сбросить
-                // Для простоты пока оставим как есть или сбросим
-                // updateBPM(null); // Сбросить на N/A
-            }
-        });
-        // Предотвращение ввода нечисловых символов (базовый пример)
-        bpmDisplay.addEventListener('input', () => {
-             bpmDisplay.textContent = bpmDisplay.textContent.replace(/[^0-9]/g, '');
-        });
+     // Устанавливаем слушатели для свайпов
+     setupSwipeListeners();
 
-    }
+      // Добавляем слушатель на весь оверлей для показа контролов при касании
+     if (presentationOverlay) {
+          presentationOverlay.addEventListener('touchstart', showPresentationControls, { passive: true });
+          console.log("Слушатель касания для показа контролов добавлен.");
+      }
 
-   // Это существующий код для кнопки Holychords, он остается
-    if(holychordsButton) holychordsButton.addEventListener('click', (e) => {
-        if (!holychordsButton.href || holychordsButton.href.endsWith('#')) {
-            e.preventDefault();
-            alert('Ссылка на Holychords для этой песни отсутствует.');
-        }
-    });
+     console.log("Слушатели для презентации и свайпов добавлены.");
 
-    // Эта строка тоже остается
-    console.log("Event listeners setup complete.");
+ } // <--- Конец функции setupEventListeners
 
-    // --- Слушатели для НОВЫХ кнопок презентации --- // <--- ВОТ СЮДА НУЖНО БЫЛО ВСТАВИТЬ БЛОК
-    const prevBtn = document.getElementById('pres-prev-btn');
-    const nextBtn = document.getElementById('pres-next-btn');
-
-    if(prevBtn) {
-        prevBtn.addEventListener('click', prevPresentationSong);
-    }
-    if(nextBtn) {
-        nextBtn.addEventListener('click', nextPresentationSong);
-    }
-
-    // Устанавливаем слушатели для свайпов
-    setupSwipeListeners();
-
-  console.log("Слушатели для кнопок презентации и свайпов добавлены."); // Эта строка уже была
-
-    // Добавляем слушатель на весь оверлей для показа контролов при касании <-- ВСТАВЛЯЕМ СЮДА
-    if (presentationOverlay) {
-        presentationOverlay.addEventListener('touchstart', showPresentationControls, { passive: true });
-        // Примечание: Мы используем 'touchstart' - самое первое касание.
-        // Оно же используется и для свайпов, это нормально.
-        // Функция showPresentationControls сбросит таймер и запустит новый.
-        console.log("Слушатель касания для показа контролов добавлен.");
-    } // <-- КОНЕЦ ВСТАВЛЕННОГО БЛОКА
-
-} //
 
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', async () => {
