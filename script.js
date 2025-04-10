@@ -1482,6 +1482,43 @@ function playClick() {
 
 
 
+
+/** Применяет указанную тему (light/dark) */
+function applyTheme(themeName) {
+    console.log("Применяется тема:", themeName);
+    document.body.dataset.theme = themeName; // Устанавливаем атрибут data-theme
+
+    // Обновляем иконку на кнопке переключения
+    const toggleButton = document.getElementById('theme-toggle-button');
+    if (toggleButton) {
+        const icon = toggleButton.querySelector('i');
+        if (icon) {
+            if (themeName === 'light') {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon'); // Показываем луну для светлой темы
+                toggleButton.title = "Переключить на темную тему";
+            } else {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');  // Показываем солнце для темной темы
+                toggleButton.title = "Переключить на светлую тему";
+            }
+        }
+    }
+    // Сохраняем выбор в localStorage
+    localStorage.setItem('theme', themeName);
+}
+
+/** Переключает между светлой и темной темой */
+function toggleTheme() {
+    // Проверяем текущую тему по атрибуту body
+    const currentTheme = document.body.dataset.theme || 'dark'; // Если атрибута нет, считаем что тема темная
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark'; // Определяем новую тему
+    applyTheme(newTheme); // Применяем новую тему
+}
+
+
+
+
 // --- EVENT LISTENER SETUP ---
 function setupEventListeners() {
     console.log("Настройка слушателей событий...");
@@ -1493,6 +1530,8 @@ function setupEventListeners() {
         await loadSheetSongs();
         displaySongDetails(null); // Сброс отображения песни
     });
+
+
 
     if(songSelect) songSelect.addEventListener('change', () => {
         const sheetName = SHEETS[sheetSelect.value];
@@ -1636,6 +1675,8 @@ function setupEventListeners() {
          });
      } else { console.warn("Заголовок shared-list-heading не найден."); }
 
+
+
      if (presentationCloseBtn && presentationOverlay) { // Кнопка закрытия презентации
          presentationCloseBtn.addEventListener('click', () => {
              presentationOverlay.classList.remove('visible');
@@ -1690,6 +1731,9 @@ function setupEventListeners() {
 
      console.log("Event listeners setup complete (v2)."); // Обновил лог для ясности
 
+
+
+
      // --- Слушатели для НОВЫХ кнопок презентации и свайпов ---
      const prevBtn = document.getElementById('pres-prev-btn');
      const nextBtn = document.getElementById('pres-next-btn');
@@ -1713,31 +1757,54 @@ function setupEventListeners() {
 
      console.log("Слушатели для презентации и свайпов добавлены.");
 
+    
+const themeToggleButton = document.getElementById('theme-toggle-button');
+    if (themeToggleButton) {
+        themeToggleButton.addEventListener('click', toggleTheme);
+        console.log("Слушатель для кнопки переключения темы добавлен.");
+    }
+
  } // <--- Конец функции setupEventListeners
 
 
 // --- INITIALIZATION ---
+// --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("DOM loaded.");
-    if (!favoritesPanel || !repertoirePanel || !songContent || !sheetSelect || !songSelect || !keySelect) { // Проверка ключевых элементов
+    if (!favoritesPanel || !repertoirePanel || !songContent || !sheetSelect || !songSelect || !keySelect) {
         console.error("Критически важные элементы интерфейса не найдены в HTML!");
         alert("Ошибка инициализации интерфейса! Проверьте HTML структуру и ID элементов.");
         return;
     }
 
-    setupEventListeners(); // <-- ВЫЗЫВАЕМ НАСТРОЙКУ СЛУШАТЕЛЕЙ ЗДЕСЬ ОДИН РАЗ
+    // --- Определение и применение начальной темы ---
+    let initialTheme = localStorage.getItem('theme'); // 1. Проверяем сохраненную тему
+    if (!initialTheme) {
+        // 2. Если не сохранена, проверяем системные настройки
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            initialTheme = 'light'; // Предпочитает светлую
+        } else {
+            initialTheme = 'dark'; // По умолчанию или предпочитает темную
+        }
+        console.log("Сохраненная тема не найдена, используется системная/умолчание:", initialTheme);
+    } else {
+         console.log("Найдена сохраненная тема:", initialTheme);
+    }
+    applyTheme(initialTheme); // Применяем найденную или дефолтную тему
+    // --- Конец определения темы ---
 
-    await loadAllSheetsData(); // Загружаем все данные для поиска и кэша
-    await loadSheetSongs();    // Загружаем песни для листа по умолчанию (если он выбран)
-    await loadVocalists();     // Загружаем список вокалистов
-    // await loadAudioFile();  // Можно предзагрузить звук метронома здесь, если нужно
+    // Настраиваем слушатели событий ПОСЛЕ применения темы
+    setupEventListeners();
 
-    // Загружаем начальное состояние интерфейса
-    displaySongDetails(null); // Показываем заглушку для песни
-    loadGroupPanel();         // Загружаем данные для панели списков (если она вдруг будет открыта по умолчанию)
-    loadRepertoire(null);     // Загружаем "пустой" репертуар
+    // --- Остальная инициализация (как было) ---
+    await loadAllSheetsData();
+    await loadSheetSongs();
+    await loadVocalists();
+    // await loadAudioFile();
 
-    // Панели скрыты через CSS transform/opacity, нет нужды менять display
+    displaySongDetails(null);
+    loadGroupPanel();
+    loadRepertoire(null);
 
     console.log("App initialization complete.");
 });
