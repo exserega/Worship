@@ -901,7 +901,7 @@ function prevPresentationSong() {
 }
 // --- Функции для автоскрытия панели управления в презентации ---
 
-const CONTROLS_HIDE_DELAY = 3000; // Время бездействия в миллисекундах (3 секунды)
+const CONTROLS_HIDE_DELAY = 1000; // Время бездействия в миллисекундах (3 секунды)
 
 /** Показывает панель управления и запускает таймер для скрытия */
 function showPresentationControls() {
