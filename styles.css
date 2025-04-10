@@ -179,6 +179,14 @@ button.icon-button.simple:active { background: var(--primary-color); color: #fff
     align-items: center;
     z-index: 2002; /* Выше контента, но ниже кнопки закрытия */
     border-top: 1px solid #333;
+opacity: 1; /* По умолчанию панель видима */
+    transition: opacity 0.5s ease-in-out; /* Плавное появление/исчезновение */
+    pointer-events: auto; /* По умолчанию можно взаимодействовать */
+}
+
+.presentation-controls.controls-hidden {
+    opacity: 0; /* Делаем невидимой */
+    pointer-events: none; /* Запрещаем клики по невидимой панели */
 }
 
 .presentation-nav-btn {
