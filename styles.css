@@ -128,6 +128,18 @@ h1 { text-align: center; color: #fff; margin: 0; font-size: 2.4rem; text-transfo
 #song-content h2 { text-align: center; color: #fff; margin-top: 0; margin-bottom: 15px; font-size: 1.4rem; font-weight: bold; letter-spacing: 1px; }
 h3 { text-align: center; font-size: 1.1rem; margin-bottom: 10px; color: var(--accent-color); padding-bottom: 5px; border-bottom: 1px solid var(--border-color); }
 
+
+#theme-toggle-button {
+    position: absolute; /* Абсолютное позиционирование */
+    right: 15px;       /* Справа */
+    top: 50%;          /* Посередине по вертикали */
+    transform: translateY(-50%); /* Точная центровка по вертикали */
+    width: 36px;       /* Чуть меньше стандартной */
+    height: 36px;
+    font-size: 1rem;
+    /* Используем стиль simple или можно настроить свой */
+}
+
 /* --- Forms --- */
 .controls { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
 .control-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -551,5 +563,8 @@ opacity: 1; /* По умолчанию панель видима */
     #repertoire-panel #vocalist-select { padding: 8px 12px; padding-right: 30px; font-size: 0.95rem; margin-bottom: 5px; }
     #repertoire-panel-list { padding: 8px; }
     #repertoire-panel .repertoire-item { font-size: 0.85rem; padding: 7px 5px 7px 15px; /* Уменьшен общий, сохранен левый отступ */}
+  #theme-toggle-button {
+         right: 10px; /* Ближе к краю на маленьких экранах */
+     }
 
 }
