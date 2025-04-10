@@ -123,7 +123,7 @@ button.icon-button.simple:active { background: var(--primary-color); color: #fff
 .presentation-overlay::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 4px;}
 .presentation-overlay.visible { display: block; }
  .presentation-content {
-        padding: 60px 20px 80px 20px; /* Увеличили отступы сверху/снизу для кнопок */
+       padding: 25px 15px 65px 15px; /* Увеличили отступы сверху/снизу для кнопок */
         max-width: 900px;
         margin: 0 auto;
         height: 100%; /* Растягиваем на всю высоту оверлея */
@@ -134,32 +134,29 @@ button.icon-button.simple:active { background: var(--primary-color); color: #fff
     .presentation-content::-webkit-scrollbar-track { background: #222; } /* Чуть темнее */
     .presentation-content::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 4px;}
 .presentation-song {
-        /* min-height: 95vh; УДАЛЕНО */
-        padding: 20px 0 70px 0; /* Отступы сверху/снизу (снизу больше для кнопок) */
+        
+       
         margin-bottom: 0; /* Убрали отступ между песнями, т.к. она одна */
         border-bottom: none; /* Убрали разделитель */
         /* display: flex; flex-direction: column; justify-content: center; УДАЛЕНО */
     }
 .presentation-song:last-child { border-bottom: none; min-height: auto; padding-bottom: 5vh; }
- .presentation-song h2 {
-        /* Было: font-size: 2.5rem; */
-        font-size: 1.6rem; /* Стало значительно меньше */
-        /* Остальные стили оставляем */
-        color: var(--accent-color);
-        text-align: center;
-        margin-bottom: 15px; /* Уменьшил отступ */
-    }
+.presentation-song h2 {
+    font-size: 1.3rem; /* Еще чуть меньше */
+    color: var(--accent-color);
+    text-align: center;
+    margin-bottom: 10px; /* И отступ снизу меньше */
+}
 .presentation-song pre {
-        /* Было: font-size: 1.8rem; */
-        /* Стало: Адаптивный размер от 14px до 18px в зависимости от ширины */
-        font-size: clamp(14px, 2.8vw, 18px);
-        /* Остальные стили оставляем */
-        font-family: 'Courier New', Courier, monospace;
-        line-height: 1.5; /* Можно чуть уменьшить межстрочный интервал */
-        white-space: pre-wrap;
-        word-wrap: break-word;
-        color: var(--text-color);
-    }
+    /* Уменьшаем диапазон: от 11px до 15px */
+    font-size: clamp(11px, 2.6vw, 15px);
+    font-family: 'Courier New', Courier, monospace;
+    /* Уменьшаем межстрочный интервал */
+    line-height: 1.35;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color: var(--text-color);
+}
 .presentation-song .chord { font-weight: bold; color: var(--accent-color); background-color: transparent; padding: 0; margin: 0; }
 .presentation-close-btn { position: fixed; top: 15px; right: 15px; z-index: 2001; background: rgba(50, 50, 50, 0.7); color: white; border: 1px solid #555; border-radius: 50%; width: 40px; height: 40px; font-size: 1.5rem; line-height: 1; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: none; }
 .presentation-close-btn:hover { background-color: rgba(80, 80, 80, 0.8); transform: none; box-shadow: none; }
