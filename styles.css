@@ -1,10 +1,15 @@
 /* ======================================== */
-/* Styles for Agape Worship                 */
-/* Version after Repertoire Panel Redesign  */
+/* Styles for Agape Worship               */
+/* Версия включает:                       */
+/* - Рефакторинг панелей (Репертуар Аккордеон) */
+/* - Режим Презентации v2 (1 песня, навигация, автоскрытие) */
+/* - Светлую тему + Переключение          */
+/* - Исправления для светлой темы         */
 /* ======================================== */
 
 /* --- Theme Variables --- */
 :root {
+    /* Dark Theme (Default) */
     --primary-color: #ff1493; /* Темно-розовый */
     --secondary-color: #c71585; /* Более темный розовый */
     --background-color: #151515; /* Черный фон */
@@ -20,113 +25,28 @@
     --link-color: var(--accent-color);
     --input-bg-color: #222;
     --label-color: #ccc;
+    --glow-color: #ff69b4; /* Цвет свечения для темной темы */
 }
-
 
 /* --- Light Theme Variables --- */
 body[data-theme="light"] {
-    --primary-color: #339af0;
-    --secondary-color: #1c7ed6;
-    /* --- ИЗМЕНЕННЫЕ ЦВЕТА ФОНА --- */
-    --background-color: #e9ecef; /* Еще чуть более серый фон страницы */
-    --container-background-color: #f8f9fa; /* Контейнер теперь не чисто белый, а очень светлый серый */
-    --text-color: #212529;
-    --border-color: #dee2e6;
-    --hover-color: #dee2e6; /* Цвет ховера чуть темнее фона контейнера */
-    /* --- КОНЕЦ ИЗМЕНЕНИЙ ФОНА --- */
-    --shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-    --radius: 14px;
-    --accent-color: #1c7ed6;
-    --danger-color: #fa5252;
-    --button-text-color: #ffffff;
-    --link-color: var(--accent-color);
-    --input-bg-color: #ffffff; /* Оставим инпуты белыми для контраста */
-    --label-color: #495057;
-
-
-    /* Дополнительно: можно переопределить цвет для текста аккордов, если синий плохо читается */
-    /* --accent-color: #1971c2; */ /* Пример чуть более темного синего */
-
-     /* Дополнительно: цвет текста на градиентных кнопках можно сделать темным, если нужно */
-    /* --button-text-color: #343a40; */
-
-    /* Изменение цвета glow эффекта для заголовка h1 */
-    /* (Нужно обновить и @keyframes) - пока оставим розовый */
-h1 {
-        color: var(--text-color); /* Используем темный цвет текста темы */
-        /* Убираем или меняем свечение, если розовое не подходит */
-         animation: none; /* Вариант: убрать свечение в светлой теме */
-         text-shadow: none; /* Убираем тень текста */
-         /* Или можно изменить keyframes для glow, но это сложнее */
-    }
-
-     /* Делаем иконки и текст в нижней навигации темными */
-     .mobile-nav-button {
-         color: var(--text-color); /* Используем темный цвет текста */
-     }
-     .mobile-nav-button:hover {
-         /* Можно оставить цвет акцента (синий) или сделать темнее */
-          color: var(--accent-color);
-          /* background-color: var(--hover-color); оставляем */
-     }
+    --primary-color: #339af0; /* Голубой */
+    --secondary-color: #1c7ed6; /* Более темный голубой */
+    --background-color: #e9ecef; /* Светло-серый фон страницы */
+    --container-background-color: #f8f9fa; /* Очень светлый серый контейнер */
+    --text-color: #212529; /* Почти черный текст */
+    --border-color: #dee2e6; /* Светло-серая граница */
+    --hover-color: #dee2e6; /* Серый для наведения */
+    --shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Более светлая тень */
+    /* --radius: 14px; */ /* Оставляем */
+    --accent-color: #1c7ed6; /* Синий для аккордов */
+    /* --danger-color: #fa5252; */ /* Оставляем */
+    --button-text-color: #ffffff; /* Белый текст на синих кнопках */
+    --link-color: var(--accent-color); /* Синяя ссылка */
+    --input-bg-color: #ffffff; /* Белый фон инпутов */
+    --label-color: #495057; /* Серый текст меток */
+    --glow-color: rgba(28, 126, 214, 0.5); /* Цвет "тени" для светлой темы - полупрозрачный синий */
 }
-
-
-
-/* Дополнительно: Можно добавить стили для лучшего вида элементов в светлой теме, если потребуется */
-body[data-theme="light"] select {
-     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23495057'%3E%3Cpath fill-rule='evenodd' d='M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z' clip-rule='evenodd' /%3E%3C/svg%3E"); /* Серая стрелка */
-}
-
-body[data-theme="light"] .remove-button:hover,
-body[data-theme="light"] .delete-button:hover {
-     color: #fff !important;
-     background-color: var(--danger-color) !important; /* Фон кнопки удаления при наведении */
-}
-
-/* Можно переопределить цвет фона панели при наведении на песню */
-body[data-theme="light"] .favorite-item:hover,
-body[data-theme="light"] .shared-item:hover,
-body[data-theme="light"] #repertoire-panel .repertoire-item:hover {
-    background-color: #f1f3f5; /* Очень светлый серо-голубой */
-}
-
-/* Цвет фона "липких" заголовков в репертуаре */
-body[data-theme="light"] .repertoire-key-heading {
-    background-color: #e9ecef;
-    border-left-color: var(--primary-color);
-}
-
-/* Цвет фона скроллбаров */
-body[data-theme="light"] ::-webkit-scrollbar-track { background: #e9ecef; }
-body[data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--primary-color); }
-
-/* Цвет фона/границ кнопок управления (можно оставить темными или сделать светлыми) */
-body[data-theme="light"] button.icon-button.simple {
-    background: #f8f9fa;
-    border-color: #ced4da;
-    color: #495057;
-}
-body[data-theme="light"] button.icon-button.simple:hover {
-    background: #e9ecef;
-    border-color: #adb5bd;
-}
-body[data-theme="light"] button.icon-button.simple:active {
-    background: var(--primary-color);
-    border-color: var(--primary-color);
-    color: #fff;
-}
-
-/* Цвет кнопки Holychords */
-body[data-theme="light"] #holychords-button {
-    color: var(--link-color);
-    border-color: var(--link-color);
-}
-body[data-theme="light"] #holychords-button:hover {
-     background-color: var(--link-color);
-     color: #fff;
-}
-
 
 /* --- Base Styles --- */
 body {
@@ -134,59 +54,149 @@ body {
     margin: 0; padding: 0; background: var(--background-color);
     color: var(--text-color); line-height: 1.6; min-height: 100vh;
     padding-bottom: 70px; /* Отступ для нижней панели */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Плавный переход темы */
 }
 .container {
     max-width: 600px; margin: 20px auto; padding: 15px;
     box-shadow: var(--shadow); border-radius: var(--radius);
     background: var(--container-background-color); position: relative;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Плавный переход темы */
 }
 
 /* --- Header --- */
-header { display: flex; justify-content: center; align-items: center; position: relative; padding: 10px 20px; margin-bottom: 20px; }
-h1 { text-align: center; color: #fff; margin: 0; font-size: 2.4rem; text-transform: uppercase; letter-spacing: 2px; animation: glow 3s infinite alternate; }
-@keyframes glow { from { text-shadow: 0 0 10px #ff69b4; } to { text-shadow: 0 0 20px #ff69b4; } }
+header {
+    display: flex; justify-content: center; align-items: center;
+    position: relative; padding: 10px 20px; margin-bottom: 20px;
+}
+h1 {
+    text-align: center; color: var(--text-color); margin: 0;
+    font-size: 2.4rem; text-transform: uppercase; letter-spacing: 2px;
+    animation: glow 3s infinite alternate; /* Анимация свечения */
+    transition: color 0.3s ease; /* Плавный переход темы */
+}
+/* Анимация свечения (использует --glow-color) */
+@keyframes glow {
+    from { text-shadow: 0 0 10px var(--glow-color); }
+    to   { text-shadow: 0 0 20px var(--glow-color); }
+}
+
+/* Добавляем тень для H1 в светлой теме вместо яркого свечения */
+body[data-theme="light"] h1 {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15); /* Мягкая темная тень */
+    animation: none; /* Отключаем анимацию glow */
+}
+
 
 /* --- Headings --- */
-#song-content h2 { text-align: center; color: #fff; margin-top: 0; margin-bottom: 15px; font-size: 1.4rem; font-weight: bold; letter-spacing: 1px; }
-h3 { text-align: center; font-size: 1.1rem; margin-bottom: 10px; color: var(--accent-color); padding-bottom: 5px; border-bottom: 1px solid var(--border-color); }
-
-
-#theme-toggle-button {
-    position: absolute; /* Абсолютное позиционирование */
-    right: 15px;       /* Справа */
-    top: 50%;          /* Посередине по вертикали */
-    transform: translateY(-50%); /* Точная центровка по вертикали */
-    width: 36px;       /* Чуть меньше стандартной */
-    height: 36px;
-    font-size: 1rem;
-    /* Используем стиль simple или можно настроить свой */
+#song-content h2 {
+    text-align: center; color: var(--text-color); margin-top: 0;
+    margin-bottom: 15px; font-size: 1.4rem; font-weight: bold;
+    letter-spacing: 1px; transition: color 0.3s ease;
+}
+h3 { /* Заголовки панелей */
+    text-align: center; font-size: 1.1rem; margin-bottom: 10px;
+    color: var(--accent-color); padding-bottom: 5px;
+    border-bottom: 1px solid var(--border-color);
+    transition: color 0.3s ease, border-color 0.3s ease;
 }
 
 /* --- Forms --- */
 .controls { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
 .control-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.control-group label { font-size: 0.85rem; color: var(--label-color); margin-bottom: 3px; flex-basis: 100%; }
+.control-group label { font-size: 0.85rem; color: var(--label-color); margin-bottom: 3px; flex-basis: 100%; transition: color 0.3s ease;}
 
-select, input[type="text"] { padding: 10px 14px; font-size: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius); transition: all 0.2s ease; outline: none; appearance: none; background: var(--input-bg-color); color: var(--text-color); width: 100%; box-sizing: border-box; }
-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23cccccc'%3E%3Cpath fill-rule='evenodd' d='M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z' clip-rule='evenodd' /%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 16px; padding-right: 35px; cursor: pointer; }
+select, input[type="text"] {
+    padding: 10px 14px; font-size: 1rem; border: 1px solid var(--border-color);
+    border-radius: var(--radius); transition: all 0.2s ease; outline: none;
+    appearance: none; background: var(--input-bg-color); color: var(--text-color);
+    width: 100%; box-sizing: border-box;
+}
+select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23cccccc'%3E%3Cpath fill-rule='evenodd' d='M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z' clip-rule='evenodd' /%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center;
+    background-size: 16px; padding-right: 35px; cursor: pointer;
+}
+/* Стрелка select в светлой теме */
+body[data-theme="light"] select {
+     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23495057'%3E%3Cpath fill-rule='evenodd' d='M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z' clip-rule='evenodd' /%3E%3C/svg%3E"); /* Серая стрелка */
+}
+
 select:disabled { opacity: 0.6; cursor: not-allowed; }
-input:focus, select:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(255, 20, 147, 0.2); }
+input:focus, select:focus {
+     border-color: var(--primary-color);
+     /* Используем полупрозрачный primary color для box-shadow */
+     box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 20%, transparent);
+}
 
-#sheet-select, #song-select { width: auto; flex-grow: 1; min-width: 140px;} /* Select вокалиста УДАЛЕН отсюда */
+#sheet-select, #song-select { width: auto; flex-grow: 1; min-width: 140px;}
 #search-input { width: 100%; }
+#search-results { position: relative; width: 100%; }
+#search-results .search-result {
+    position: absolute; /* Позиционирование под полем ввода */
+    left: 0;
+    right: 0; /* Растягиваем на всю ширину */
+    background-color: var(--container-background-color);
+    border: 1px solid var(--border-color);
+    border-top: none; /* Убираем верхнюю границу, чтобы примыкало к инпуту */
+    padding: 8px 12px;
+    cursor: pointer;
+    z-index: 5; /* Над другими элементами */
+    max-height: 150px; /* Ограничение высоты с прокруткой */
+    overflow-y: auto;
+    border-bottom-left-radius: var(--radius); /* Скругляем нижние углы */
+    border-bottom-right-radius: var(--radius);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+#search-results .search-result:hover { background-color: var(--hover-color); }
+
 
 /* --- Buttons --- */
-/* Базовый стиль для ГРАДИЕНТНЫХ кнопок */
-button { display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(145deg, var(--primary-color), var(--secondary-color)); color: var(--button-text-color) !important; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); font-weight: 500; cursor: pointer; border: none; border-radius: var(--radius); transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease; padding: 10px 15px; font-size: 0.9rem; line-height: 1.4; text-decoration: none; vertical-align: middle; }
-button:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); }
-button:active { transform: translateY(0); box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15); }
+button {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
+    color: var(--button-text-color) !important; /* Оставляем !important если были проблемы */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); font-weight: 500;
+    cursor: pointer; border: none; border-radius: var(--radius);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    padding: 10px 15px; font-size: 0.9rem; line-height: 1.4;
+    text-decoration: none; vertical-align: middle;
+}
+button:hover:not(:disabled) {
+    transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+button:active:not(:disabled) {
+    transform: translateY(0); box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: gray; /* Явный серый фон для выключенной кнопки */
+}
+
 
 /* Общий стиль для кнопок-иконок */
 button.icon-button { padding: 0; width: 40px; height: 40px; font-size: 1.1rem; line-height: 1; flex-shrink: 0; overflow: hidden; }
-/* Простой стиль для кнопок-иконок */
-button.icon-button.simple { background: var(--hover-color); box-shadow: none; border: 1px solid var(--border-color); color: var(--text-color); }
-button.icon-button.simple:hover { background: var(--border-color); border-color: #555; transform: none; box-shadow: none; }
-button.icon-button.simple:active { background: var(--primary-color); color: #fff; border-color: var(--primary-color); transform: translateY(1px); box-shadow: none; }
+/* Простой стиль для кнопок-иконок (используется для масштаба, темы) */
+button.icon-button.simple {
+    background: var(--hover-color); box-shadow: none;
+    border: 1px solid var(--border-color); color: var(--text-color);
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+button.icon-button.simple:hover:not(:disabled) {
+     background: var(--border-color); border-color: color-mix(in srgb, var(--border-color) 80%, black);
+     transform: none; box-shadow: none;
+}
+button.icon-button.simple:active:not(:disabled) {
+    background: var(--primary-color); color: var(--button-text-color);
+    border-color: var(--primary-color); transform: translateY(1px);
+    box-shadow: none;
+}
+
+/* Кнопка переключения темы */
+#theme-toggle-button {
+    position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+    width: 36px; height: 36px; font-size: 1rem;
+}
 
 /* --- Ряд: Тональность / Разделить / Масштаб --- */
 .control-group:has(#key-select) { align-items: center; min-height: 40px; gap: 5px; }
@@ -195,331 +205,333 @@ button.icon-button.simple:active { background: var(--primary-color); color: #fff
 #split-text-button.control-group-button { padding: 0 12px; height: 40px; font-size: 14px; flex-shrink: 0; }
 #split-text-button i { margin-right: 6px; }
 .font-size-controls { margin-left: auto; display: flex; align-items: center; gap: 5px; }
-#zoom-in, #zoom-out { width: 40px; height: 40px; padding: 0; font-size: 1.1rem; line-height: 1; }
+#zoom-in, #zoom-out { /* Наследует .icon-button и .icon-button.simple */ }
 
 /* --- Кнопки под песней --- */
-.control-buttons { display: flex; justify-content: center; gap: 10px; margin-top: 15px; flex-wrap: wrap; padding-bottom: 15px; border-bottom: 1px solid var(--border-color);}
+.control-buttons { display: flex; justify-content: center; gap: 10px; margin-top: 15px; flex-wrap: wrap; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); transition: border-color 0.3s ease;}
 .control-buttons button { padding: 8px 12px; font-size: 14px; flex: 0 1 auto; }
 
 /* --- Нижний ряд управления (Footer) --- */
 .controls-footer { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; padding-top: 0;}
 .bpm-controls { display: flex; align-items: center; gap: 10px; }
-.bpm-controls span:not(#bpm-display) { font-size: 0.85rem; color: var(--label-color); }
+.bpm-controls span:not(#bpm-display) { font-size: 0.85rem; color: var(--label-color); transition: color 0.3s ease;}
 .bpm-controls #time-signature { padding: 8px 12px; font-size: 0.9rem; min-width: 65px; height: 40px; }
-.bpm-controls #bpm-display { padding: 8px 10px; min-width: 50px; font-size: 0.95rem; cursor: text; border: 1px solid var(--border-color); background-color: var(--input-bg-color); border-radius: var(--radius); text-align: center; color: var(--text-color); height: 40px; line-height: normal; display: inline-block; box-sizing: border-box;}
+.bpm-controls #bpm-display {
+    padding: 8px 10px; min-width: 50px; font-size: 0.95rem; cursor: text;
+    border: 1px solid var(--border-color); background-color: var(--input-bg-color);
+    border-radius: var(--radius); text-align: center; color: var(--text-color);
+    height: 40px; line-height: normal; display: inline-block; box-sizing: border-box;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
 #metronome-button { padding: 0 12px; min-width: auto; height: 40px; flex-shrink: 0; }
 #metronome-button i { margin-right: 6px; }
 #add-to-repertoire-button { padding: 8px 12px; height: 40px; }
-#holychords-button { display: inline-flex; align-items: center; padding: 0 12px; height: 40px; font-size: 14px; color: var(--link-color); text-decoration: none; border: 1px solid var(--link-color); border-radius: var(--radius); transition: all 0.3s ease; background: none; box-shadow: none; font-weight: normal; box-sizing: border-box;}
+#holychords-button {
+    display: inline-flex; align-items: center; padding: 0 12px; height: 40px;
+    font-size: 14px; color: var(--link-color); text-decoration: none;
+    border: 1px solid var(--link-color); border-radius: var(--radius);
+    transition: all 0.3s ease; background: none; box-shadow: none;
+    font-weight: normal; box-sizing: border-box;
+}
 #holychords-button:hover { background-color: var(--link-color); color: #fff; transform: none; box-shadow: none; }
 
 /* --- Отображение Песни --- */
-#song-content { background: var(--container-background-color); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); margin-top: 20px; position: relative; overflow: hidden; border: 1px solid var(--border-color); }
-#song-content pre { font-family: 'Tahoma', monospace; white-space: pre-wrap; word-wrap: break-word; line-height: 1.4; font-size: var(--lyrics-font-size, 1rem); color: var(--text-color); margin: 0; overflow-x: auto; }
-.chord { font-weight: bold; color: var(--accent-color); margin-right: 4px; }
+#song-content {
+    background: var(--container-background-color); padding: 20px; border-radius: var(--radius);
+    box-shadow: var(--shadow); margin-top: 20px; position: relative; overflow: hidden;
+    border: 1px solid var(--border-color);
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+#song-content pre {
+    font-family: 'Tahoma', monospace; white-space: pre-wrap; word-wrap: break-word;
+    line-height: 1.4; font-size: var(--lyrics-font-size, 1rem); /* Управляется JS */
+    color: var(--text-color); margin: 0; overflow-x: auto;
+    transition: color 0.3s ease;
+}
+.chord { font-weight: bold; color: var(--accent-color); margin-right: 4px; transition: color 0.3s ease;}
 #song-content.split-columns pre { column-count: 2; column-gap: 25px; position: relative;}
-#song-content.split-columns pre::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background-color: var(--border-color); transform: translateX(-50%); z-index: 1;}
+#song-content.split-columns pre::before {
+    content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px;
+    background-color: var(--border-color); transform: translateX(-50%); z-index: 1;
+    transition: background-color 0.3s ease;
+}
 
 /* --- YouTube Player --- */
 #youtube-player-section { max-width: 600px; margin: 25px auto 15px auto; }
-#youtube-player-section h3 { text-align: center; margin-bottom: 15px; font-size: 1.1rem; color: var(--text-color); border: none; padding: 0;}
+#youtube-player-section h3 { text-align: center; margin-bottom: 15px; font-size: 1.1rem; color: var(--text-color); border: none; padding: 0; transition: color 0.3s ease;}
 #youtube-player-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000; border-radius: var(--radius); margin-bottom: 15px; }
 #youtube-player-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+/* Стили для отображения тональности видео */
+#youtube-video-key-display {
+    text-align: center; margin-bottom: 10px; font-size: 0.9rem;
+    color: var(--label-color); transition: color 0.3s ease;
+}
+
 
 /* ============================================ */
-/* СТИЛИ ДЛЯ РЕЖИМА ПРЕЗЕНТАЦИИ              */
+/* СТИЛИ ДЛЯ РЕЖИМА ПРЕЗЕНТАЦИИ                 */
 /* ============================================ */
-.presentation-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--background-color); z-index: 2000; display: none; scroll-behavior: smooth; }
 .presentation-overlay {
-        /* ... существующие стили ... */
-        overflow-y: hidden; /* Запрещаем скролл самого оверлея */
-        /* overflow-y: scroll; было */
-     }
-.presentation-overlay::-webkit-scrollbar { width: 8px; }
-
-.presentation-overlay::-webkit-scrollbar-track { background: #444; }
-.presentation-overlay::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 4px;}
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: var(--background-color); z-index: 2000; display: none;
+    scroll-behavior: smooth; overflow-y: hidden; /* Скролл перенесен на content */
+    transition: background-color 0.3s ease;
+}
 .presentation-overlay.visible { display: block; }
- .presentation-content {
-       padding: 25px 15px 65px 15px; /* Увеличили отступы сверху/снизу для кнопок */
-        max-width: 900px;
-        margin: 0 auto;
-        height: 100%; /* Растягиваем на всю высоту оверлея */
-        overflow-y: auto; /* Добавляем скролл, ЕСЛИ песня не влезет */
-        box-sizing: border-box; /* Учитываем padding в высоте */
-    }
- .presentation-content::-webkit-scrollbar { width: 8px; }
-    .presentation-content::-webkit-scrollbar-track { background: #222; } /* Чуть темнее */
-    .presentation-content::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 4px;}
+
+.presentation-content {
+    padding: 25px 15px 65px 15px; /* Уменьшены отступы */
+    max-width: 900px; margin: 0 auto; height: 100%;
+    overflow-y: auto; /* Скролл здесь, если песня не влезет */
+    box-sizing: border-box;
+}
+/* Стили для скроллбара внутри контента презентации */
+.presentation-content::-webkit-scrollbar { width: 8px; }
+.presentation-content::-webkit-scrollbar-track { background: var(--hover-color); border-radius: 4px;} /* Используем hover цвет */
+.presentation-content::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 4px;}
+
 .presentation-song {
-        
-       
-        margin-bottom: 0; /* Убрали отступ между песнями, т.к. она одна */
-        border-bottom: none; /* Убрали разделитель */
-        /* display: flex; flex-direction: column; justify-content: center; УДАЛЕНО */
-    }
-.presentation-song:last-child { border-bottom: none; min-height: auto; padding-bottom: 5vh; }
+    /* min-height, display flex УДАЛЕНЫ */
+    margin-bottom: 0; border-bottom: none;
+    /* padding удален - управляется через .presentation-content */
+}
+.presentation-song:last-child { /* Это правило теперь не нужно, т.к. песня одна */
+    /* border-bottom: none; min-height: auto; padding-bottom: 5vh; */
+}
 .presentation-song h2 {
-    font-size: 1.3rem; /* Еще чуть меньше */
-    color: var(--accent-color);
-    text-align: center;
-    margin-bottom: 10px; /* И отступ снизу меньше */
+    font-size: 1.3rem; /* Уменьшен */
+    color: var(--accent-color); text-align: center;
+    margin-bottom: 10px; /* Уменьшен */
+    transition: color 0.3s ease;
 }
 .presentation-song pre {
-    /* Уменьшаем диапазон: от 11px до 15px */
-    font-size: clamp(11px, 2.6vw, 15px);
+    font-size: clamp(11px, 2.6vw, 15px); /* Уменьшен + Адаптивность */
     font-family: 'Courier New', Courier, monospace;
-    /* Уменьшаем межстрочный интервал */
-    line-height: 1.35;
-    white-space: pre-wrap;
-    word-wrap: break-word;
+    line-height: 1.35; /* Уменьшен */
+    white-space: pre-wrap; word-wrap: break-word;
     color: var(--text-color);
+    transition: color 0.3s ease;
 }
-.presentation-song .chord { font-weight: bold; color: var(--accent-color); background-color: transparent; padding: 0; margin: 0; }
-.presentation-close-btn { position: fixed; top: 15px; right: 15px; z-index: 2001; background: rgba(50, 50, 50, 0.7); color: white; border: 1px solid #555; border-radius: 50%; width: 40px; height: 40px; font-size: 1.5rem; line-height: 1; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: none; }
-.presentation-close-btn:hover { background-color: rgba(80, 80, 80, 0.8); transform: none; box-shadow: none; }
-.presentation-close-btn:active { background-color: rgba(30, 30, 30, 0.8); transform: none; box-shadow: none; }
-.presentation-fullscreen-btn { position: fixed; top: 15px; right: 70px; z-index: 2001; /* ... */ }
-.presentation-overlay:fullscreen { background-color: #000; }
+.presentation-song .chord { font-weight: bold; color: var(--accent-color); background-color: transparent; padding: 0; margin: 0; transition: color 0.3s ease;}
 
-
-.presentation-controls {
-    position: fixed; /* Фиксируем панель управления */
-    bottom: 0;       /* Внизу экрана */
-    left: 0;
-    width: 100%;
-    background-color: rgba(20, 20, 20, 0.85); /* Полупрозрачный темный фон */
-    backdrop-filter: blur(5px); /* Размытие фона (если поддерживается) */
-    padding: 10px 15px;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: space-between; /* Кнопки по краям, счетчик по центру */
-    align-items: center;
-    z-index: 2002; /* Выше контента, но ниже кнопки закрытия */
-    border-top: 1px solid #333;
-opacity: 1; /* По умолчанию панель видима */
-    transition: opacity 0.5s ease-in-out; /* Плавное появление/исчезновение */
-    pointer-events: auto; /* По умолчанию можно взаимодействовать */
-}
-
-.presentation-controls.controls-hidden {
-    opacity: 0; /* Делаем невидимой */
-    pointer-events: none; /* Запрещаем клики по невидимой панели */
-}
-
-.presentation-nav-btn {
-    background: none;
-    border: none;
-    color: #eee;
-    font-size: 1.8rem; /* Размер иконок */
-    padding: 5px 15px;
-    cursor: pointer;
-    transition: color 0.2s ease;
-    line-height: 1;
-    border-radius: 4px;
-}
-
-.presentation-nav-btn:hover:not(:disabled) {
-    color: var(--accent-color);
-}
-/* Стили для выключенной кнопки */
-.presentation-nav-btn:disabled {
-    color: #555; /* Тусклый цвет */
-    cursor: not-allowed;
-}
-
-.presentation-counter {
-    color: #ccc;
-    font-size: 0.9rem;
-    text-align: center;
-}
-
-/* Стили для временного сообщения о загрузке в презентации */
-.presentation-loading {
-    padding: 50px 20px;
-    text-align: center;
-    font-size: 1.2rem;
-    color: var(--label-color);
-}
-
-.presentation-control-btn {
-    position: fixed; /* Фиксированное позиционирование */
-    top: 15px;       /* Отступ сверху */
-    z-index: 2001;   /* Тот же уровень, что и кнопка закрытия */
-    background: rgba(50, 50, 50, 0.7); /* Полупрозрачный фон */
-    color: white;
-    border: 1px solid #555;
-    border-radius: 50%; /* Круглая */
-    width: 40px;       /* Размер */
-    height: 40px;
-    font-size: 1.1rem; /* Размер иконки чуть меньше крестика */
-    line-height: 1;
-    padding: 0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: none;
+/* --- Управление Презентацией --- */
+/* Кнопка закрытия */
+.presentation-close-btn {
+    position: fixed; top: 15px; right: 15px; z-index: 2003; /* Выше всего */
+    background: rgba(50, 50, 50, 0.7); color: white; border: 1px solid #555;
+    border-radius: 50%; width: 40px; height: 40px; font-size: 1.5rem;
+    line-height: 1; padding: 0; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; box-shadow: none;
     transition: background-color 0.2s ease;
 }
-.presentation-control-btn:hover {
-    background-color: rgba(80, 80, 80, 0.8);
-}
-.presentation-control-btn:active {
-     background-color: rgba(30, 30, 30, 0.8);
-}
+.presentation-close-btn:hover { background-color: rgba(80, 80, 80, 0.8); }
+.presentation-close-btn:active { background-color: rgba(30, 30, 30, 0.8); }
 
-/* Позиционирование кнопки разделения (левее кнопки закрытия) */
-#pres-split-text-btn {
-    right: 65px; /* Отступ справа = ширина кнопки закрытия (40) + отступ (15) + еще отступ (10) */
+/* Кнопка разделения текста (новая) */
+.presentation-control-btn { /* Общий стиль для верхних кнопок */
+    position: fixed; top: 15px; z-index: 2001;
+    background: rgba(50, 50, 50, 0.7); color: white; border: 1px solid #555;
+    border-radius: 50%; width: 40px; height: 40px; font-size: 1.1rem;
+    line-height: 1; padding: 0; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; box-shadow: none;
+    transition: background-color 0.2s ease;
 }
+.presentation-control-btn:hover { background-color: rgba(80, 80, 80, 0.8); }
+.presentation-control-btn:active { background-color: rgba(30, 30, 30, 0.8); }
+#pres-split-text-btn { right: 65px; /* Левее кнопки закрытия */ }
 
-/* --- Стили для разделения колонок ВНУТРИ ПРЕЗЕНТАЦИИ --- */
-/* Применяем класс к #presentation-content */
-#presentation-content.split-columns .presentation-song pre {
-    column-count: 2;
-    column-gap: 30px; /* Немного увеличим расстояние между колонками */
-    position: relative; /* Для псевдо-элемента */
+/* Нижняя панель управления (Вперед/Назад/Счетчик) */
+.presentation-controls {
+    position: fixed; bottom: 0; left: 0; width: 100%;
+    background-color: rgba(20, 20, 20, 0.85);
+    backdrop-filter: blur(5px); padding: 10px 15px; box-sizing: border-box;
+    display: flex; justify-content: space-between; align-items: center;
+    z-index: 2002; border-top: 1px solid #333;
+    opacity: 1; /* Управляется JS */
+    transition: opacity 0.5s ease-in-out; /* Плавное скрытие */
+    pointer-events: auto; /* Управляется JS */
 }
-
-/* Вертикальный разделитель (опционально) */
-#presentation-content.split-columns .presentation-song pre::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    width: 1px;
-    background-color: #444; /* Цвет разделителя (чуть светлее фона) */
-    transform: translateX(-50%);
-    z-index: 1;
-}
-
-
-/* ============================================ */
-/* СТИЛИ ДЛЯ БОКОВЫХ ПАНЕЛЕЙ                   */
-/* ============================================ */
-.side-panel { position: fixed; top: 0; width: 90%; max-width: 380px; height: 100%; background-color: var(--container-background-color); box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); transition: transform 0.3s ease-in-out; z-index: 1000; padding: 15px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; /* overflow-y убран, т.к. скролл внутри списка */ box-sizing: border-box; }
-#favorites-panel { left: 0; right: auto; transform: translateX(-100%); border-right: 2px solid var(--primary-color); }
-#favorites-panel.open { transform: translateX(0); }
-#repertoire-panel { right: 0; left: auto; transform: translateX(100%); border-left: 2px solid var(--primary-color); /* overflow: hidden; */ /* Убрал, чтобы тень была видна */} /* Убедимся, что overflow-y здесь нет, он будет на list */
-#repertoire-panel.open { transform: translateX(0); }
-/* --- Стили для Аккордеона Репертуара --- */
-.repertoire-key-heading {
-    /* (Оставляем существующие стили) */
-    cursor: pointer; /* Делаем заголовок кликабельным */
-    display: flex; /* Для выравнивания текста и иконки */
-    justify-content: space-between; /* Текст слева, иконка справа */
-    align-items: center;
-    user-select: none; /* Запретить выделение текста заголовка */
-}
-
-.repertoire-key-heading i.fas {
-    transition: transform 0.3s ease; /* Плавный поворот иконки */
-    margin-left: 10px; /* Небольшой отступ слева от иконки */
-}
-
-/* Контейнер для песен внутри ключа */
-.repertoire-songs-for-key {
-    overflow: hidden; /* Важно для анимации max-height */
-    transition: max-height 0.35s ease-out, opacity 0.3s ease-out, margin-top 0.35s ease-out, margin-bottom 0.35s ease-out; /* Плавное раскрытие/скрытие */
-    max-height: 1000px; /* Достаточно большая высота для раскрытого состояния */
-    opacity: 1;
-    /* Можно добавить небольшие отступы сверху/снизу, когда раскрыто */
-    margin-top: 5px;
-    margin-bottom: 10px;
-    /* border-top: 1px solid var(--border-color); */ /* Можно добавить разделитель */
-}
-
-/* Стили для свернутого состояния */
-.repertoire-songs-for-key.collapsed {
-    max-height: 0;
+.presentation-controls.controls-hidden {
     opacity: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    /* border-top: none; */ /* Убираем разделитель, если он был */
+    pointer-events: none;
 }
 
-/* Поворот иконки при раскрытии (когда НЕТ класса collapsed) */
-.repertoire-key-heading i.fa-chevron-up {
-    transform: rotate(180deg);
+.presentation-nav-btn { /* Кнопки < > */
+    background: none; border: none; color: #eee; font-size: 1.8rem;
+    padding: 5px 15px; cursor: pointer; transition: color 0.2s ease;
+    line-height: 1; border-radius: 4px;
+}
+.presentation-nav-btn:hover:not(:disabled) { color: var(--accent-color); }
+.presentation-nav-btn:disabled { color: #555; cursor: not-allowed; }
+
+.presentation-counter { color: #ccc; font-size: 0.9rem; text-align: center; }
+
+/* Сообщение о загрузке в презентации */
+.presentation-loading { padding: 50px 20px; text-align: center; font-size: 1.2rem; color: var(--label-color); }
+
+/* Стили для разделения колонок в презентации */
+#presentation-content.split-columns .presentation-song pre {
+    column-count: 2; column-gap: 30px; position: relative;
+}
+#presentation-content.split-columns .presentation-song pre::before {
+    content: ""; position: absolute; top: 0; bottom: 0; left: 50%;
+    width: 1px; background-color: #444; transform: translateX(-50%); z-index: 1;
+}
+body[data-theme="light"] #presentation-content.split-columns .presentation-song pre::before {
+    background-color: #ccc; /* Светлый разделитель для светлой темы */
 }
 
-/* Небольшой отступ для песен внутри аккордеона */
-.repertoire-songs-for-key .repertoire-item {
-    padding-left: 15px; /* Чуть больше отступ слева для песен */
-}
-.repertoire-songs-for-key .repertoire-item:first-child {
-    border-top: 1px dotted var(--border-color); /* Верхняя граница для первой песни */
-    margin-top: 5px;
-}
 
-/* Дополнительно: Стиль для маленького сообщения об ошибке, если нужно */
-.empty-message.small {
-    font-size: 0.8rem;
-    padding: 8px;
+/* ============================================ */
+/* СТИЛИ ДЛЯ БОКОВЫХ ПАНЕЛЕЙ                    */
+/* ============================================ */
+.side-panel {
+    position: fixed; top: 0; width: 90%; max-width: 380px; height: 100%;
+    background-color: var(--container-background-color);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease-in-out, background-color 0.3s ease, box-shadow 0.3s ease;
+    z-index: 1000; padding: 15px; display: flex; flex-direction: column;
+    gap: 15px; /* overflow-y: auto; */ /* Управляется внутренними блоками */
+    box-sizing: border-box;
 }
+#favorites-panel { left: 0; right: auto; transform: translateX(-100%); border-right: 2px solid var(--primary-color); transition-property: transform, border-color; transition-duration: 0.3s; transition-timing-function: ease-in-out;}
+#favorites-panel.open { transform: translateX(0); }
+#repertoire-panel { right: 0; left: auto; transform: translateX(100%); border-left: 2px solid var(--primary-color); transition-property: transform, border-color; transition-duration: 0.3s; transition-timing-function: ease-in-out;}
+#repertoire-panel.open { transform: translateX(0); }
+
+/* --- Аккордеон Репертуара --- */
+.repertoire-key-heading {
+    font-size: 0.9rem; font-weight: 600; color: var(--text-color);
+    background-color: var(--input-bg-color); padding: 5px 10px; margin-top: 15px;
+    margin-bottom: 8px; border-radius: 4px; border-left: 3px solid var(--primary-color);
+    position: sticky; top: -1px; /* Немного перекрываем рамку сверху при прокрутке */
+    z-index: 1; cursor: pointer; display: flex; justify-content: space-between;
+    align-items: center; user-select: none;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+#repertoire-panel-list > .repertoire-key-heading:first-child { margin-top: 0; }
+.repertoire-key-heading i.fas { transition: transform 0.3s ease; margin-left: 10px; }
+.repertoire-songs-for-key {
+    overflow: hidden;
+    transition: max-height 0.35s ease-out, opacity 0.3s ease-out, margin-top 0.35s ease-out, margin-bottom 0.35s ease-out;
+    max-height: 1000px; opacity: 1; margin-top: 5px; margin-bottom: 10px;
+}
+.repertoire-songs-for-key.collapsed { max-height: 0; opacity: 0; margin-top: 0; margin-bottom: 0; }
+.repertoire-key-heading i.fa-chevron-up { transform: rotate(180deg); }
+.repertoire-songs-for-key .repertoire-item { padding-left: 15px; }
+.repertoire-songs-for-key .repertoire-item:first-child { border-top: 1px dotted var(--border-color); margin-top: 5px; transition: border-color 0.3s ease;}
+.empty-message.small { font-size: 0.8rem; padding: 8px; color: var(--label-color); }
 
 /* Содержимое Левой панели (Списки) */
 .list-section { margin-bottom: 0; flex-shrink: 0;}
-.list-section h3 { text-align: left; font-size: 1rem; margin-top: 0; margin-bottom: 10px; color: var(--accent-color); border-bottom: 1px solid var(--border-color); padding-bottom: 5px;}
-/* Базовый .list-container (для Списков в левой панели) */
-.list-container { max-height: 250px; /* Ограничение высоты для левой панели */ overflow-y: auto; margin-bottom: 10px; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--hover-color); }
+.list-section h3 { text-align: left; font-size: 1rem; margin-top: 0; margin-bottom: 10px; color: var(--accent-color); border-bottom: 1px solid var(--border-color); padding-bottom: 5px; transition: color 0.3s ease, border-color 0.3s ease;}
+.list-container {
+    max-height: 250px; overflow-y: auto; margin-bottom: 10px; padding: 10px;
+    border: 1px solid var(--border-color); border-radius: var(--radius);
+    background: var(--hover-color);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
 .list-container::-webkit-scrollbar { width: 6px; }
 .list-container::-webkit-scrollbar-track { background: var(--border-color); border-radius: 3px;}
 .list-container::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 3px;}
-.favorite-item, .shared-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-color); transition: background 0.3s ease; font-size: 0.9rem; cursor: pointer;}
+.favorite-item, .shared-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px; border-bottom: 1px solid var(--border-color);
+    transition: background 0.3s ease, border-color 0.3s ease;
+    font-size: 0.9rem; cursor: pointer;
+}
 .favorite-item:last-child, .shared-item:last-child { border-bottom: none; }
-.favorite-item:hover, .shared-item:hover { background-color: #262626; }
-.list-container .song-name { flex-grow: 1; margin-right: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.empty-message { padding: 15px; text-align: center; color: var(--label-color); font-style: italic; font-size: 0.9rem; }
-.remove-button, .delete-button { background: none !important; border: none !important; color: var(--danger-color) !important; box-shadow: none !important; padding: 0 5px !important; font-size: 0.9rem !important; line-height: 1 !important; flex-shrink: 0; min-width: auto !important; height: auto !important; transition: color 0.2s ease, background-color 0.2s ease !important; transform: none !important; cursor: pointer; border-radius: 50%; }
-.remove-button:hover, .delete-button:hover { color: #fff !important; background-color: var(--danger-color) !important; transform: none !important; box-shadow: none !important; text-decoration: none; }
+.favorite-item:hover, .shared-item:hover { background-color: var(--container-background-color); /* Используем фон контейнера для ховера */ }
+.list-container .song-name { flex-grow: 1; margin-right: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--text-color); transition: color 0.3s ease;}
+.empty-message { padding: 15px; text-align: center; color: var(--label-color); font-style: italic; font-size: 0.9rem; transition: color 0.3s ease;}
+
+.remove-button, .delete-button { /* Кнопки удаления в списках */
+    background: none !important; border: none !important; color: var(--danger-color) !important;
+    box-shadow: none !important; padding: 0 5px !important; font-size: 0.9rem !important;
+    line-height: 1 !important; flex-shrink: 0; min-width: auto !important; height: auto !important;
+    transition: color 0.2s ease, background-color 0.2s ease !important;
+    transform: none !important; cursor: pointer; border-radius: 50%;
+}
+.remove-button:hover, .delete-button:hover {
+    color: #fff !important; background-color: var(--danger-color) !important;
+    transform: none !important; box-shadow: none !important; text-decoration: none;
+}
 
 /* Содержимое Правой панели (Репертуар) */
-#repertoire-panel .panel-header { text-align: center; font-size: 1.2rem; color: var(--primary-color); margin: 0 0 5px 0; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+#repertoire-panel .panel-header { text-align: center; font-size: 1.2rem; color: var(--primary-color); margin: 0 0 5px 0; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); flex-shrink: 0; transition: color 0.3s ease, border-color 0.3s ease;}
 .repertoire-vocalist-selector { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
-.repertoire-vocalist-selector label { font-size: 0.85rem; color: var(--label-color); }
+.repertoire-vocalist-selector label { font-size: 0.85rem; color: var(--label-color); transition: color 0.3s ease;}
 #repertoire-panel #vocalist-select { width: 100%; padding: 10px 14px; padding-right: 35px; font-size: 1rem; background-color: var(--input-bg-color); margin-bottom: 10px; /* Наследует стили select */ }
 
-/* Контейнер списка репертуара */
-#repertoire-panel-list { /* Убран класс list-container из HTML */
-    flex-grow: 1; /* Растягивается */
-    min-height: 100px; /* Мин. высота */
-    overflow-y: auto; /* Внутренний скролл */
-    margin-bottom: 0;
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    background: var(--hover-color);
-    max-height: none !important; /* Отменяем ограничение */
+#repertoire-panel-list {
+    flex-grow: 1; min-height: 100px; overflow-y: auto; margin-bottom: 0; padding: 10px;
+    border: 1px solid var(--border-color); border-radius: var(--radius);
+    background: var(--hover-color); max-height: none !important; /* Отменяем ограничение */
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 #repertoire-panel-list::-webkit-scrollbar { width: 6px; }
 #repertoire-panel-list::-webkit-scrollbar-track { background: var(--border-color); border-radius: 3px;}
 #repertoire-panel-list::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 3px;}
-/* Стили для содержимого списка репертуара */
-#repertoire-panel-list > .repertoire-key-heading:first-child { margin-top: 0; }
-#repertoire-panel .repertoire-item { display: flex; justify-content: space-between; align-items: center; padding: 7px 10px 7px 25px; font-size: 0.9rem; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background-color 0.2s ease;}
+
+#repertoire-panel .repertoire-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 7px 10px 7px 15px; /* Был отступ 25px слева, уменьшил */
+    font-size: 0.9rem; border-bottom: 1px solid var(--border-color); cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.3s ease;
+}
 #repertoire-panel .repertoire-item:last-child { border-bottom: none; }
-#repertoire-panel .repertoire-item:hover { background-color: #262626; }
-#repertoire-panel .repertoire-item .song-name { line-height: 1.4; color: var(--text-color); font-weight: normal; flex-grow: 1; margin-right: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-/* Используются те же .remove-button стили */
-#repertoire-panel-list .empty-message { /* Используется базовый стиль .empty-message */ }
+#repertoire-panel .repertoire-item:hover { background-color: var(--container-background-color); /* Используем фон контейнера для ховера */ }
+#repertoire-panel .repertoire-item .song-name { line-height: 1.4; color: var(--text-color); font-weight: normal; flex-grow: 1; margin-right: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; transition: color 0.3s ease;}
 
 /* ============================================ */
-/* НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ                   */
+/* НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ                      */
 /* ============================================ */
-.mobile-bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background-color: var(--container-background-color); border-top: 1px solid var(--border-color); box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3); display: flex; justify-content: space-around; align-items: center; z-index: 1000; padding: 0 5px; box-sizing: border-box; }
-.mobile-nav-button { background: none; border: none; box-shadow: none; padding: 5px; margin: 0; color: var(--text-color); font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-grow: 1; max-width: 50%; height: 100%; cursor: pointer; transition: color 0.2s ease, background-color 0.2s ease; border-radius: 0; background-image: none !important; }
+.mobile-bottom-nav {
+    position: fixed; bottom: 0; left: 0; width: 100%; height: 60px;
+    background-color: var(--container-background-color);
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+    display: flex; justify-content: space-around; align-items: center; z-index: 1000;
+    padding: 0 5px; box-sizing: border-box;
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.mobile-nav-button {
+    background: none; border: none; box-shadow: none; padding: 5px; margin: 0;
+    color: var(--text-color); /* Используем переменную! */
+    font-size: 0.75rem; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; flex-grow: 1; max-width: 50%; height: 100%; cursor: pointer;
+    transition: color 0.2s ease, background-color 0.2s ease; border-radius: 0;
+    background-image: none !important; /* Убираем фон, если был */
+}
 .mobile-nav-button i { font-size: 1.4rem; margin-bottom: 4px; }
-.mobile-nav-button:hover { background-color: var(--hover-color); color: var(--accent-color); transform: none; box-shadow: none; }
-.mobile-nav-button:active { background-color: var(--border-color); transform: none; box-shadow: none; }
+.mobile-nav-button:hover {
+    background-color: var(--hover-color);
+    color: var(--accent-color); /* Цвет иконки/текста при наведении */
+    transform: none; box-shadow: none;
+}
+.mobile-nav-button:active {
+    background-color: var(--border-color);
+    transform: none; box-shadow: none;
+}
+/* Явное указание цвета для светлой темы (для надежности) */
+body[data-theme="light"] .mobile-nav-button,
+body[data-theme="light"] .mobile-nav-button i,
+body[data-theme="light"] .mobile-nav-button span {
+     color: var(--text-color) !important; /* Используем темный цвет текста темы */
+}
+body[data-theme="light"] .mobile-nav-button:hover,
+body[data-theme="light"] .mobile-nav-button:hover i,
+body[data-theme="light"] .mobile-nav-button:hover span {
+    color: var(--accent-color) !important; /* Цвет при наведении */
+}
+
 
 /* --- Loading Indicator --- */
 #loading-indicator { display: none; position: fixed; top: 15px; left: 50%; transform: translateX(-50%); background-color: rgba(40, 40, 40, 0.85); color: white; padding: 8px 18px; border-radius: var(--radius); z-index: 1002; font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
+
 /* ============================================ */
-/* АДАПТИВНОСТЬ                              */
+/* АДАПТИВНОСТЬ                                 */
 /* ============================================ */
 @media (max-width: 768px) {
     /* Стили для кнопок toggle-button удалены */
@@ -536,36 +548,39 @@ opacity: 1; /* По умолчанию панель видима */
     select, input { font-size: 15px; padding: 10px 12px; }
     button { font-size: 15px; }
 
+     /* Кнопка темы на мобильных */
+     #theme-toggle-button {
+         right: 10px;
+     }
+
     /* --- Ряд Тональность / Разделить / Масштаб (Мобильный) --- */
-     .control-group:has(#key-select) { min-height: 38px; gap: 5px; }
+    .control-group:has(#key-select) { min-height: 38px; gap: 5px; }
     #key-select {
-        min-width: 55px; /* Ширина */
-        height: 38px;
-        padding-right: 25px; /* Место для стрелки */
-        padding-left: 5px;  /* Отступ текста слева */
-        margin-right: 5px;
-        background-position: right 5px center; /* Позиция стрелки */
-        background-size: 14px; /* Размер стрелки */
-        text-align: left; /* Текст слева */
-        box-sizing: border-box;
+        min-width: 55px; height: 38px; padding-right: 25px; padding-left: 5px;
+        margin-right: 5px; background-position: right 5px center;
+        background-size: 14px; text-align: left; box-sizing: border-box;
     }
-    #split-text-button { width: 38px; height: 38px; padding: 0; margin-left: 5px; margin-right: 5px; background: var(--hover-color); box-shadow: none; border: 1px solid var(--border-color); color: var(--text-color); display: inline-flex; align-items: center; justify-content: center; }
-    #split-text-button:hover { background: var(--border-color); transform: none; box-shadow: none; }
-    #split-text-button > i { font-size: 1rem; margin: 0; }
-    #split-text-button .button-text { display: none; } /* Скрываем текст */
+    #split-text-button { /* В основной части, не в презентации */
+        width: 38px; height: 38px; padding: 0; margin-left: 5px; margin-right: 5px;
+        /* Используем стиль simple */
+        background: var(--hover-color); box-shadow: none; border: 1px solid var(--border-color); color: var(--text-color); display: inline-flex; align-items: center; justify-content: center;
+    }
+     #split-text-button:hover { background: var(--border-color); transform: none; box-shadow: none; }
+     #split-text-button > i { font-size: 1rem; margin: 0; }
+     #split-text-button .button-text { display: none; }
 
     #zoom-in, #zoom-out { width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; }
-    #zoom-in > i, #zoom-out > i { margin: 0; } /* Центрируем иконку */
+    #zoom-in > i, #zoom-out > i { margin: 0; }
 
 
     /* --- Footer (Мобильный) --- */
     .controls-footer { align-items: stretch; flex-direction: column; gap: 10px; }
     .controls-footer > * { width: auto; margin-bottom: 10px; align-self: center; }
     .controls-footer .bpm-controls { justify-content: center; width: 100%; }
-     .bpm-controls #time-signature, .bpm-controls #bpm-display { height: 38px; }
+    .bpm-controls #time-signature, .bpm-controls #bpm-display { height: 38px; }
     #metronome-button { width: 45px; height: 45px; padding: 0; margin: 5px auto; display: inline-flex; align-items: center; justify-content: center; }
     #metronome-button > i { font-size: 1.2rem; margin: 0; }
-    #metronome-button .button-text { display: none; } /* Скрываем текст */
+    #metronome-button .button-text { display: none; }
 
     #holychords-button { padding: 8px 15px; height: 38px; }
     #add-to-repertoire-button { padding: 10px 15px; height: 42px; }
@@ -577,16 +592,11 @@ opacity: 1; /* По умолчанию панель видима */
 
     /* Панели */
     #favorites-panel, #repertoire-panel { width: 95%; padding: 10px; gap: 10px; }
-    /* Левая панель списки */
-    .list-container { max-height: 200px; /* Оставляем для левой панели */ }
+    .list-container { max-height: 200px; }
     .favorite-item, .shared-item { font-size: 0.85rem; padding: 7px 5px; }
-    /* Правая панель репертуар */
     #repertoire-panel .panel-header { font-size: 1.1rem; padding-bottom: 8px; }
     #repertoire-panel #vocalist-select { padding: 8px 12px; padding-right: 30px; font-size: 0.95rem; margin-bottom: 5px; }
     #repertoire-panel-list { padding: 8px; }
-    #repertoire-panel .repertoire-item { font-size: 0.85rem; padding: 7px 5px 7px 15px; /* Уменьшен общий, сохранен левый отступ */}
-  #theme-toggle-button {
-         right: 10px; /* Ближе к краю на маленьких экранах */
-     }
+    #repertoire-panel .repertoire-item { font-size: 0.85rem; padding: 7px 5px 7px 15px; }
 
 }
