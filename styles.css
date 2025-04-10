@@ -25,21 +25,24 @@
 
 /* --- Light Theme Variables --- */
 body[data-theme="light"] {
-    --primary-color: #339af0; /* Голубой */
-    --secondary-color: #1c7ed6; /* Более темный голубой */
-    --background-color: #f8f9fa; /* Очень светло-серый фон */
-    --container-background-color: #ffffff; /* Белый контейнер */
-    --text-color: #212529; /* Почти черный текст */
-    --border-color: #dee2e6; /* Светло-серая граница */
-    --hover-color: #e9ecef; /* Серый для наведения */
-    --shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Более светлая тень */
-    --radius: 14px; /* Оставляем как есть */
-    --accent-color: #1c7ed6; /* Синий для аккордов */
-    --danger-color: #fa5252; /* Красный оставляем */
-    --button-text-color: #ffffff; /* Белый текст на синих кнопках */
-    --link-color: var(--accent-color); /* Синяя ссылка */
-    --input-bg-color: #ffffff; /* Белый фон инпутов */
-    --label-color: #495057; /* Серый текст меток */
+    --primary-color: #339af0;
+    --secondary-color: #1c7ed6;
+    /* --- ИЗМЕНЕННЫЕ ЦВЕТА ФОНА --- */
+    --background-color: #e9ecef; /* Еще чуть более серый фон страницы */
+    --container-background-color: #f8f9fa; /* Контейнер теперь не чисто белый, а очень светлый серый */
+    --text-color: #212529;
+    --border-color: #dee2e6;
+    --hover-color: #dee2e6; /* Цвет ховера чуть темнее фона контейнера */
+    /* --- КОНЕЦ ИЗМЕНЕНИЙ ФОНА --- */
+    --shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    --radius: 14px;
+    --accent-color: #1c7ed6;
+    --danger-color: #fa5252;
+    --button-text-color: #ffffff;
+    --link-color: var(--accent-color);
+    --input-bg-color: #ffffff; /* Оставим инпуты белыми для контраста */
+    --label-color: #495057;
+
 
     /* Дополнительно: можно переопределить цвет для текста аккордов, если синий плохо читается */
     /* --accent-color: #1971c2; */ /* Пример чуть более темного синего */
@@ -49,7 +52,26 @@ body[data-theme="light"] {
 
     /* Изменение цвета glow эффекта для заголовка h1 */
     /* (Нужно обновить и @keyframes) - пока оставим розовый */
+h1 {
+        color: var(--text-color); /* Используем темный цвет текста темы */
+        /* Убираем или меняем свечение, если розовое не подходит */
+         animation: none; /* Вариант: убрать свечение в светлой теме */
+         text-shadow: none; /* Убираем тень текста */
+         /* Или можно изменить keyframes для glow, но это сложнее */
+    }
+
+     /* Делаем иконки и текст в нижней навигации темными */
+     .mobile-nav-button {
+         color: var(--text-color); /* Используем темный цвет текста */
+     }
+     .mobile-nav-button:hover {
+         /* Можно оставить цвет акцента (синий) или сделать темнее */
+          color: var(--accent-color);
+          /* background-color: var(--hover-color); оставляем */
+     }
 }
+
+
 
 /* Дополнительно: Можно добавить стили для лучшего вида элементов в светлой теме, если потребуется */
 body[data-theme="light"] select {
