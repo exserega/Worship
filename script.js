@@ -1616,6 +1616,7 @@ function setupEventListeners() {
 
     }
 
+   // Это существующий код для кнопки Holychords, он остается
     if(holychordsButton) holychordsButton.addEventListener('click', (e) => {
         if (!holychordsButton.href || holychordsButton.href.endsWith('#')) {
             e.preventDefault();
@@ -1623,23 +1624,27 @@ function setupEventListeners() {
         }
     });
 
+    // Эта строка тоже остается
     console.log("Event listeners setup complete.");
-// --- Слушатели для НОВЫХ кнопок презентации ---
-const prevBtn = document.getElementById('pres-prev-btn');
-const nextBtn = document.getElementById('pres-next-btn');
 
-if(prevBtn) {
-    prevBtn.addEventListener('click', prevPresentationSong);
-}
-if(nextBtn) {
-    nextBtn.addEventListener('click', nextPresentationSong);
-}
+    // --- Слушатели для НОВЫХ кнопок презентации --- // <--- ВОТ СЮДА НУЖНО БЫЛО ВСТАВИТЬ БЛОК
+    const prevBtn = document.getElementById('pres-prev-btn');
+    const nextBtn = document.getElementById('pres-next-btn');
 
-// Устанавливаем слушатели для свайпов
-setupSwipeListeners();
+    if(prevBtn) {
+        prevBtn.addEventListener('click', prevPresentationSong);
+    }
+    if(nextBtn) {
+        nextBtn.addEventListener('click', nextPresentationSong);
+    }
 
-console.log("Слушатели для кнопок презентации и свайпов добавлены.");
-}
+    // Устанавливаем слушатели для свайпов
+    setupSwipeListeners();
+
+    console.log("Слушатели для кнопок презентации и свайпов добавлены.");
+    // --- Конец блока для слушателей презентации ---
+
+} 
 
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', async () => {
