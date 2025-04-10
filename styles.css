@@ -22,6 +22,90 @@
     --label-color: #ccc;
 }
 
+
+/* --- Light Theme Variables --- */
+body[data-theme="light"] {
+    --primary-color: #339af0; /* Голубой */
+    --secondary-color: #1c7ed6; /* Более темный голубой */
+    --background-color: #f8f9fa; /* Очень светло-серый фон */
+    --container-background-color: #ffffff; /* Белый контейнер */
+    --text-color: #212529; /* Почти черный текст */
+    --border-color: #dee2e6; /* Светло-серая граница */
+    --hover-color: #e9ecef; /* Серый для наведения */
+    --shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Более светлая тень */
+    --radius: 14px; /* Оставляем как есть */
+    --accent-color: #1c7ed6; /* Синий для аккордов */
+    --danger-color: #fa5252; /* Красный оставляем */
+    --button-text-color: #ffffff; /* Белый текст на синих кнопках */
+    --link-color: var(--accent-color); /* Синяя ссылка */
+    --input-bg-color: #ffffff; /* Белый фон инпутов */
+    --label-color: #495057; /* Серый текст меток */
+
+    /* Дополнительно: можно переопределить цвет для текста аккордов, если синий плохо читается */
+    /* --accent-color: #1971c2; */ /* Пример чуть более темного синего */
+
+     /* Дополнительно: цвет текста на градиентных кнопках можно сделать темным, если нужно */
+    /* --button-text-color: #343a40; */
+
+    /* Изменение цвета glow эффекта для заголовка h1 */
+    /* (Нужно обновить и @keyframes) - пока оставим розовый */
+}
+
+/* Дополнительно: Можно добавить стили для лучшего вида элементов в светлой теме, если потребуется */
+body[data-theme="light"] select {
+     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23495057'%3E%3Cpath fill-rule='evenodd' d='M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z' clip-rule='evenodd' /%3E%3C/svg%3E"); /* Серая стрелка */
+}
+
+body[data-theme="light"] .remove-button:hover,
+body[data-theme="light"] .delete-button:hover {
+     color: #fff !important;
+     background-color: var(--danger-color) !important; /* Фон кнопки удаления при наведении */
+}
+
+/* Можно переопределить цвет фона панели при наведении на песню */
+body[data-theme="light"] .favorite-item:hover,
+body[data-theme="light"] .shared-item:hover,
+body[data-theme="light"] #repertoire-panel .repertoire-item:hover {
+    background-color: #f1f3f5; /* Очень светлый серо-голубой */
+}
+
+/* Цвет фона "липких" заголовков в репертуаре */
+body[data-theme="light"] .repertoire-key-heading {
+    background-color: #e9ecef;
+    border-left-color: var(--primary-color);
+}
+
+/* Цвет фона скроллбаров */
+body[data-theme="light"] ::-webkit-scrollbar-track { background: #e9ecef; }
+body[data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--primary-color); }
+
+/* Цвет фона/границ кнопок управления (можно оставить темными или сделать светлыми) */
+body[data-theme="light"] button.icon-button.simple {
+    background: #f8f9fa;
+    border-color: #ced4da;
+    color: #495057;
+}
+body[data-theme="light"] button.icon-button.simple:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+}
+body[data-theme="light"] button.icon-button.simple:active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #fff;
+}
+
+/* Цвет кнопки Holychords */
+body[data-theme="light"] #holychords-button {
+    color: var(--link-color);
+    border-color: var(--link-color);
+}
+body[data-theme="light"] #holychords-button:hover {
+     background-color: var(--link-color);
+     color: #fff;
+}
+
+
 /* --- Base Styles --- */
 body {
     font-family: 'Tahoma', sans-serif;
