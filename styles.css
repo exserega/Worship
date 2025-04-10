@@ -224,7 +224,58 @@ opacity: 1; /* По умолчанию панель видима */
     color: var(--label-color);
 }
 
+.presentation-control-btn {
+    position: fixed; /* Фиксированное позиционирование */
+    top: 15px;       /* Отступ сверху */
+    z-index: 2001;   /* Тот же уровень, что и кнопка закрытия */
+    background: rgba(50, 50, 50, 0.7); /* Полупрозрачный фон */
+    color: white;
+    border: 1px solid #555;
+    border-radius: 50%; /* Круглая */
+    width: 40px;       /* Размер */
+    height: 40px;
+    font-size: 1.1rem; /* Размер иконки чуть меньше крестика */
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+    transition: background-color 0.2s ease;
+}
+.presentation-control-btn:hover {
+    background-color: rgba(80, 80, 80, 0.8);
+}
+.presentation-control-btn:active {
+     background-color: rgba(30, 30, 30, 0.8);
+}
 
+/* Позиционирование кнопки разделения (левее кнопки закрытия) */
+#pres-split-text-btn {
+    right: 65px; /* Отступ справа = ширина кнопки закрытия (40) + отступ (15) + еще отступ (10) */
+}
+
+/* --- Стили для разделения колонок ВНУТРИ ПРЕЗЕНТАЦИИ --- */
+/* Применяем класс к #presentation-content */
+#presentation-content.split-columns .presentation-song pre {
+    column-count: 2;
+    column-gap: 30px; /* Немного увеличим расстояние между колонками */
+    position: relative; /* Для псевдо-элемента */
+}
+
+/* Вертикальный разделитель (опционально) */
+#presentation-content.split-columns .presentation-song pre::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    background-color: #444; /* Цвет разделителя (чуть светлее фона) */
+    transform: translateX(-50%);
+    z-index: 1;
+}
 
 
 /* ============================================ */
