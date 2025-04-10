@@ -115,7 +115,7 @@ async function fetchSheetData(sheetName) {
     }
     loadingIndicator.style.display = 'block';
     try {
-        const range = `${SHEETS[sheetName]}!A2:F`; // Загружаем A-F
+        const range = `${SHEETS[sheetName]}!A2:G`; // Загружаем A-G
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?key=${API_KEY}`;
         const response = await fetch(url);
         if (!response.ok) {
