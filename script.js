@@ -811,7 +811,6 @@ async function showPresentationView(songsToShow) {
 }
 
 /** Отображает ТЕКУЩУЮ песню в режиме презентации */
-/** Отображает ТЕКУЩУЮ песню в режиме презентации */
 async function displayCurrentPresentationSong() {
     if (presentationSongs.length === 0 || !presentationContent) return; // Нечего показывать
 
@@ -820,77 +819,69 @@ async function displayCurrentPresentationSong() {
     if (currentPresentationIndex >= presentationSongs.length) currentPresentationIndex = presentationSongs.length - 1;
 
     const song = presentationSongs[currentPresentationIndex]; // Получаем данные текущей песни из списка
-    console.log(`Презентация: Показываем песню <span class="math-inline">\{currentPresentationIndex \+ 1\}/</span>{presentationSongs.length}: ${song.name}`);
+    // --- ИСПРАВЛЕНО в console.log: Убраны лишние слэши и span ---
+    console.log(`Презентация: Показываем песню ${currentPresentationIndex + 1}/${presentationSongs.length}: ${song.name}`);
 
     // Временно показываем загрузку
     presentationContent.innerHTML = `<div class="presentation-loading">Загрузка "${song.name}"...</div>`;
 
     try {
         // --- Получение и подготовка данных ---
-        // Проверяем кэш, если данных нет - загружаем из Google Sheets
         if (!cachedData[song.sheet]?.[song.index]) {
-            console.log(`Presentation: Загрузка данных для <span class="math-inline">\{song\.name\} \(</span>{song.sheet})`);
-            await fetchSheetData(song.sheet); // Функция fetchSheetData уже есть
+            console.log(`Presentation: Загрузка данных для ${song.name} (${song.sheet})`);
+            await fetchSheetData(song.sheet);
         }
         const originalSongData = cachedData[song.sheet]?.[song.index];
-        // Если данных все равно нет - показываем ошибку
         if (!originalSongData) throw new Error(`Не найдены данные для ${song.name}`);
 
-        // Извлекаем нужные поля из оригинальных данных
         const songTitle = originalSongData[0];
         const originalLyrics = originalSongData[1] || '';
-        const originalKey = originalSongData[2] || chords[0]; // Ориг. тональность
-        const targetKey = song.key; // Тональность из общего списка
+        const originalKey = originalSongData[2] || chords[0];
+        const targetKey = song.key;
 
-        // Транспонируем (функции getTransposition, transposeLyrics уже есть)
         const transposition = getTransposition(originalKey, targetKey);
         const transposedLyrics = transposeLyrics(originalLyrics, transposition);
-
-        // Обрабатываем пробелы и подсвечиваем аккорды (функции processLyrics, highlightChords уже есть)
         const processedLyrics = processLyrics(transposedLyrics);
         const highlightedLyrics = highlightChords(processedLyrics);
 
         // --- Формирование HTML для ОДНОЙ песни ---
-        // Оборачиваем в div .presentation-song, чтобы применить стили
+        // --- ИСПРАВЛЕНО: Убраны лишние слэши и span вокруг targetKey, закрыт тег h2 ---
         const songHtml = `
             <div class="presentation-song">
-                <h2>${songTitle} — <span class="math-inline">\{targetKey\}</h2\>
-<pre>{highlightedLyrics}</pre>
-</div>`;
-// Вставляем готовый HTML в контейнер
-presentationContent.innerHTML = songHtml;
+                <h2>${songTitle} — ${targetKey}</h2>
+                <pre>${highlightedLyrics}</pre>
+            </div>
+        `;
+        // Вставляем готовый HTML в контейнер
+        presentationContent.innerHTML = songHtml;
 
-      // --- Применение класса разделения ---
-      // Применяем или убираем класс .split-columns в зависимости от сохраненного состояния isPresentationSplit
-      if (presentationContent) { // Доп. проверка на всякий случай
-           presentationContent.classList.toggle('split-columns', isPresentationSplit);
-      }
-      // --- Конец применения класса разделения ---
+        // --- Применение класса разделения ---
+        if (presentationContent) {
+             presentationContent.classList.toggle('split-columns', isPresentationSplit);
+        }
+        // --- Конец применения класса разделения ---
 
+        // Прокрутка содержимого песни наверх
+         const songElement = presentationContent.querySelector('.presentation-song');
+         if (songElement) songElement.scrollTop = 0;
 
-      // Прокрутка содержимого песни наверх (если оно само вдруг скроллится)
-       const songElement = presentationContent.querySelector('.presentation-song');
-       if (songElement) songElement.scrollTop = 0;
+    } catch (error) {
+        console.error("Ошибка при отображении песни в презентации:", error);
+        presentationContent.innerHTML = `<div class="presentation-song error"><h2>Ошибка загрузки песни</h2><p>${error.message}</p></div>`;
+    }
 
-  } catch (error) {
-      // Если произошла ошибка при загрузке или обработке
-      console.error("Ошибка при отображении песни в презентации:", error);
-      presentationContent.innerHTML = `<div class="presentation-song error"><h2>Ошибка загрузки песни</h2><p>${error.message}</p></div>`;
-  }
+    // --- Обновление счетчика песен ---
+    const counterElement = document.getElementById('pres-counter');
+    if (counterElement) {
+        // --- ИСПРАВЛЕНО в счетчике: Убраны лишние слэши ---
+        counterElement.textContent = `${currentPresentationIndex + 1} / ${presentationSongs.length}`;
+    }
 
-  // --- Обновление счетчика песен (например, "3 / 8") ---
-  const counterElement = document.getElementById('pres-counter');
-  if (counterElement) {
-      counterElement.textContent = `${currentPresentationIndex + 1} / ${presentationSongs.length}`;
-  }
-
-  // --- Обновление состояния кнопок "Назад" / "Вперед" ---
-  const prevBtn = document.getElementById('pres-prev-btn');
-  const nextBtn = document.getElementById('pres-next-btn');
-  // Выключаем кнопку "Назад", если это первая песня
-  if (prevBtn) prevBtn.disabled = (currentPresentationIndex === 0);
-  // Выключаем кнопку "Вперед", если это последняя песня
-  if (nextBtn) nextBtn.disabled = (currentPresentationIndex === presentationSongs.length - 1);
+    // --- Обновление состояния кнопок "Назад" / "Вперед" ---
+    const prevBtn = document.getElementById('pres-prev-btn');
+    const nextBtn = document.getElementById('pres-next-btn');
+    if (prevBtn) prevBtn.disabled = (currentPresentationIndex === 0);
+    if (nextBtn) nextBtn.disabled = (currentPresentationIndex === presentationSongs.length - 1);
 }
 
 /** Переключает на СЛЕДУЮЩУЮ песню в презентации */
