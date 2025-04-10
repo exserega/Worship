@@ -1546,19 +1546,21 @@ function setupEventListeners() {
     // --- КОНЕЦ ОБРАБОТЧИКОВ ДЛЯ КНОПОК ПАНЕЛЕЙ ---
 
      // Клик по заголовку "Общий список" для входа в режим презентации
-     if (sharedListHeading) {
-         sharedListHeading.addEventListener('click', () => {
-             console.log("Клик по заголовку Общий список");
-             if (currentSharedListData && currentSharedListData.length > 0) {
-                 // Закрываем боковые панели, если открыты
-                 if (favoritesPanel?.classList.contains('open')) favoritesPanel.classList.remove('open');
-                 if (repertoirePanel?.classList.contains('open')) repertoirePanel.classList.remove('open');
-                 // Показываем презентацию
-                 showPresentationView(currentSharedListData);
-             } else {
-                 alert("Общий список пуст. Добавьте песни для презентации.");
-             }
-         });
+    if (sharedListHeading) {
+    sharedListHeading.addEventListener('click', (event) => { // Добавили event сюда
+        event.stopPropagation(); // <-- ДОБАВЛЕНА ЭТА СТРОКА
+        console.log("Клик по заголовку Общий список (событие остановлено)"); // Изменил лог для ясности
+        if (currentSharedListData && currentSharedListData.length > 0) {
+            // Закрываем боковые панели, если открыты
+             if (favoritesPanel?.classList.contains('open')) favoritesPanel.classList.remove('open');
+             if (repertoirePanel?.classList.contains('open')) repertoirePanel.classList.remove('open');
+             // Показываем презентацию
+             showPresentationView(currentSharedListData);
+         } else {
+             alert("Общий список пуст. Добавьте песни для презентации.");
+         }
+     });
+
     } else {
         console.warn("Заголовок shared-list-heading не найден.");
     }
