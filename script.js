@@ -954,29 +954,57 @@ function setupSwipeListeners() {
 
 
 // --- UI UPDATE FUNCTIONS ---
+/** Отображает детали выбранной песни, включая плеер и тональность видео */
 function displaySongDetails(songData, index, key) {
-    // ---> ИСПРАВЛЕНА ОШИБКА СИНТАКСИСА ВНУТРИ ЭТОЙ ФУНКЦИИ <---
-    if(!playerContainer||!playerSection||!songContent){console.error("Missing DOM elements");return;}
-    if(!songData){
-        songContent.innerHTML='<h2>Выберите песню</h2><pre></pre>';
-        playerContainer.innerHTML='';
-        playerSection.style.display='none';
-        if(bpmDisplay) bpmDisplay.textContent='N/A';
-        if(holychordsButton) { holychordsButton.style.display='none'; holychordsButton.href='#'; }
-        if(keySelect) { keySelect.value=chords[0]; keySelect.dataset.index=''; }
+    // Проверка наличия основных DOM элементов
+    if (!playerContainer || !playerSection || !songContent) {
+        console.error("displaySongDetails: Отсутствуют необходимые DOM элементы (playerContainer, playerSection, songContent).");
         return;
     }
-    const cK = key || songData[2] || chords[0];
-    const bpm = songData[4] || 'N/A';
-    const lyrics = songData[1] || '';
-    const srcUrl = songData[3] || '#';
+    // Находим элемент для отображения тональности видео (он может быть или не быть, если HTML не обновлен)
+    const keyDisplay = document.getElementById('youtube-video-key-display');
+
+    // --- СЛУЧАЙ, КОГДА ПЕСНЯ НЕ ВЫБРАНА (СБРОС) ---
+    if (!songData) {
+        songContent.innerHTML = '<h2>Выберите песню</h2><pre></pre>'; // Сброс основной области
+        playerContainer.innerHTML = '';                // Очистка плеера
+        playerSection.style.display = 'none';          // Скрытие секции плеера
+        if (bpmDisplay) bpmDisplay.textContent = 'N/A'; // Сброс BPM
+        if (holychordsButton) {                        // Скрытие кнопки Holychords
+            holychordsButton.style.display = 'none';
+            holychordsButton.href = '#';
+        }
+        if (keySelect) {                               // Сброс выбора тональности
+             keySelect.value = chords[0];
+             keySelect.dataset.index = '';
+        }
+        // Скрытие отображения тональности видео
+        if (keyDisplay) {
+            keyDisplay.textContent = '';
+            keyDisplay.style.display = 'none';
+        }
+        return; // Выход из функции
+    }
+
+    // --- СЛУЧАЙ, КОГДА ПЕСНЯ ВЫБРАНА ---
+
+    // Получаем данные песни из массива songData
     const title = songData[0] || 'Без названия';
-    const ytLink = songData[5];
+    const lyrics = songData[1] || '';
+    const originalKeyFromSheet = songData[2] || chords[0]; // Ориг. тональность из таблицы
+    const srcUrl = songData[3] || '#'; // Ссылка на Holychords
+    const bpm = songData[4] || 'N/A'; // BPM
+    const ytLink = songData[5]; // Ссылка на YouTube
+    // Получаем тональность видео из НОВОГО столбца G (индекс 6)
+    const videoKey = songData[6] ? songData[6].trim() : null;
 
-    if(bpmDisplay) { updateBPM(bpm); bpmDisplay.textContent = bpm; }
+    const currentSelectedKey = key || originalKeyFromSheet; // Определяем текущую тональность для отображения
 
-    if(holychordsButton) {
-        if(srcUrl && srcUrl.trim() !== '' && srcUrl.trim() !== '#'){
+    // --- Обновление основной информации о песне ---
+    if (bpmDisplay) { updateBPM(bpm); bpmDisplay.textContent = bpm; } // Обновляем BPM
+
+    if (holychordsButton) { // Обновляем кнопку Holychords
+        if (srcUrl && srcUrl.trim() !== '' && srcUrl.trim() !== '#') {
             holychordsButton.href = srcUrl;
             holychordsButton.style.display = 'inline-block';
         } else {
@@ -985,23 +1013,45 @@ function displaySongDetails(songData, index, key) {
         }
     }
 
-    const pLyrics = processLyrics(lyrics);
-    const hLyrics = highlightChords(pLyrics);
+    // Обработка и отображение текста песни
+    const pLyrics = processLyrics(lyrics); // Обработка пробелов
+    const hLyrics = highlightChords(pLyrics); // Подсветка аккордов
+    songContent.innerHTML = `<h2>${title} — ${currentSelectedKey}</h2><pre>${hLyrics}</pre>`; // Вставка в DOM
 
-    // ИСПРАВЛЕННАЯ СТРОКА: Правильная интерполяция и HTML
-    songContent.innerHTML = `<h2>${title} — ${cK}</h2><pre>${hLyrics}</pre>`;
+    // Установка текущей тональности в select и обновление текста (если тональность изменилась)
+    if (keySelect) {
+        keySelect.value = currentSelectedKey;
+        keySelect.dataset.index = index; // Сохраняем индекс для транспонирования
+    }
+    updateTransposedLyrics(); // Применяем транспонирование, если нужно
 
-    if(keySelect) { keySelect.value = cK; keySelect.dataset.index = index; }
-    updateTransposedLyrics(); // Обновляем текст с учетом новой/оригинальной тональности
+    // --- Обновление секции YouTube плеера ---
+    const vId = extractYouTubeVideoId(ytLink); // Получаем ID видео
 
-    const vId = extractYouTubeVideoId(ytLink);
-    if(vId && playerContainer && playerSection){
-        // ИСПРАВЛЕННАЯ СТРОКА: Правильная интерполяция и URL YouTube
+    if (vId && playerContainer && playerSection) { // Если есть ID видео и элементы на месте
+        // Вставляем iframe плеера
         playerContainer.innerHTML = `<iframe width="100%" height="315" src="https://www.youtube.com/embed/${vId}?autoplay=0&modestbranding=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-        playerSection.style.display = 'block';
-    } else if (playerContainer && playerSection) {
-        playerContainer.innerHTML = '';
-        playerSection.style.display = 'none';
+        playerSection.style.display = 'block'; // Показываем секцию
+
+        // Показываем или скрываем тональность видео
+        if (keyDisplay) {
+            if (videoKey) { // Если тональность видео есть в данных
+                keyDisplay.textContent = `Ориг. тональность видео: ${videoKey}`;
+                keyDisplay.style.display = 'block'; // Показываем
+            } else { // Если тональности видео нет
+                keyDisplay.textContent = '';
+                keyDisplay.style.display = 'none'; // Скрываем
+            }
+        }
+    } else { // Если нет ID видео или элементов
+        playerContainer.innerHTML = '';         // Очищаем контейнер плеера
+        playerSection.style.display = 'none';   // Скрываем всю секцию
+
+        // Также скрываем отображение тональности видео
+        if (keyDisplay) {
+            keyDisplay.textContent = '';
+            keyDisplay.style.display = 'none';
+        }
     }
 }
 
