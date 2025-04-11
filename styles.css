@@ -8,7 +8,8 @@
 /* - Визуальные улучшения (Цвета, Шрифт, Кнопки) */
 /* - Исправление контраста кнопок в темной теме */
 /* - Исправление SVG URL                  */
-/* - !!! ИСПРАВЛЕНИЕ КОНТРАСТА КНОПОК В СВЕТЛОЙ ТЕМЕ (v2) + РАЗДЕЛИТЕЛЬ !!! */
+/* - Исправление контраста в светлой теме */
+/* - !!! ФИНАЛЬНАЯ ПОПЫТКА ИСПРАВЛЕНИЯ КОНТРАСТА КНОПОК + РАЗДЕЛИТЕЛЬ !!! */
 /* ======================================== */
 
 /* --- Theme Variables --- */
@@ -18,7 +19,7 @@
     --secondary-color: #06b6d4;
     --background-color: #111827;
     --container-background-color: #1f2937;
-    --text-color: #e5e7eb;
+    --text-color: #e5e7eb; /* Светлый текст/иконки по умолчанию для темной темы */
     --border-color: #374151;
     --hover-color: #374151;
     --shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
@@ -28,9 +29,8 @@
     --button-text-color: #111827;
     --link-color: var(--accent-color);
     --input-bg-color: #374151;
-    --label-color: #9ca3af;
+    --label-color: #9ca3af; /* Средне-серый для меток в темной теме */
     --glow-color: rgba(34, 211, 238, 0.4);
-    /* Переменная --icon-button-color удалена */
 }
 
 /* --- Light Theme Variables --- */
@@ -39,7 +39,7 @@ body[data-theme="light"] {
     --secondary-color: #1c7ed6;
     --background-color: #f1f5f9;
     --container-background-color: #ffffff;
-    --text-color: #1e293b;
+    --text-color: #1e293b; /* Темный текст по умолчанию для светлой темы */
     --border-color: #cbd5e1;
     --hover-color: #e2e8f0;
     --shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
@@ -49,9 +49,8 @@ body[data-theme="light"] {
     --button-text-color: #ffffff;
     --link-color: var(--accent-color);
     --input-bg-color: #ffffff;
-    --label-color: #475569;
+    --label-color: #475569; /* Темно-серый для меток/иконок в светлой теме */
     --glow-color: rgba(28, 126, 214, 0.3);
-    /* Переменная --icon-button-color удалена */
 }
 
 /* --- Base Styles --- */
@@ -212,14 +211,15 @@ button.icon-button { padding: 0; width: 38px; height: 38px; font-size: 1rem; lin
 button.icon-button.simple {
     background: transparent; box-shadow: none;
     border: 1px solid var(--border-color);
-    /* !!! ИЗМЕНЕНИЕ: Цвет по умолчанию СВЕТЛЫЙ (для темной темы) !!! */
-    color: var(--text-color);
+    /* !!! ИЗМЕНЕНИЕ: Базовый цвет (темная тема) - СВЕТЛЫЙ !!! */
+    color: #e5e7eb; /* var(--text-color) */
     transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 button.icon-button.simple:hover:not(:disabled) {
-    background: var(--hover-color); border-color: color-mix(in srgb, var(--border-color) 80%, black);
-    /* Ховер всегда использует --text-color для лучшей видимости */
-    color: var(--text-color);
+    background: var(--hover-color);
+    border-color: color-mix(in srgb, var(--border-color) 80%, black);
+    /* Ховер для темной темы - остается светлым */
+    color: #e5e7eb; /* var(--text-color) */
     transform: none; box-shadow: none;
 }
 button.icon-button.simple:active:not(:disabled) {
@@ -228,14 +228,22 @@ button.icon-button.simple:active:not(:disabled) {
     box-shadow: none;
 }
 
-/* !!! ИЗМЕНЕНИЕ: Явное переопределение цвета .icon-button.simple для СВЕТЛОЙ темы !!! */
+/* !!! ИЗМЕНЕНИЕ: Стили .icon-button.simple для СВЕТЛОЙ темы !!! */
 body[data-theme="light"] button.icon-button.simple {
-    color: var(--label-color); /* Темный цвет для светлой темы */
+    color: #475569; /* var(--label-color) - ТЕМНЫЙ цвет для светлой темы */
+    border-color: var(--border-color); /* Используем границу светлой темы */
 }
-/* Ховер для светлой темы тоже переопределим на всякий случай */
 body[data-theme="light"] button.icon-button.simple:hover:not(:disabled) {
-    color: var(--text-color); /* Темный цвет текста темы */
+    background: var(--hover-color);
+    border-color: color-mix(in srgb, var(--border-color) 80%, #475569);
+    color: #1e293b; /* var(--text-color) - ТЕМНЫЙ цвет текста темы */
 }
+body[data-theme="light"] button.icon-button.simple:active:not(:disabled) {
+    background: var(--primary-color);
+    color: var(--button-text-color); /* Белый текст кнопки */
+    border-color: var(--primary-color);
+}
+
 
 /* Кнопка переключения темы */
 #theme-toggle-button {
@@ -545,45 +553,44 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
 }
 .mobile-nav-button {
     background: none; border: none; box-shadow: none; padding: 5px; margin: 0;
-    /* !!! ИЗМЕНЕНИЕ: Цвет по умолчанию СВЕТЛЫЙ (для темной темы) !!! */
-    color: var(--text-color);
+    /* !!! ИЗМЕНЕНИЕ: Базовый цвет (темная тема) - СВЕТЛЫЙ !!! */
+    color: #e5e7eb; /* var(--text-color) */
     font-size: 0.7rem;
     display: flex; flex-direction: column; align-items: center;
     justify-content: center; flex-grow: 1; max-width: 50%; height: 100%; cursor: pointer;
     transition: color 0.2s ease, background-color 0.2s ease; border-radius: 0;
     background-image: none !important;
-    position: relative; /* Для позиционирования псевдоэлемента */
+    position: relative;
 }
 .mobile-nav-button i { font-size: 1.3rem; margin-bottom: 3px; }
 .mobile-nav-button:hover {
-    background-color: var(--hover-color); /* Добавили фон при наведении */
-    color: var(--accent-color);
+    background-color: var(--hover-color);
+    color: var(--accent-color); /* Акцентный цвет при наведении */
     transform: none; box-shadow: none;
 }
 .mobile-nav-button:active {
-    background-color: var(--border-color); /* Чуть темнее фон при нажатии */
+    background-color: var(--border-color);
     transform: none; box-shadow: none;
     color: var(--accent-color);
 }
 
-/* !!! ИЗМЕНЕНИЕ: Явное переопределение цвета .mobile-nav-button для СВЕТЛОЙ темы !!! */
+/* !!! ИЗМЕНЕНИЕ: Стили .mobile-nav-button для СВЕТЛОЙ темы !!! */
 body[data-theme="light"] .mobile-nav-button {
-    color: var(--label-color); /* Темный цвет по умолчанию */
+    color: #475569; /* var(--label-color) - ТЕМНЫЙ цвет для светлой темы */
 }
-/* Ховер/Актив для светлой темы */
 body[data-theme="light"] .mobile-nav-button:hover {
     background-color: var(--hover-color);
-    color: var(--accent-color);
+    color: var(--accent-color); /* Акцентный цвет при наведении */
 }
 body[data-theme="light"] .mobile-nav-button:active {
     background-color: var(--border-color);
     color: var(--accent-color);
 }
 
-/* !!! НОВОЕ: Разделительная линия между кнопками !!! */
-#toggle-repertoire { /* Добавляем границу слева ко второй кнопке */
+/* Разделительная линия между кнопками */
+#toggle-repertoire {
     border-left: 1px solid var(--border-color);
-    transition: border-color 0.3s ease; /* Плавный переход цвета границы */
+    transition: border-color 0.3s ease;
 }
 
 
@@ -619,7 +626,7 @@ body[data-theme="light"] .mobile-nav-button:active {
     }
     #split-text-button { /* В основной части, не в презентации */
         width: 36px; height: 36px; padding: 0; margin-left: 5px; margin-right: 5px;
-        /* Наследует стиль .icon-button.simple */
+        /* Наследует .icon-button.simple */
         background: transparent; box-shadow: none; border: 1px solid var(--border-color);
         display: inline-flex; align-items: center; justify-content: center;
     }
