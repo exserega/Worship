@@ -4,11 +4,11 @@
 /* - Рефакторинг панелей (Репертуар Аккордеон) */
 /* - Режим Презентации v2                 */
 /* - Светлую тему + Переключение         */
-/* - Исправления для светлой темы         */
 /* - Визуальные улучшения (Цвета, Шрифт, Кнопки) */
 /* - Исправление SVG URL                  */
 /* - Разделитель для нижних кнопок        */
-/* - !!! СУПЕР-ФИНАЛЬНАЯ ПОПЫТКА ИСПРАВЛЕНИЯ КОНТРАСТА НИЖНИХ КНОПОК !!! */
+/* - Исправление контраста кнопок навигации/темы */
+/* - !!! УЛУЧШЕНИЕ ВИДИМОСТИ КНОПОК ПРЕЗЕНТАЦИИ В ТЕМНОЙ ТЕМЕ !!! */
 /* ======================================== */
 
 /* --- Theme Variables --- */
@@ -18,7 +18,7 @@
     --secondary-color: #06b6d4;
     --background-color: #111827;
     --container-background-color: #1f2937;
-    --text-color: #e5e7eb; /* Светлый текст/иконки по умолчанию для темной темы */
+    --text-color: #e5e7eb;
     --border-color: #374151;
     --hover-color: #374151;
     --shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
@@ -28,9 +28,9 @@
     --button-text-color: #111827;
     --link-color: var(--accent-color);
     --input-bg-color: #374151;
-    --label-color: #9ca3af; /* Средне-серый для меток в темной теме */
+    --label-color: #9ca3af;
     --glow-color: rgba(34, 211, 238, 0.4);
-    --nav-icon-dark-theme: #e5e7eb; /* ЯВНЫЙ СВЕТЛЫЙ цвет для иконок/текста нав. кнопок в темной теме */
+    --nav-icon-dark-theme: #e5e7eb;
 }
 
 /* --- Light Theme Variables --- */
@@ -39,7 +39,7 @@ body[data-theme="light"] {
     --secondary-color: #1c7ed6;
     --background-color: #f1f5f9;
     --container-background-color: #ffffff;
-    --text-color: #1e293b; /* Темный текст по умолчанию для светлой темы */
+    --text-color: #1e293b;
     --border-color: #cbd5e1;
     --hover-color: #e2e8f0;
     --shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
@@ -49,9 +49,9 @@ body[data-theme="light"] {
     --button-text-color: #ffffff;
     --link-color: var(--accent-color);
     --input-bg-color: #ffffff;
-    --label-color: #475569; /* Темно-серый для меток/иконок в светлой теме */
+    --label-color: #475569;
     --glow-color: rgba(28, 126, 214, 0.3);
-    --nav-icon-dark-theme: #475569; /* ЯВНЫЙ ТЕМНЫЙ цвет для иконок/текста нав. кнопок в светлой теме */
+    --nav-icon-dark-theme: #475569;
 }
 
 /* --- Base Styles --- */
@@ -208,50 +208,66 @@ button:disabled {
 
 /* Общий стиль для кнопок-иконок */
 button.icon-button { padding: 0; width: 38px; height: 38px; font-size: 1rem; line-height: 1; flex-shrink: 0; overflow: hidden; }
-/* Простой стиль для кнопок-иконок (типа кнопки темы) */
+
+/* Простой стиль для кнопок-иконок (типа кнопки зума, разделения на мобильных) */
+/* Убрали цвет отсюда, он будет задаваться отдельно для #theme-toggle-button */
 button.icon-button.simple {
     background: transparent; box-shadow: none;
     border: 1px solid var(--border-color);
-    /* Базовый цвет (темная тема) - СВЕТЛЫЙ */
-    color: #e5e7eb; /* var(--text-color) */
+    /* color: ...; */ /* УДАЛЕНО */
     transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 button.icon-button.simple:hover:not(:disabled) {
     background: var(--hover-color);
     border-color: color-mix(in srgb, var(--border-color) 80%, black);
-    /* Ховер для темной темы - остается светлым */
-    color: #e5e7eb; /* var(--text-color) */
+    /* Ховер наследует цвет от родителя или задается специфично */
+    /* color: ...; */
     transform: none; box-shadow: none;
 }
 button.icon-button.simple:active:not(:disabled) {
-    background: var(--primary-color); color: var(--button-text-color);
+    background: var(--primary-color);
+    color: var(--button-text-color) !important; /* Явно задаем цвет текста при активации */
     border-color: var(--primary-color); transform: translateY(1px);
     box-shadow: none;
 }
-
-/* Стили .icon-button.simple для СВЕТЛОЙ темы */
-body[data-theme="light"] button.icon-button.simple {
-    color: #475569; /* var(--label-color) - ТЕМНЫЙ цвет для светлой темы */
-    border-color: var(--border-color);
-}
-body[data-theme="light"] button.icon-button.simple:hover:not(:disabled) {
-    background: var(--hover-color);
-    border-color: color-mix(in srgb, var(--border-color) 80%, #475569);
-    color: #1e293b; /* var(--text-color) - ТЕМНЫЙ цвет текста темы */
-}
-body[data-theme="light"] button.icon-button.simple:active:not(:disabled) {
-    background: var(--primary-color);
-    color: var(--button-text-color); /* Белый текст кнопки */
-    border-color: var(--primary-color);
-}
+/* Цвет иконок зума (наследуют от родителя или задать явно, если нужно) */
+/* Если они тоже не видны, можно добавить сюда: */
+/*
+#zoom-in, #zoom-out { color: #e5e7eb !important; }
+body[data-theme="light"] #zoom-in,
+body[data-theme="light"] #zoom-out { color: #475569 !important; }
+*/
 
 
 /* Кнопка переключения темы */
 #theme-toggle-button {
     position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
     width: 36px; height: 36px; font-size: 1rem;
-    /* Наследует стиль .icon-button.simple */
+    /* Наследует фон/границу от .icon-button.simple */
+    background: transparent;
+    border: 1px solid var(--border-color);
+
+    /* !!! Явный цвет для темной темы (светлый) !!! */
+    color: #e5e7eb !important; /* Светлый */
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
+/* !!! Явный цвет для светлой темы (темный) !!! */
+body[data-theme="light"] #theme-toggle-button {
+    color: #475569 !important; /* Темный */
+    border-color: var(--border-color);
+}
+/* !!! Стили ховера/актива для кнопки темы !!! */
+#theme-toggle-button:hover {
+   background-color: var(--hover-color);
+   /* Цвет иконки при ховере можно оставить как есть или изменить */
+   /* color: var(--accent-color) !important; */
+}
+#theme-toggle-button:active {
+   background-color: var(--primary-color);
+   color: var(--button-text-color) !important;
+   border-color: var(--primary-color);
+}
+
 
 /* --- Ряд: Тональность / Разделить / Масштаб --- */
 .control-group:has(#key-select) { align-items: center; min-height: 38px; gap: 8px; }
@@ -366,34 +382,56 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
 .presentation-song .chord { font-weight: bold; color: var(--accent-color); background-color: transparent; padding: 0; margin: 0; transition: color 0.3s ease;}
 
 /* --- Управление Презентацией --- */
+/* Кнопка закрытия */
 .presentation-close-btn {
     position: fixed; top: 15px; right: 15px; z-index: 2003;
-    background: rgba(50, 50, 50, 0.8);
+    /* !!! ИЗМЕНЕНИЕ: Фон чуть светлее, граница заметнее для темной темы !!! */
+    background: rgba(80, 80, 80, 0.8);
     color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%; width: 38px; height: 38px; font-size: 1.4rem;
     line-height: 1; padding: 0; cursor: pointer; display: flex;
     align-items: center; justify-content: center; box-shadow: none;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
-.presentation-close-btn:hover { background-color: rgba(80, 80, 80, 0.9); border-color: rgba(255, 255, 255, 0.4); }
-.presentation-close-btn:active { background-color: rgba(30, 30, 30, 0.9); }
+.presentation-close-btn:hover { background-color: rgba(100, 100, 100, 0.9); border-color: rgba(255, 255, 255, 0.5); }
+.presentation-close-btn:active { background-color: rgba(60, 60, 60, 0.9); }
 
-.presentation-control-btn { /* Общий стиль для верхних кнопок */
+/* Кнопка разделения текста */
+.presentation-control-btn {
     position: fixed; top: 15px; z-index: 2001;
-    background: rgba(50, 50, 50, 0.8);
+    /* !!! ИЗМЕНЕНИЕ: Фон чуть светлее, граница заметнее для темной темы !!! */
+    background: rgba(80, 80, 80, 0.8);
     color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%; width: 38px; height: 38px; font-size: 1rem;
     line-height: 1; padding: 0; cursor: pointer; display: flex;
     align-items: center; justify-content: center; box-shadow: none;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
-.presentation-control-btn:hover { background-color: rgba(80, 80, 80, 0.9); border-color: rgba(255, 255, 255, 0.4); }
-.presentation-control-btn:active { background-color: rgba(30, 30, 30, 0.9); }
+.presentation-control-btn:hover { background-color: rgba(100, 100, 100, 0.9); border-color: rgba(255, 255, 255, 0.5); }
+.presentation-control-btn:active { background-color: rgba(60, 60, 60, 0.9); }
 #pres-split-text-btn { right: 63px; }
 
-.presentation-controls {
+/* Стили для светлой темы (возвращаем темный фон кнопкам презентации) */
+body[data-theme="light"] .presentation-close-btn,
+body[data-theme="light"] .presentation-control-btn {
+    background: rgba(50, 50, 50, 0.8); /* Темный фон */
+    color: #fff; /* Белая иконка */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Светлая граница */
+}
+body[data-theme="light"] .presentation-close-btn:hover,
+body[data-theme="light"] .presentation-control-btn:hover {
+     background-color: rgba(80, 80, 80, 0.9);
+     border-color: rgba(255, 255, 255, 0.4);
+}
+body[data-theme="light"] .presentation-close-btn:active,
+body[data-theme="light"] .presentation-control-btn:active {
+     background-color: rgba(30, 30, 30, 0.9);
+}
+
+
+.presentation-controls { /* Нижняя панель */
     position: fixed; bottom: 0; left: 0; width: 100%;
     background-color: rgba(20, 20, 20, 0.9);
     backdrop-filter: blur(8px); padding: 8px 15px;
@@ -554,8 +592,6 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
 }
 .mobile-nav-button {
     background: none; border: none; box-shadow: none; padding: 5px; margin: 0;
-    /* УБРАЛИ ЯВНЫЙ ЦВЕТ ЗДЕСЬ, будем задавать ниже для i и span */
-    /* color: ... */
     font-size: 0.7rem;
     display: flex; flex-direction: column; align-items: center;
     justify-content: center; flex-grow: 1; max-width: 50%; height: 100%; cursor: pointer;
@@ -565,23 +601,23 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
 }
 .mobile-nav-button i {
     font-size: 1.3rem; margin-bottom: 3px;
-    transition: color 0.2s ease; /* Плавный переход для иконки */
+    transition: color 0.2s ease;
 }
 .mobile-nav-button span {
-     transition: color 0.2s ease; /* Плавный переход для текста */
+     transition: color 0.2s ease;
 }
 
 /* --- Цвета для темной темы --- */
 nav.mobile-bottom-nav .mobile-nav-button i,
 nav.mobile-bottom-nav .mobile-nav-button span {
-    color: #e5e7eb; /* var(--text-color) - СВЕТЛЫЙ */
+    color: #e5e7eb !important; /* СВЕТЛЫЙ + !important */
 }
 /* Ховер/Актив для темной темы */
 nav.mobile-bottom-nav .mobile-nav-button:hover i,
 nav.mobile-bottom-nav .mobile-nav-button:hover span,
 nav.mobile-bottom-nav .mobile-nav-button:active i,
 nav.mobile-bottom-nav .mobile-nav-button:active span {
-    color: var(--accent-color); /* Акцентный цвет */
+    color: var(--accent-color) !important; /* Акцентный цвет */
 }
 nav.mobile-bottom-nav .mobile-nav-button:hover {
     background-color: var(--hover-color);
@@ -594,14 +630,14 @@ nav.mobile-bottom-nav .mobile-nav-button:active {
 /* --- Цвета для светлой темы --- */
 body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button i,
 body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button span {
-    color: #475569; /* var(--label-color) - ТЕМНЫЙ */
+    color: #475569 !important; /* ТЕМНЫЙ + !important */
 }
 /* Ховер/Актив для светлой темы */
 body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:hover i,
 body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:hover span,
 body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active i,
 body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active span {
-    color: var(--accent-color); /* Акцентный цвет */
+    color: var(--accent-color) !important; /* Акцентный цвет */
 }
 body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:hover {
     background-color: var(--hover-color);
@@ -652,6 +688,7 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active {
         /* Наследует .icon-button.simple */
         background: transparent; box-shadow: none; border: 1px solid var(--border-color);
         display: inline-flex; align-items: center; justify-content: center;
+         /* Цвет иконки наследуется от #theme-toggle-button через общие правила (с !important) */
     }
     /* Ховер наследуется */
     #split-text-button > i { font-size: 0.9rem; margin: 0; }
