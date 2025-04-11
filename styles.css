@@ -5,7 +5,8 @@
 /* - Режим Презентации v2                 */
 /* - Светлую тему + Переключение         */
 /* - Исправления для светлой темы         */
-/* - !!! ВИЗУАЛЬНЫЕ УЛУЧШЕНИЯ (Цвета, Шрифт, Кнопки) !!! */
+/* - Визуальные улучшения (Цвета, Шрифт, Кнопки) */
+/* - !!! ИСПРАВЛЕНИЕ КОНТРАСТА КНОПОК В ТЕМНОЙ ТЕМЕ !!! */
 /* ======================================== */
 
 /* --- Theme Variables --- */
@@ -27,6 +28,7 @@
     --input-bg-color: #374151;    /* Slate 700 (Темно-серый фон инпутов) */
     --label-color: #9ca3af;      /* Slate 400 (Светло-серый текст меток) */
     --glow-color: rgba(34, 211, 238, 0.4); /* Цвет свечения (полупрозрачный Cyan, менее яркий) */
+    --icon-color-dark-theme: #e5e7eb; /* !!! НОВАЯ ПЕРЕМЕННАЯ: Цвет иконок для темной темы (как --text-color) !!! */
 }
 
 /* --- Light Theme Variables --- */
@@ -47,6 +49,7 @@ body[data-theme="light"] {
     --input-bg-color: #ffffff;   /* Белый фон инпутов */
     --label-color: #475569;      /* Slate 600 (Серый текст меток) */
     --glow-color: rgba(28, 126, 214, 0.3); /* Цвет "тени" для светлой темы - полупрозрачный синий */
+    --icon-color-dark-theme: var(--label-color); /* В светлой теме иконки используют цвет label */
 }
 
 /* --- Base Styles --- */
@@ -121,8 +124,8 @@ select, input[type="text"] {
     width: 100%; box-sizing: border-box;
 }
 select {
-    /* Стрелка для темной темы (стала светлее) */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%239ca3af'%3E%3Cpath fill-rule='evenodd' d='M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z' clip-rule='evenodd' /%3E%3C/svg%3E");
+    /* Стрелка для темной темы (используем --icon-color-dark-theme для большей яркости) */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='{encodeURIComponent(var(--icon-color-dark-theme))}'%3E%3Cpath fill-rule='evenodd' d='M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z' clip-rule='evenodd' /%3E%3C/svg%3E");
     background-repeat: no-repeat; background-position: right 10px center;
     background-size: 16px; padding-right: 35px; cursor: pointer;
 }
@@ -212,11 +215,14 @@ button.icon-button { padding: 0; width: 38px; height: 38px; font-size: 1rem; lin
 /* Простой стиль для кнопок-иконок */
 button.icon-button.simple {
     background: transparent; box-shadow: none;
-    border: 1px solid var(--border-color); color: var(--label-color); /* Используем цвет label */
+    border: 1px solid var(--border-color);
+    /* !!! ИЗМЕНЕНИЕ: Используем --icon-color-dark-theme для цвета иконки/текста !!! */
+    color: var(--icon-color-dark-theme);
     transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 button.icon-button.simple:hover:not(:disabled) {
     background: var(--hover-color); border-color: color-mix(in srgb, var(--border-color) 80%, black);
+    /* !!! ИЗМЕНЕНИЕ: Используем --text-color для ховера в обеих темах !!! */
     color: var(--text-color); /* Цвет текста при наведении */
     transform: none; box-shadow: none;
 }
@@ -230,6 +236,7 @@ button.icon-button.simple:active:not(:disabled) {
 #theme-toggle-button {
     position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
     width: 36px; height: 36px; font-size: 1rem;
+    /* Наследует стиль .icon-button.simple, цвет теперь берется из --icon-color-dark-theme */
 }
 
 /* --- Ряд: Тональность / Разделить / Масштаб --- */
@@ -352,26 +359,30 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; } /* Явно �
 /* Кнопка закрытия */
 .presentation-close-btn {
     position: fixed; top: 15px; right: 15px; z-index: 2003;
-    background: rgba(50, 50, 50, 0.7); color: white; border: 1px solid #555;
-    border-radius: 50%; width: 38px; height: 38px; font-size: 1.4rem; /* Немного уменьшили */
+    background: rgba(50, 50, 50, 0.8); /* Чуть темнее фон */
+    color: #fff; /* Явно белый */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Светлая граница */
+    border-radius: 50%; width: 38px; height: 38px; font-size: 1.4rem;
     line-height: 1; padding: 0; cursor: pointer; display: flex;
     align-items: center; justify-content: center; box-shadow: none;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
 }
-.presentation-close-btn:hover { background-color: rgba(80, 80, 80, 0.8); }
-.presentation-close-btn:active { background-color: rgba(30, 30, 30, 0.8); }
+.presentation-close-btn:hover { background-color: rgba(80, 80, 80, 0.9); border-color: rgba(255, 255, 255, 0.4); }
+.presentation-close-btn:active { background-color: rgba(30, 30, 30, 0.9); }
 
 /* Кнопка разделения текста (новая) */
 .presentation-control-btn { /* Общий стиль для верхних кнопок */
     position: fixed; top: 15px; z-index: 2001;
-    background: rgba(50, 50, 50, 0.7); color: white; border: 1px solid #555;
-    border-radius: 50%; width: 38px; height: 38px; font-size: 1rem; /* Немного уменьшили */
+    background: rgba(50, 50, 50, 0.8);
+    color: #fff; /* Явно белый */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Светлая граница */
+    border-radius: 50%; width: 38px; height: 38px; font-size: 1rem;
     line-height: 1; padding: 0; cursor: pointer; display: flex;
     align-items: center; justify-content: center; box-shadow: none;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
 }
-.presentation-control-btn:hover { background-color: rgba(80, 80, 80, 0.8); }
-.presentation-control-btn:active { background-color: rgba(30, 30, 30, 0.8); }
+.presentation-control-btn:hover { background-color: rgba(80, 80, 80, 0.9); border-color: rgba(255, 255, 255, 0.4); }
+.presentation-control-btn:active { background-color: rgba(30, 30, 30, 0.9); }
 #pres-split-text-btn { right: 63px; /* Левее кнопки закрытия (с учетом размера) */ }
 
 /* Нижняя панель управления (Вперед/Назад/Счетчик) */
@@ -381,7 +392,7 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; } /* Явно �
     backdrop-filter: blur(8px); padding: 8px 15px; /* Уменьшили паддинг */
     box-sizing: border-box;
     display: flex; justify-content: space-between; align-items: center;
-    z-index: 2002; border-top: 1px solid #333;
+    z-index: 2002; border-top: 1px solid #444; /* Чуть светлее граница */
     opacity: 1;
     transition: opacity 0.5s ease-in-out;
     pointer-events: auto;
@@ -389,14 +400,16 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; } /* Явно �
 .presentation-controls.controls-hidden { opacity: 0; pointer-events: none; }
 
 .presentation-nav-btn { /* Кнопки < > */
-    background: none; border: none; color: #eee; font-size: 1.6rem; /* Уменьшили */
+    background: none; border: none;
+    color: #f0f0f0; /* Очень светлый серый */
+    font-size: 1.8rem; /* Вернули размер */
     padding: 5px 15px; cursor: pointer; transition: color 0.2s ease;
     line-height: 1; border-radius: 4px;
 }
 .presentation-nav-btn:hover:not(:disabled) { color: var(--accent-color); }
-.presentation-nav-btn:disabled { color: #555; cursor: not-allowed; }
+.presentation-nav-btn:disabled { color: #666; cursor: not-allowed; } /* Светлее для disabled */
 
-.presentation-counter { color: #ccc; font-size: 0.85rem; text-align: center; } /* Уменьшили */
+.presentation-counter { color: #ddd; font-size: 0.9rem; text-align: center; } /* Светлее */
 
 /* Сообщение о загрузке в презентации */
 .presentation-loading { padding: 50px 20px; text-align: center; font-size: 1.1rem; color: var(--label-color); }
@@ -407,7 +420,7 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; } /* Явно �
 }
 #presentation-content.split-columns .presentation-song pre::before {
     content: ""; position: absolute; top: 0; bottom: 0; left: 50%;
-    width: 1px; background-color: #444; transform: translateX(-50%); z-index: 1;
+    width: 1px; background-color: var(--border-color); transform: translateX(-50%); z-index: 1;
 }
 body[data-theme="light"] #presentation-content.split-columns .presentation-song pre::before {
     background-color: #ccc;
@@ -534,7 +547,8 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
 }
 .mobile-nav-button {
     background: none; border: none; box-shadow: none; padding: 5px; margin: 0;
-    color: var(--label-color); /* Используем цвет label для неактивного состояния */
+    /* !!! ИЗМЕНЕНИЕ: Используем --icon-color-dark-theme для цвета по умолчанию !!! */
+    color: var(--icon-color-dark-theme);
     font-size: 0.7rem; /* Уменьшили */
     display: flex; flex-direction: column; align-items: center;
     justify-content: center; flex-grow: 1; max-width: 50%; height: 100%; cursor: pointer;
@@ -552,14 +566,9 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
     transform: none; box-shadow: none;
     color: var(--accent-color);
 }
-/* Явное указание цвета для светлой темы */
-body[data-theme="light"] .mobile-nav-button {
-    color: var(--label-color) !important;
-}
-body[data-theme="light"] .mobile-nav-button:hover,
-body[data-theme="light"] .mobile-nav-button:active {
-    color: var(--accent-color) !important;
-}
+/* Явное указание цвета для светлой темы (убрано, т.к. теперь управляется через --icon-color-dark-theme) */
+/* body[data-theme="light"] .mobile-nav-button { ... } */
+/* body[data-theme="light"] .mobile-nav-button:hover, ... { ... } */
 
 
 /* --- Loading Indicator --- */
@@ -596,9 +605,17 @@ body[data-theme="light"] .mobile-nav-button:active {
     #split-text-button { /* В основной части, не в презентации */
         width: 36px; height: 36px; padding: 0; margin-left: 5px; margin-right: 5px;
         /* Используем стиль simple */
-        background: transparent; box-shadow: none; border: 1px solid var(--border-color); color: var(--label-color); display: inline-flex; align-items: center; justify-content: center;
+        background: transparent; box-shadow: none; border: 1px solid var(--border-color);
+        /* !!! ИЗМЕНЕНИЕ: Цвет берется из --icon-color-dark-theme через .simple !!! */
+        /* color: var(--label-color); */
+        display: inline-flex; align-items: center; justify-content: center;
     }
-    #split-text-button:hover { background: var(--hover-color); color: var(--text-color); transform: none; box-shadow: none; }
+    #split-text-button:hover {
+        /* !!! ИЗМЕНЕНИЕ: Цвет ховера берется из --text-color через .simple !!! */
+        background: var(--hover-color);
+        /* color: var(--text-color); */
+        transform: none; box-shadow: none;
+    }
     #split-text-button > i { font-size: 0.9rem; margin: 0; }
     #split-text-button .button-text { display: none; }
 
