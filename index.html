@@ -76,7 +76,7 @@
 
     <div class="control-buttons">
         <button id="favorite-button" aria-label="Добавить в избранное">❤️ Мой список</button>
-        <button id="add-to-list-button" aria-label="Добавить в список">📝 Общий список</button>
+       <button id="add-to-setlist-button" aria-label="Добавить в сет-лист">➕ В сет-лист</button>
     </div>
 
     <div class="controls-footer">
@@ -101,26 +101,36 @@
 </main> <aside id="favorites-panel" class="side-panel favorites-panel">
     <div id="my-list" class="list-section">
         <h3>Мой список</h3>
-        <div id="favorites-list" class="list-container"></div>
-    </div>
-    <div id="shared-list" class="list-section">
-        <h3 id="shared-list-heading">Общий список</h3>
-        <div id="shared-songs-list" class="list-container"></div>
-    </div>
-</aside>
-
-<aside id="repertoire-panel" class="side-panel repertoire-panel">
-    <h3 class="panel-header">Репертуар</h3>
-
-    <div class="repertoire-vocalist-selector">
-        <label for="vocalist-select">Вокалист:</label> <select id="vocalist-select">
-            <option value="">-- Выберите вокалиста --</option>
-            </select>
+        <div id="favorites-list" class="list-container">
+            </div>
     </div>
 
-    <div id="repertoire-panel-list" class="repertoire-list-container">
-        <div class="empty-message">Выберите вокалиста для просмотра репертуара.</div>
+    <div class="list-section setlist-section">
+        <h3>Сет-листы</h3>
+
+        <div class="create-setlist-form">
+            <input type="text" id="new-setlist-name-input" placeholder="Название нового сет-листа...">
+            <button id="create-setlist-button" title="Создать сет-лист">Создать</button>
         </div>
+
+        <div id="setlists-list-container" class="list-container setlists-list">
+            <div class="empty-message">Загрузка сет-листов...</div>
+        </div>
+    </div>
+
+    <div class="list-section current-setlist-section">
+        <h3 id="current-setlist-title">Выберите сет-лист</h3>
+        <div class="current-setlist-controls" style="display: none;"> <button id="start-presentation-button" title="Начать презентацию для этого сет-листа">
+                 <i class="fas fa-play"></i> Презентация
+             </button>
+             <button id="delete-setlist-button" title="Удалить этот сет-лист">
+                 <i class="fas fa-trash-alt"></i> Удалить
+             </button>
+        </div>
+        <div id="current-setlist-songs-container" class="list-container current-setlist-songs">
+            <div class="empty-message">Сначала выберите сет-лист</div>
+        </div>
+    </div>
 </aside>
 <div id="presentation-overlay" class="presentation-overlay">
     <button id="presentation-close-btn" class="presentation-close-btn" title="Закрыть режим презентации">&times;</button>
