@@ -544,8 +544,7 @@ function loadSetlists() {
         setlistsListContainer.innerHTML = ''; // Очищаем контейнер
         if (snapshot.empty) {
             setlistsListContainer.innerHTML = '<div class="empty-message">Нет созданных сет-листов.</div>';
-            // Если нет сет-листов, сбрасываем выбор текущего
-            selectSetlist(null, null); // Вызываем сброс
+            selectSetlist(null, null);
             return;
         }
 
@@ -553,69 +552,48 @@ function loadSetlists() {
             const setlist = doc.data();
             const setlistId = doc.id;
             const setlistItem = document.createElement('div');
-            setlistItem.className = 'setlist-item'; // Класс для стилизации
-            setlistItem.dataset.id = setlistId; // Сохраняем ID в data-атрибут
+            setlistItem.className = 'setlist-item';
+            setlistItem.dataset.id = setlistId; // Сохраняем ID
 
-           // 1. Создаем SPAN для отображения имени
-const nameSpan = document.createElement('span');
-nameSpan.className = 'setlist-name-display';
-nameSpan.textContent = setlist.name || 'Без названия';
-// Клик по имени выбирает сет-лист
-nameSpan.addEventListener('click', () => {
-    selectSetlist(setlistId, setlist.name);
-});
-setlistItem.appendChild(nameSpan);
+            // --- НАЧАЛО БЛОКА, КОТОРЫЙ МЫ МЕНЯЛИ ---
+            // 1. Создаем SPAN для отображения имени
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'setlist-name-display';
+            nameSpan.textContent = setlist.name || 'Без названия';
+            // Клик по имени выбирает сет-лист
+            nameSpan.addEventListener('click', () => {
+                selectSetlist(setlistId, setlist.name);
+            });
+            setlistItem.appendChild(nameSpan);
 
-// 2. Создаем кнопку Редактировать
-const editButton = document.createElement('button');
-editButton.className = 'setlist-edit-button';
-editButton.title = 'Редактировать название';
-editButton.innerHTML = '<i class="fas fa-pencil-alt"></i>';
-editButton.addEventListener('click', (e) => {
-    e.stopPropagation(); // Не вызываем selectSetlist при клике на карандаш
-    startEditSetlistName(setlistItem, setlistId, setlist.name);
-});
-setlistItem.appendChild(editButton);
+            // 2. Создаем кнопку Редактировать
+            const editButton = document.createElement('button');
+            editButton.className = 'setlist-edit-button';
+            editButton.title = 'Редактировать название';
+            editButton.innerHTML = '<i class="fas fa-pencil-alt"></i>';
+            editButton.addEventListener('click', (e) => {
+                e.stopPropagation(); // Не вызываем selectSetlist при клике на карандаш
+                startEditSetlistName(setlistItem, setlistId, setlist.name);
+            });
+            setlistItem.appendChild(editButton);
+            // --- КОНЕЦ БЛОКА, КОТОРЫЙ МЫ МЕНЯЛИ ---
 
-// !!! КОНЕЦ ИЗМЕНЕНИЙ ТУТ !!!
+            // Подсветка активного элемента
+            if (setlistId === currentSetlistId) {
+                setlistItem.classList.add('active');
+            }
 
-// Подсветка активного элемента остается как была
-if (setlistId === currentSetlistId) {
-    setlistItem.classList.add('active');
-}
+            setlistsListContainer.appendChild(setlistItem);
+        }); // <--- Конец forEach
 
-/** Обработка выбора сет-листа */
-function selectSetlist(setlistId, setlistName) {
-     console.log(`Выбран сет-лист: ID=<span class="math-inline">\{setlistId\}, Имя\=</span>{setlistName}`);
-     currentSetlistId = setlistId; // Обновляем глобальное состояние
-     currentSetlistName = setlistName;
+    }, (error) => { // <--- Начало обработчика ошибок onSnapshot
+        console.error("Ошибка при загрузке списка сет-листов:", error);
+        setlistsListContainer.innerHTML = '<div class="empty-message">Не удалось загрузить сет-листы.</div>';
+        selectSetlist(null, null);
+    }); // <--- Конец onSnapshot
 
-     // Обновляем подсветку в списке сет-листов
-     if (setlistsListContainer) {
-         const items = setlistsListContainer.querySelectorAll('.setlist-item');
-         items.forEach(item => {
-             item.classList.toggle('active', item.dataset.id === setlistId);
-         });
-     }
-
-     // Обновляем заголовок текущего сет-листа и кнопки управления
-     if (currentSetlistTitle && currentSetlistControls) {
-         if (setlistId) {
-             currentSetlistTitle.textContent = setlistName || 'Сет-лист без названия';
-             currentSetlistControls.style.display = 'flex'; // Показываем кнопки Презентация/Удалить
-         } else {
-             currentSetlistTitle.textContent = 'Выберите сет-лист';
-             currentSetlistControls.style.display = 'none'; // Скрываем кнопки
-             currentSetlistSongs = []; // Очищаем песни при сбросе
-             if (currentSetlistSongsContainer) {
-                  currentSetlistSongsContainer.innerHTML = '<div class="empty-message">Сначала выберите сет-лист</div>';
-             }
-         }
-     }
-
-     // Загружаем песни для выбранного сет-листа (функцию напишем на след. шаге)
-     loadCurrentSetlistSongs(setlistId);
-}
+    // !!! Важно: Пока не сохраняем unsubscribe, т.к. список сет-листов должен обновляться всегда.
+} // <--- Убедитесь, что эта скобка ЕСТЬ в конце функции loadSetlists
 
 
 /** Создание нового сет-листа */
@@ -948,113 +926,85 @@ async function deleteCurrentSetlist() {
 
 /** Вход в режим редактирования имени сет-листа */
 function startEditSetlistName(itemElement, id, currentName) {
-    // Если уже редактируем другой элемент, отменяем его
     const currentlyEditing = document.querySelector('.setlist-item.is-editing');
     if (currentlyEditing && currentlyEditing !== itemElement) {
         cancelEditSetlistName(currentlyEditing);
     }
-
-    // Если кликнули по уже редактируемому - ничего не делаем
     if (itemElement.classList.contains('is-editing')) {
         return;
     }
-
-    itemElement.classList.add('is-editing'); // Добавляем класс для скрытия span/кнопки через CSS
-
+    itemElement.classList.add('is-editing');
     const nameSpan = itemElement.querySelector('span.setlist-name-display');
-    // const editButton = itemElement.querySelector('.setlist-edit-button'); // Он скрывается через CSS
-
     const input = document.createElement('input');
     input.type = 'text';
     input.className = 'edit-setlist-input';
-    input.value = currentName || ''; // Используем текущее имя
-    input.dataset.originalName = currentName || ''; // Сохраняем оригинальное имя
-
-    // Вставляем поле ввода перед кнопкой (которая скрыта CSS)
+    input.value = currentName || '';
+    input.dataset.originalName = currentName || '';
     const editButtonRef = itemElement.querySelector('.setlist-edit-button');
     if (editButtonRef) {
           itemElement.insertBefore(input, editButtonRef);
-    } else { // На всякий случай, если кнопки нет
+    } else {
         itemElement.prepend(input);
     }
-
-
-    input.focus(); // Ставим фокус на поле ввода
-    input.select(); // Выделяем текст
-
-    // Обработчики для сохранения/отмены
+    input.focus();
+    input.select();
     input.addEventListener('blur', () => {
-        // Небольшая задержка, чтобы успел сработать keydown Enter
         setTimeout(() => saveSetlistName(id, input, itemElement), 100);
     });
-
     input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            e.preventDefault(); // Предотвращаем стандартное поведение Enter
+            e.preventDefault();
             saveSetlistName(id, input, itemElement);
         } else if (e.key === 'Escape') {
             cancelEditSetlistName(itemElement);
         }
     });
-}
+} // <--- Проверьте эту скобку
 
 /** Сохранение нового имени сет-листа */
 async function saveSetlistName(id, inputElement, itemElement) {
-     // Проверяем, существует ли еще элемент ввода (мог быть удален по Escape)
     if (!inputElement || !itemElement.contains(inputElement)) {
         return;
     }
-
     const newName = inputElement.value.trim();
     const originalName = inputElement.dataset.originalName;
-
-    // Если имя пустое или не изменилось, просто отменяем редактирование
     if (!newName || newName === originalName) {
         cancelEditSetlistName(itemElement);
         return;
     }
-
     console.log(`Сохранение нового имени "${newName}" для сет-листа ${id}`);
     try {
         const setlistDocRef = doc(db, "setlists", id);
         await updateDoc(setlistDocRef, { name: newName });
         console.log("Имя сет-листа успешно обновлено.");
-
-        // Обновляем имя в span перед тем, как его показать
         const nameSpan = itemElement.querySelector('span.setlist-name-display');
         if (nameSpan) {
             nameSpan.textContent = newName;
         }
-         // Обновляем имя в заголовке текущего сетлиста, если редактировали его
         if(id === currentSetlistId && currentSetlistTitle){
             currentSetlistTitle.textContent = newName;
-            currentSetlistName = newName; // Обновляем и глобальное состояние
+            currentSetlistName = newName;
         }
-
-        cancelEditSetlistName(itemElement); // Убираем поле ввода, показываем span/кнопку
-        // alert("Имя сет-листа обновлено!"); // Можно добавить уведомление
+        cancelEditSetlistName(itemElement);
     } catch (error) {
         console.error("Ошибка при обновлении имени сет-листа:", error);
         alert("Не удалось обновить имя сет-листа.");
-        // В случае ошибки тоже отменяем редактирование
         cancelEditSetlistName(itemElement);
     }
-}
+} // <--- Проверьте эту скобку
 
 /** Отмена режима редактирования имени сет-листа */
 function cancelEditSetlistName(itemElement) {
     if (!itemElement || !itemElement.classList.contains('is-editing')) {
-        return; // Если элемент не в режиме редактирования, выходим
+        return;
     }
-
     const input = itemElement.querySelector('input.edit-setlist-input');
     if (input) {
-        itemElement.removeChild(input); // Удаляем поле ввода
+        itemElement.removeChild(input);
     }
-    itemElement.classList.remove('is-editing'); // Убираем класс (показывает span/кнопку)
-    // Фокус на всякий случай вернем на сам элемент списка
-    itemElement.focus();
-}
+    itemElement.classList.remove('is-editing');
+    // itemElement.focus(); // Можно раскомментировать
+} // <--- Проверьте эту скобку
 
 
 
