@@ -830,6 +830,79 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active {
     font-size: 0.9rem !important; /* Чуть меньше иконка удаления */
 }
 
+
+/* ============================================ */
+/* СТИЛИ ДЛЯ РЕДАКТИРОВАНИЯ СЕТ-ЛИСТА         */
+/* ============================================ */
+
+.setlist-item {
+    display: flex; /* Чтобы имя и иконка были в строку */
+    align-items: center; /* Выравнивание по вертикали */
+    gap: 8px; /* Промежуток между именем и иконкой */
+}
+
+/* Span, в котором отображается имя сет-листа */
+span.setlist-name-display {
+    flex-grow: 1; /* Имя занимает доступное место */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer; /* Указываем, что по имени тоже можно кликнуть (для выбора) */
+}
+
+/* Кнопка/иконка редактирования */
+.setlist-edit-button {
+    background: none !important;
+    border: none !important;
+    color: var(--label-color) !important; /* Цвет как у меток */
+    box-shadow: none !important;
+    padding: 0 4px !important; /* Маленькие отступы */
+    margin: 0 !important; /* Убираем внешние отступы */
+    font-size: 0.85rem !important; /* Размер иконки */
+    line-height: 1 !important;
+    flex-shrink: 0; /* Не сжимается */
+    min-width: auto !important;
+    height: auto !important;
+    cursor: pointer;
+    opacity: 0; /* По умолчанию скрыта */
+    transition: opacity 0.2s ease, color 0.2s ease !important;
+}
+
+/* Показываем иконку при наведении на элемент списка */
+.setlist-item:hover .setlist-edit-button {
+    opacity: 0.7; /* Полупрозрачная */
+}
+ /* Делаем ярче при наведении на саму иконку */
+.setlist-edit-button:hover {
+    opacity: 1 !important;
+    color: var(--accent-color) !important;
+}
+
+/* Поле ввода, которое появляется при редактировании */
+.setlist-item input.edit-setlist-input {
+    flex-grow: 1; /* Занимает место span'а */
+    font-size: 0.95rem; /* Как у .setlist-item */
+    padding: 4px 8px; /* Компактные отступы */
+    margin: -4px 0; /* Компенсируем padding, чтобы не прыгала высота */
+    border: 1px solid var(--primary-color); /* Выделяем рамкой */
+    background-color: var(--input-bg-color);
+    color: var(--text-color);
+    border-radius: 4px; /* Небольшое скругление */
+    outline: none;
+    box-shadow: 0 0 3px color-mix(in srgb, var(--primary-color) 30%, transparent); /* Легкая тень */
+}
+
+/* Скрываем кнопку редактирования, когда показывается поле ввода */
+.setlist-item.is-editing .setlist-edit-button {
+    display: none;
+}
+/* Скрываем span с именем, когда показывается поле ввода */
+ .setlist-item.is-editing span.setlist-name-display {
+    display: none;
+}
+
+
+
 /* ============================================ */
 /* АДАПТИВНОСТЬ                                 */
 /* ============================================ */
