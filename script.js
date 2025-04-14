@@ -649,7 +649,7 @@ async function createSetlist() {
     }
 }
 
-/** Загрузка песен для ТЕКУЩЕГО сет-листа */
+/** Загрузка и отображение песен для ТЕКУЩЕГО выбранного сет-листа */
 function loadCurrentSetlistSongs(setlistId) {
     if (!currentSetlistSongsContainer) {
         console.error("Контейнер #current-setlist-songs-container не найден.");
@@ -682,82 +682,89 @@ function loadCurrentSetlistSongs(setlistId) {
 
     // 5. Установка нового слушателя
     currentSetlistSongsUnsubscribe = onSnapshot(q, (snapshot) => {
-        // Проверка актуальности
-        if (setlistId !== currentSetlistId) {
-            console.warn(`Получен снимок песен для ${setlistId}, но текущий сет-лист уже ${currentSetlistId}. Игнорируем.`);
-            return;
-        }
+          // Проверка актуальности
+          if (setlistId !== currentSetlistId) {
+              console.warn(`Получен снимок песен для ${setlistId}, но текущий ${currentSetlistId}. Игнор.`);
+              return;
+          }
 
-        console.log(`Слушатель песен для ${setlistId} сработал. Документов: ${snapshot.size}`);
-        currentSetlistSongsContainer.innerHTML = ''; // Очистка контейнера
-        currentSetlistSongs = []; // Очистка массива
+         console.log(`Слушатель песен ${setlistId} сработал. Документов: ${snapshot.size}`);
+         currentSetlistSongsContainer.innerHTML = ''; currentSetlistSongs = [];
 
-        if (snapshot.empty) {
-            currentSetlistSongsContainer.innerHTML = '<div class="empty-message">В этом сет-листе пока нет песен.</div>';
-            return;
-        }
+         if (snapshot.empty) {
+             currentSetlistSongsContainer.innerHTML = '<div class="empty-message">Нет песен в сет-листе.</div>';
+             return;
+         }
 
-        // 6. Обработка и отображение песен
-        snapshot.docs.forEach((songDoc) => {
-            const songData = songDoc.data();
-            const songDocId = songDoc.id;
+         // 6. Обработка и отображение песен
+         snapshot.docs.forEach((songDoc) => {
+             const songData = songDoc.data();
+             const songDocId = songDoc.id;
 
-            // Сохраняем данные песни в глобальный массив
-            currentSetlistSongs.push({ id: songDocId, ...songData });
+             currentSetlistSongs.push({ id: songDocId, ...songData }); // Сохраняем в массив
 
-            // Создаем элемент для списка
-            const songItem = document.createElement('div');
-            songItem.className = 'setlist-song-item';
-            songItem.dataset.id = songDocId;
-            songItem.dataset.sheet = songData.sheet;
-            songItem.dataset.index = songData.index;
-            songItem.draggable = true; // Для drag-n-drop (если будет реализован)
-            songItem.dataset.order = songData.order; // Сохраняем порядок
+             const songItem = document.createElement('div');
+             songItem.className = 'setlist-song-item';
+             songItem.dataset.id = songDocId;
+             songItem.dataset.sheet = songData.sheet;
+             songItem.dataset.index = songData.index;
+             // songItem.draggable = true; // Если нужен drag-n-drop
+             // songItem.dataset.order = songData.order;
 
-            // Информация о песне
-            const songInfo = document.createElement('span');
-            songInfo.className = 'song-name';
-            songInfo.textContent = `${songData.name || 'Без названия'} — ${songData.preferredKey || 'N/A'}`;
-            songItem.appendChild(songInfo);
+             // Добавляем ручку, если нужна
+             // const dragHandle = document.createElement('span'); dragHandle.className = 'drag-handle'; dragHandle.innerHTML = '☰'; songItem.appendChild(dragHandle);
 
-            // Кнопка удаления
-            const deleteBtn = document.createElement('button');
-            deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
-            deleteBtn.className = 'delete-button delete-song-from-setlist-button';
-            deleteBtn.title = 'Удалить песню из сет-листа';
-            deleteBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                deleteSongFromSetlist(songDocId);
-            });
-            songItem.appendChild(deleteBtn);
+             const songInfo = document.createElement('span');
+             songInfo.className = 'song-name';
+             songInfo.textContent = `${songData.name || '...'} — ${songData.preferredKey || 'N/A'}`;
+             songItem.appendChild(songInfo);
 
-            // Клик по элементу
-            songItem.addEventListener('click', async () => {
-                console.log(`Клик по песне "${songData.name}" в сет-листе.`);
-                if (!cachedData[songData.sheet]?.[songData.index]) {
-                    console.log(`Данные для ${songData.name} (${songData.sheet}) не найдены в кэше, загружаем...`);
-                    await fetchSheetData(songData.sheet);
-                    if (!cachedData[songData.sheet]?.[songData.index]) {
-                        alert(`Не удалось найти или загрузить данные песни "${songData.name}". Возможно, она была удалена из исходного листа.`);
-                        return;
-                    }
-                }
-                const originalSongData = cachedData[songData.sheet][songData.index];
-                const sheetNameValue = Object.keys(SHEETS).find(sKey => SHEETS[sKey] === songData.sheet);
+             const deleteBtn = document.createElement('button');
+             deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
+             deleteBtn.className = 'delete-button delete-song-from-setlist-button';
+             deleteBtn.title = 'Удалить из сет-листа';
+             deleteBtn.addEventListener('click', (e) => {
+                 e.stopPropagation();
+                 deleteSongFromSetlist(songDocId);
+             });
+             songItem.appendChild(deleteBtn);
 
-                if(sheetSelect && sheetNameValue) sheetSelect.value = sheetNameValue;
-                await loadSheetSongs();
-                if(songSelect) songSelect.value = songData.index;
-                displaySongDetails(originalSongData, songData.index, songData.preferredKey);
+             // Клик по песне в сет-листе
+             songItem.addEventListener('click', async () => {
+                 console.log(`Клик по песне "${songData.name}" в сет-листе.`);
+                 if (!cachedData[songData.sheet]?.[songData.index]) {
+                     console.log(`Загрузка листа "${songData.sheet}"...`);
+                     await fetchSheetData(songData.sheet);
+                     if (!cachedData[songData.sheet]?.[songData.index]) {
+                         alert(`Не удалось загрузить/найти данные песни "${songData.name}".`);
+                         return;
+                     }
+                 }
+                 const originalSongData = cachedData[songData.sheet][songData.index];
+                 const sheetNameValue = Object.keys(SHEETS).find(sKey => SHEETS[sKey] === songData.sheet);
 
-                if (favoritesPanel) favoritesPanel.classList.remove('open');
-                if (repertoirePanel) repertoirePanel.classList.remove('open');
-            });
+                 if(sheetSelect && sheetNameValue) sheetSelect.value = sheetNameValue;
+                 await loadSheetSongs();
+                 if(songSelect) songSelect.value = songData.index;
+                 displaySongDetails(originalSongData, songData.index, songData.preferredKey);
 
-            currentSetlistSongsContainer.appendChild(songItem);
-        });
-        // Здесь можно инициализировать Drag-and-Drop
-        // initSetlistDragDrop(currentSetlistSongsContainer);
+                 // !!! ЗАКРЫВАЕМ ПАНЕЛИ ПОСЛЕ КЛИКА !!!
+                 closeAllSidePanels();
+             }); // Конец обработчика клика по songItem
+
+             currentSetlistSongsContainer.appendChild(songItem);
+         }); // Конец forEach songDoc
+
+         // Тут можно инициализировать drag-n-drop
+         // initSortable();
+
+     }, (error) => { // Обработка ошибок onSnapshot
+           if (setlistId !== currentSetlistId) { return; }
+         console.error(`Ошибка загрузки песен для ${setlistId}:`, error);
+         currentSetlistSongsContainer.innerHTML = '<div class="empty-message">Ошибка загрузки песен.</div>';
+         currentSetlistSongs = [];
+         if (currentSetlistSongsUnsubscribe) { currentSetlistSongsUnsubscribe(); currentSetlistSongsUnsubscribe = null; } });
+ } // Конец loadCurrentSetlistSongs
 
     }, (error) => {
         // Обработка ошибок слушателя песен
@@ -1743,6 +1750,7 @@ function updateFontSize() {
 // }
 
 /** Загрузка избранных песен из localStorage */
+/** Загрузка избранных песен из localStorage */
 function loadFavorites(container = favoritesList) {
     if (!container) {
         console.error("Контейнер для избранных песен не найден."); return;
@@ -1754,9 +1762,8 @@ function loadFavorites(container = favoritesList) {
     } catch (e) {
         console.error("Ошибка парсинга избранного из localStorage:", e);
         favorites = [];
-        localStorage.removeItem('favorites'); // Очистить некорректные данные
+        localStorage.removeItem('favorites');
     }
-
 
     if (favorites.length === 0) {
         container.innerHTML = '<div class="empty-message">Нет избранных песен</div>';
@@ -1769,8 +1776,8 @@ function loadFavorites(container = favoritesList) {
     favorites.forEach(fav => {
         // Проверяем валидность записи в избранном
         if (!fav || !fav.name || !fav.sheet || fav.index === undefined || !fav.key) {
-             console.warn("Пропуск некорректной записи в избранном:", fav);
-             return; // Пропускаем эту запись
+            console.warn("Пропуск некорректной записи в избранном:", fav);
+            return; // Пропускаем эту запись
         }
 
         const favoriteItem = document.createElement('div');
@@ -1791,40 +1798,42 @@ function loadFavorites(container = favoritesList) {
         });
         favoriteItem.appendChild(removeBtn);
 
+        // Клик по элементу избранного
         favoriteItem.addEventListener('click', async () => {
-             console.log("Клик по избранной песне:", fav);
-             const sheetNameValue = Object.keys(SHEETS).find(key => SHEETS[key] === fav.sheet);
-             if(!sheetNameValue) {
-                  alert(`Ошибка: Лист "${fav.sheet}" для избранной песни не найден в конфигурации.`);
-                  return;
-             }
-             // Убедимся, что данные для листа загружены
-             if (!cachedData[fav.sheet]) {
-                  console.log(`Загрузка данных листа "${fav.sheet}" для избранной песни...`);
-                  await fetchSheetData(fav.sheet);
-                  if (!cachedData[fav.sheet]) {
-                      alert(`Не удалось загрузить данные листа "${fav.sheet}" для избранной песни.`);
-                      return;
-                  }
-             }
-             // Убедимся, что данные самой песни существуют по индексу
-              const songDataFromCache = cachedData[fav.sheet]?.[fav.index];
-             if (!songDataFromCache) {
-                  alert(`Данные для песни "${fav.name}" (индекс ${fav.index}) не найдены на листе "${fav.sheet}". Возможно, песня была удалена или перемещена. Удалите ее из избранного.`);
-                  return;
-             }
+            console.log("Клик по избранной песне:", fav);
+            const sheetNameValue = Object.keys(SHEETS).find(key => SHEETS[key] === fav.sheet);
+            if(!sheetNameValue) {
+                alert(`Ошибка: Лист "${fav.sheet}" для избранной песни не найден.`);
+                return;
+            }
+            // Убедимся, что данные для листа загружены
+            if (!cachedData[fav.sheet]) {
+                console.log(`Загрузка листа "${fav.sheet}" для избранного...`);
+                await fetchSheetData(fav.sheet);
+                if (!cachedData[fav.sheet]) {
+                    alert(`Не удалось загрузить данные листа "${fav.sheet}".`);
+                    return;
+                }
+            }
+            const songDataFromCache = cachedData[fav.sheet]?.[fav.index];
+            if (!songDataFromCache) {
+                alert(`Данные для песни "${fav.name}" (индекс ${fav.index}) не найдены. Удалите ее из избранного.`);
+                return;
+            }
 
-             if(sheetSelect) sheetSelect.value = sheetNameValue;
-             await loadSheetSongs(); // Перезагрузить список песен
-             if(songSelect) songSelect.value = fav.index; // Выбрать песню
-             displaySongDetails(songDataFromCache, fav.index, fav.key); // Отобразить с сохраненным ключом
+            if(sheetSelect) sheetSelect.value = sheetNameValue;
+            await loadSheetSongs(); // Перезагружаем список песен листа
+            if(songSelect) songSelect.value = fav.index; // Выбираем песню
+            // Отображаем детали с ключом из избранного
+            displaySongDetails(songDataFromCache, fav.index, fav.key);
 
-             if (favoritesPanel) favoritesPanel.classList.remove('open');
-             if (repertoirePanel) repertoirePanel.classList.remove('open');
-        });
+            // !!! ЗАКРЫВАЕМ ПАНЕЛИ ПОСЛЕ КЛИКА !!!
+            closeAllSidePanels();
+        }); // Конец обработчика клика по favoriteItem
+
         container.appendChild(favoriteItem);
-    });
-}
+    }); // Конец forEach
+} // Конец loadFavorites
 
 /** Удаление песни из избранного */
 function removeFromFavorites(favToRemove) {
