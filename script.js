@@ -1057,3 +1057,1460 @@ function cancelEditSetlistName(itemElement, nameToShow) {
 }
 
 // --- КОНЕЦ НОВЫХ ФУНКЦИЙ ДЛЯ СЕТ-ЛИСТОВ ---
+
+// --- CORE LOGIC / UTILITIES ---
+
+/** Расчет смещения для транспонирования */
+function getTransposition(originalKey, newKey) {
+    // Проверка на пустые или некорректные ключи
+    if (!originalKey || !newKey) {
+        // console.warn(`getTransposition: One or both keys are missing. Original: ${originalKey}, New: ${newKey}`);
+        return 0;
+    }
+    const originalIndex = chords.indexOf(originalKey);
+    const newIndex = chords.indexOf(newKey);
+    if (originalIndex === -1 || newIndex === -1) {
+        console.warn(`Invalid key(s) for transposition: ${originalKey} -> ${newKey}. Using 0 shift.`);
+        return 0; // Возвращаем 0, если ключ не найден в массиве chords
+    }
+    // Расчет смещения с учетом "закольцованности" массива аккордов
+    let transposition = newIndex - originalIndex;
+    // // Обработка перехода через конец массива (не обязательна с modulo ниже, но для ясности)
+    // if (transposition > 6) transposition -= 12;
+    // if (transposition < -6) transposition += 12;
+    return transposition; // Возвращаем разницу индексов
+}
+
+/** Транспонирование одного аккорда */
+function transposeChord(chord, transposition) {
+    if (transposition === 0 || !chord) return chord; // Не транспонируем, если нет смещения или аккорда
+
+    let chordType = '';
+    let baseChord = chord;
+    let bassNote = '';
+    // Список суффиксов аккордов, от длинных к коротким, для корректного парсинга
+    const suffixes = ['maj7', 'maj9', 'm7', 'm9', 'm11', '7sus4', 'sus4', 'sus2', 'add9', 'dim7', 'dim', 'aug7', 'aug', '7', 'm', '6', '9', '11', '13', 'sus'];
+
+    // 1. Разделение на основной аккорд и басовую ноту (если есть)
+    if (chord.includes('/')) {
+        const parts = chord.split('/');
+        if (parts.length === 2) {
+             baseChord = parts[0];
+             bassNote = parts[1];
+        } else {
+            console.warn("Malformed chord with '/':", chord); // Некорректный формат
+            return chord; // Возвращаем как есть
+        }
+    }
+
+    // 2. Определение типа аккорда (суффикса)
+    for (let suffix of suffixes) {
+        if (baseChord.endsWith(suffix)) {
+            baseChord = baseChord.slice(0, -suffix.length); // Убираем суффикс из базового аккорда
+            chordType = suffix; // Сохраняем суффикс
+            break; // Нашли самый длинный подходящий суффикс, выходим
+        }
+    }
+
+    // 3. Транспонирование основной ноты аккорда
+    const baseChordIndex = chords.indexOf(baseChord);
+    if (baseChordIndex === -1) {
+        // console.warn(`Unknown base chord for transposition: ${baseChord} in ${chord}`);
+        return chord; // Неизвестный базовый аккорд, возвращаем как есть
+    }
+    const newBaseChordIndex = (baseChordIndex + transposition + chords.length) % chords.length;
+    const transposedBaseChord = chords[newBaseChordIndex] + chordType; // Собираем новую базу с типом
+
+    // 4. Транспонирование басовой ноты (если была)
+    if (bassNote) {
+        const bassNoteIndex = chords.indexOf(bassNote);
+        if (bassNoteIndex !== -1) {
+            const newBassNoteIndex = (bassNoteIndex + transposition + chords.length) % chords.length;
+            return `${transposedBaseChord}/${chords[newBassNoteIndex]}`; // Возвращаем с транспонированным басом
+        } else {
+            // console.warn(`Unknown bass note: ${bassNote} in ${chord}`);
+            return `${transposedBaseChord}/${bassNote}`; // Бас-нота не найдена, оставляем как есть
+        }
+    }
+
+    // 5. Возвращаем транспонированный аккорд без баса
+    return transposedBaseChord;
+}
+
+/** Очистка аккорда от лишних пробелов (если они влияют на парсинг) */
+// function cleanChord(chord) {
+//     return chord.replace(/\s+/g, ''); // Может быть не нужна, если regex обрабатывает пробелы
+// }
+
+/** Транспонирование всего текста с аккордами */
+function transposeLyrics(lyrics, transposition) {
+    if (transposition === 0 || !lyrics) return lyrics;
+
+    // Улучшенное регулярное выражение:
+    // - Учитывает необязательные пробелы вокруг /
+    // - Обрабатывает b (бемоль) как часть ноты
+    // - Более точно определяет границы аккорда
+    const chordRegex = /([A-H][#b]?(?:maj7|maj9|m7|m9|m11|7sus4|sus4|sus2|add9|dim7|dim|aug7|aug|7|m|6|9|11|13|sus)?(?:\s*\/\s*[A-H][#b]?)?)/g;
+
+    try {
+        return lyrics.replace(chordRegex, (match) => {
+            // Убираем пробелы вокруг слэша перед транспонированием, если они есть
+            const cleanedMatch = match.replace(/\s*\/\s*/, '/');
+            return transposeChord(cleanedMatch, transposition);
+        });
+    } catch (error) {
+        console.error("Ошибка при транспонировании текста:", error, "Текст:", lyrics.substring(0, 100) + "...");
+        return lyrics; // Возвращаем оригинальный текст при ошибке
+    }
+}
+
+/** Обработка строк текста для уменьшения пробелов МЕЖДУ словами/аккордами */
+function processLyrics(lyrics) {
+    if (!lyrics) return '';
+    // Разделяем на строки
+    return lyrics.split('\n').map(line => {
+        // Заменяем 2+ пробела на округленную половину их количества ИЛИ просто один пробел
+        // return line.replace(/ {2,}/g, match => ' '.repeat(Math.max(1, Math.ceil(match.length / 2))));
+        // Или более простой вариант: заменять 2+ пробела на один пробел
+        return line.replace(/ {2,}/g, ' ');
+    }).join('\n'); // Собираем обратно
+}
+
+/** Выделение аккордов тегами span для стилизации */
+function highlightChords(lyrics) {
+    if (!lyrics) return '';
+    // Используем то же улучшенное регулярное выражение, что и в transposeLyrics
+    const chordRegex = /([A-H][#b]?(?:maj7|maj9|m7|m9|m11|7sus4|sus4|sus2|add9|dim7|dim|aug7|aug|7|m|6|9|11|13|sus)?(?:\s*\/\s*[A-H][#b]?)?)/g;
+    try {
+        // Заменяем найденные аккорды на <span class="chord">аккорд</span>
+        return lyrics.replace(chordRegex, '<span class="chord">$1</span>');
+    } catch (error) {
+        console.error("Ошибка при выделении аккордов:", error, "Текст:", lyrics.substring(0, 100) + "...");
+        return lyrics; // Возвращаем оригинальный текст при ошибке
+    }
+}
+
+/** Поиск песен */
+async function searchSongs(query) {
+    const lowerQuery = query.trim().toLowerCase();
+    if (!searchResults) return; // Если элемента нет, выходим
+
+    searchResults.innerHTML = ''; // Очищаем результаты
+    if (!lowerQuery) return; // Если запрос пуст, выходим
+
+    // Убедимся, что данные всех листов загружены (или попытаемся загрузить, если нужно)
+    // В данном сценарии предполагаем, что loadAllSheetsData уже была вызвана при инициализации.
+    if (allSheetsData.length === 0) {
+         console.warn("searchSongs: Нет данных для поиска (allSheetsData пуст). Попытка загрузить...");
+         // Можно добавить вызов loadAllSheetsData(), но это может быть медленно
+         searchResults.innerHTML = '<div class="search-result">Данные для поиска не загружены.</div>';
+         return;
+    }
+
+    const matchingSongs = [];
+    // Ищем по всем загруженным листам
+    allSheetsData.forEach(sheetInfo => {
+        // Пропускаем листы, которые не загрузились (если используем allSettled)
+        if (sheetInfo.error || !sheetInfo.data) return;
+
+        sheetInfo.data.forEach((row, index) => {
+            // Проверяем, что строка существует и содержит название песни (в первой колонке)
+            if (row && row[0]) {
+                const name = row[0].trim().toLowerCase();
+                // Ищем вхождение запроса в название
+                if (name.includes(lowerQuery)) {
+                    // Добавляем найденную песню с информацией о ее расположении
+                    matchingSongs.push({
+                        name: row[0], // Оригинальное название
+                        sheetKey: Object.keys(SHEETS).find(key => SHEETS[key] === sheetInfo.sheetName), // Ключ листа для select
+                        sheetName: sheetInfo.sheetName, // Полное имя листа
+                        index: index // Индекс строки на листе
+                    });
+                }
+            }
+        });
+    });
+
+    if (matchingSongs.length === 0) {
+        searchResults.innerHTML = '<div class="search-result">Ничего не найдено</div>';
+        return;
+    }
+
+    // Отображаем найденные песни
+    matchingSongs.forEach((songMatch) => {
+        const resultItem = document.createElement('div');
+        resultItem.textContent = `${songMatch.name} (${songMatch.sheetKey || songMatch.sheetName})`; // Показываем название и лист
+        resultItem.className = 'search-result';
+        resultItem.addEventListener('click', async () => {
+            if (!songMatch.sheetKey || !cachedData[songMatch.sheetName]) {
+                 console.warn("Не найден ключ листа или данные в кэше для:", songMatch);
+                 // Попытка догрузить данные листа, если их нет
+                 if (songMatch.sheetName) await fetchSheetData(songMatch.sheetName);
+                 if (!cachedData[songMatch.sheetName]) {
+                     alert("Не удалось загрузить данные для выбранной песни.");
+                     return;
+                 }
+            }
+
+            const originalSongData = cachedData[songMatch.sheetName]?.[songMatch.index];
+            if (!originalSongData) {
+                 console.error("Данные песни не найдены в кэше после поиска:", songMatch);
+                 alert("Ошибка при выборе песни из поиска: данные не найдены.");
+                 return;
+            }
+
+            // Обновляем интерфейс
+            if (sheetSelect && songMatch.sheetKey) sheetSelect.value = songMatch.sheetKey;
+            await loadSheetSongs(); // Загружаем песни для выбранного листа
+            if (songSelect) songSelect.value = songMatch.index; // Выбираем песню
+
+            displaySongDetails(originalSongData, songMatch.index); // Отображаем детали
+
+            // Очищаем поиск и инпут
+            if (searchResults) searchResults.innerHTML = '';
+            if (searchInput) searchInput.value = songMatch.name; // Показываем полное имя в инпуте
+        });
+        searchResults.appendChild(resultItem);
+    });
+}
+
+/** Извлечение ID видео YouTube из URL */
+function extractYouTubeVideoId(url) {
+    if (!url || typeof url !== 'string') return null;
+    let videoId = null;
+    try {
+        // Регулярное выражение для различных форматов ссылок YouTube
+        const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+        const match = url.match(regex);
+        if (match && match[1]) {
+            videoId = match[1];
+        } else {
+            // Дополнительная проверка, если URL - это просто ID
+            if (url.length === 11 && /^[a-zA-Z0-9_-]+$/.test(url)) {
+                videoId = url;
+            }
+        }
+    } catch (e) {
+        console.error("Error extracting YouTube video ID:", e, "URL:", url);
+        return null;
+    }
+    // console.log(`Extracted Video ID: ${videoId} from URL: ${url}`); // Отладка
+    return videoId;
+}
+
+/** Проверка, является ли текущий вид мобильным */
+function isMobileView() {
+    // Используем стандартную точку останова для мобильных устройств
+    return window.innerWidth <= 768; // Или 480, если дизайн очень компактный
+}
+
+
+// --- UI UPDATE FUNCTIONS ---
+
+/** Запускает режим презентации */
+async function showPresentationView(songsToShow) {
+    if (!presentationOverlay || !presentationContent) {
+        console.error("Не могу показать презентацию: нет оверлея или контента.");
+        return;
+    }
+    if (!songsToShow || songsToShow.length === 0) {
+         alert("Нет песен для показа в презентации.");
+         console.warn("showPresentationView вызван без песен.");
+         return;
+    }
+    console.log(`Запуск режима презентации с ${songsToShow.length} песнями.`);
+
+    presentationSongs = [...songsToShow]; // Копируем массив песен
+    currentPresentationIndex = 0;
+    isPresentationSplit = false; // Сброс разделения
+    updatePresentationSplitButtonState();
+
+    // document.body.style.overflow = 'hidden'; // Скрыть скролл основной страницы
+
+    await displayCurrentPresentationSong(); // Отобразить первую песню
+
+    presentationOverlay.classList.add('visible');
+    presentationOverlay.scrollTop = 0; // Прокрутка оверлея вверх
+    showPresentationControls(); // Показать панель управления
+}
+
+/** Отображает ТЕКУЩУЮ песню в режиме презентации */
+async function displayCurrentPresentationSong() {
+    if (!presentationContent || presentationSongs.length === 0) return;
+
+    // Коррекция индекса, если он вышел за пределы
+    currentPresentationIndex = Math.max(0, Math.min(currentPresentationIndex, presentationSongs.length - 1));
+
+    const song = presentationSongs[currentPresentationIndex];
+    console.log(`Презентация: Показываем песню ${currentPresentationIndex + 1}/${presentationSongs.length}: ${song.name}`);
+
+    presentationContent.innerHTML = `<div class="presentation-loading">Загрузка "${song.name}"...</div>`;
+
+    try {
+        // Получение данных (с дозагрузкой, если нужно)
+        if (!cachedData[song.sheet]?.[song.index]) {
+            console.log(`Presentation: Загрузка данных для ${song.name} (${song.sheet})`);
+            await fetchSheetData(song.sheet); // Используем существующую функцию загрузки/кэширования
+        }
+        const originalSongData = cachedData[song.sheet]?.[song.index];
+        if (!originalSongData) {
+            throw new Error(`Не найдены данные для песни "${song.name}" (${song.sheet}, индекс ${song.index})`);
+        }
+
+        // Подготовка текста
+        const songTitle = originalSongData[0];
+        const originalLyrics = originalSongData[1] || '';
+        const originalKey = originalSongData[2] || chords[0]; // Ключ из таблицы
+        const targetKey = song.preferredKey || originalKey; // Ключ из сет-листа или таблицы
+
+        const transposition = getTransposition(originalKey, targetKey);
+        const transposedLyrics = transposeLyrics(originalLyrics, transposition);
+        // const processedLyrics = processLyrics(transposedLyrics); // Обработка пробелов, возможно, не нужна в презентации
+        const highlightedLyrics = highlightChords(transposedLyrics); // Выделяем аккорды
+
+        // Формирование HTML
+        const songHtml = `
+            <div class="presentation-song">
+                <h2>${songTitle} — ${targetKey}</h2>
+                <pre>${highlightedLyrics}</pre>
+            </div>
+        `;
+        presentationContent.innerHTML = songHtml;
+
+        // Применение разделения, если активно
+        presentationContent.classList.toggle('split-columns', isPresentationSplit);
+
+        // Прокрутка содержимого песни наверх
+        const songElement = presentationContent.querySelector('.presentation-song pre');
+        if (songElement) songElement.scrollTop = 0;
+
+    } catch (error) {
+        console.error("Ошибка при отображении песни в презентации:", error);
+        presentationContent.innerHTML = `<div class="presentation-song error"><h2>Ошибка загрузки песни</h2><p>${error.message || 'Неизвестная ошибка'}</p></div>`;
+    }
+
+    // Обновление счетчика и кнопок навигации
+    if (presCounter) {
+        presCounter.textContent = `${currentPresentationIndex + 1} / ${presentationSongs.length}`;
+    }
+    if (presPrevBtn) presPrevBtn.disabled = (currentPresentationIndex === 0);
+    if (presNextBtn) presNextBtn.disabled = (currentPresentationIndex >= presentationSongs.length - 1);
+}
+
+/** Переключает на СЛЕДУЮЩУЮ песню в презентации */
+function nextPresentationSong() {
+    if (currentPresentationIndex < presentationSongs.length - 1) {
+        currentPresentationIndex++;
+        displayCurrentPresentationSong();
+        showPresentationControls(); // Показать контролы при смене песни
+    }
+}
+
+/** Переключает на ПРЕДЫДУЩУЮ песню в презентации */
+function prevPresentationSong() {
+    if (currentPresentationIndex > 0) {
+        currentPresentationIndex--;
+        displayCurrentPresentationSong();
+        showPresentationControls(); // Показать контролы при смене песни
+    }
+}
+
+// --- Функции для автоскрытия панели управления в презентации ---
+const CONTROLS_HIDE_DELAY = 3000; // 3 секунды
+
+/** Показывает панель управления и запускает таймер для скрытия */
+function showPresentationControls() {
+    if (!presentationControls) return;
+    presentationControls.classList.remove('controls-hidden');
+    clearTimeout(controlsHideTimeout); // Отменяем предыдущий таймер
+    // Запускаем новый таймер только если панель управления существует
+    controlsHideTimeout = setTimeout(hidePresentationControls, CONTROLS_HIDE_DELAY);
+}
+
+/** Скрывает панель управления */
+function hidePresentationControls() {
+    if (presentationControls) {
+        presentationControls.classList.add('controls-hidden');
+    }
+}
+
+/** Переключает режим разделения текста в презентации */
+function togglePresentationSplit() {
+    if (!presentationContent) return;
+    isPresentationSplit = !isPresentationSplit;
+    presentationContent.classList.toggle('split-columns', isPresentationSplit);
+    updatePresentationSplitButtonState();
+    showPresentationControls(); // Показать контролы при переключении
+}
+
+/** Обновляет иконку и title кнопки разделения в презентации */
+function updatePresentationSplitButtonState() {
+    if (!presSplitTextBtn) return;
+
+    const splitIconClass = 'fa-columns';
+    const mergeIconClass = 'fa-align-justify';
+    const splitTitle = 'Разделить текст';
+    const mergeTitle = 'Объединить колонки';
+
+    const iconElement = presSplitTextBtn.querySelector('i');
+    if (!iconElement) return;
+
+    if (isPresentationSplit) { // Если разделено
+        iconElement.classList.remove(splitIconClass);
+        iconElement.classList.add(mergeIconClass);
+        presSplitTextBtn.title = mergeTitle;
+    } else { // Если объединено
+        iconElement.classList.remove(mergeIconClass);
+        iconElement.classList.add(splitIconClass);
+        presSplitTextBtn.title = splitTitle;
+    }
+}
+
+// --- Логика для Свайпов в режиме презентации ---
+let touchstartX = 0;
+let touchendX = 0;
+let touchstartY = 0;
+let touchendY = 0;
+const SWIPE_THRESHOLD = 50; // Минимальная длина свайпа
+const SWIPE_VERTICAL_LIMIT = 75; // Макс. отклонение по вертикали
+
+function handleGesture() {
+    const horizontalDiff = touchendX - touchstartX;
+    const verticalDiff = Math.abs(touchendY - touchstartY);
+
+    // Игнорируем, если свайп был больше вертикальным или слишком коротким
+    if (verticalDiff > SWIPE_VERTICAL_LIMIT || Math.abs(horizontalDiff) < SWIPE_THRESHOLD) {
+        // console.log("Swipe ignored (vertical or too short)");
+        return;
+    }
+
+    if (horizontalDiff < 0) { // Свайп влево
+        console.log('Swipe Left -> Next Song');
+        nextPresentationSong();
+    } else { // Свайп вправо
+        console.log('Swipe Right -> Previous Song');
+        prevPresentationSong();
+    }
+}
+
+function setupSwipeListeners() {
+    if (!presentationOverlay) return;
+
+    presentationOverlay.addEventListener('touchstart', e => {
+        // Проверяем, что касание не на панели управления
+        if (e.target.closest('.presentation-controls')) return;
+        touchstartX = e.changedTouches[0].screenX;
+        touchstartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    presentationOverlay.addEventListener('touchend', e => {
+        // Проверяем, что касание не на панели управления
+         if (e.target.closest('.presentation-controls')) return;
+        touchendX = e.changedTouches[0].screenX;
+        touchendY = e.changedTouches[0].screenY;
+        handleGesture();
+    }, { passive: true }); // Используем passive: true для лучшей производительности
+
+     // Также добавим показ контролов при простом тапе (не свайпе)
+     presentationOverlay.addEventListener('click', (e) => {
+          // Показываем контролы только если клик не был по самой панели
+         if (!e.target.closest('.presentation-controls')) {
+              showPresentationControls();
+         }
+     });
+
+    console.log("Слушатели свайпов и кликов для презентации установлены.");
+}
+
+
+// --- UI UPDATE FUNCTIONS (Continued) ---
+
+/** Отображает детали выбранной песни */
+function displaySongDetails(songData, index, keyToSelect) {
+    // Проверки на наличие элементов
+    if (!songContent || !keySelect || !playerContainer || !playerSection) {
+        console.error("displaySongDetails: Отсутствуют критически важные DOM элементы.");
+        return;
+    }
+    const keyDisplay = document.getElementById('youtube-video-key-display'); // Элемент для ключа видео
+
+    // --- СБРОС, ЕСЛИ ПЕСНЯ НЕ ВЫБРАНА ---
+    if (!songData || index === undefined || index === null || index === "") {
+        songContent.innerHTML = '<h2>Выберите песню</h2><pre></pre>';
+        playerContainer.innerHTML = '';
+        playerSection.style.display = 'none';
+        if (bpmDisplay) bpmDisplay.textContent = 'N/A';
+        if (holychordsButton) {
+            holychordsButton.style.display = 'none';
+            holychordsButton.href = '#';
+        }
+        keySelect.value = chords[0]; // Сброс на C
+        keySelect.dataset.index = ''; // Очистка индекса для транспонирования
+        if (keyDisplay) keyDisplay.style.display = 'none';
+        if (favoriteButton) favoriteButton.disabled = true; // Блокируем кнопки действий
+        if (addToSetlistButton) addToSetlistButton.disabled = true;
+        if (addToRepertoireButton) addToRepertoireButton.disabled = true;
+        return;
+    }
+
+    // --- ОТОБРАЖЕНИЕ ВЫБРАННОЙ ПЕСНИ ---
+    const title = songData[0] || 'Без названия';
+    const lyrics = songData[1] || '';
+    const originalKeyFromSheet = songData[2] || chords[0];
+    const srcUrl = songData[3] || '#';
+    const bpm = songData[4] || 'N/A';
+    const ytLink = songData[5];
+    const videoKey = songData[6] ? songData[6].trim() : null; // Ключ видео из колонки G
+
+    // Определяем ключ, который нужно ВЫБРАТЬ в селекторе
+    const currentSelectedKey = keyToSelect || originalKeyFromSheet;
+    // Устанавливаем значение в keySelect ПЕРЕД транспонированием
+    keySelect.value = currentSelectedKey;
+    keySelect.dataset.index = index; // Сохраняем индекс для будущих транспонирований
+
+    // Обновляем BPM и Holychords
+    if (bpmDisplay) {
+        updateBPM(bpm); // Обновляем логику метронома
+        bpmDisplay.textContent = bpm; // Отображаем текст
+    }
+    if (holychordsButton) {
+        if (srcUrl && srcUrl.trim() !== '' && srcUrl.trim() !== '#') {
+            holychordsButton.href = srcUrl;
+            holychordsButton.style.display = 'inline-block';
+        } else {
+            holychordsButton.href = '#';
+            holychordsButton.style.display = 'none';
+        }
+    }
+
+    // Транспонируем и отображаем текст
+    // Рассчитываем транспозицию от ключа из таблицы до ВЫБРАННОГО ключа
+    const transposition = getTransposition(originalKeyFromSheet, currentSelectedKey);
+    const transposedLyrics = transposeLyrics(lyrics, transposition);
+    // const processedLyrics = processLyrics(transposedLyrics); // Обработка пробелов
+    const highlightedLyrics = highlightChords(transposedLyrics); // Подсветка аккордов
+    songContent.innerHTML = `<h2>${title} — ${currentSelectedKey}</h2><pre>${highlightedLyrics}</pre>`;
+    updateFontSize(); // Применяем текущий размер шрифта
+
+    // Обновляем YouTube плеер
+    const vId = extractYouTubeVideoId(ytLink);
+    if (vId && playerContainer && playerSection) {
+        // Используем стандартный embed URL без googleusercontent.com
+        playerContainer.innerHTML = `<iframe width="100%" height="315" src="https://www.youtube.com/embed/${vId}?modestbranding=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+        playerSection.style.display = 'block';
+
+        // Отображение тональности видео, если есть
+        if (keyDisplay) {
+            if (videoKey) {
+                keyDisplay.textContent = `Ориг. видео: ${videoKey}`;
+                keyDisplay.style.display = 'block';
+            } else {
+                keyDisplay.style.display = 'none';
+            }
+        }
+    } else {
+        playerContainer.innerHTML = '';
+        playerSection.style.display = 'none';
+        if (keyDisplay) keyDisplay.style.display = 'none';
+    }
+    // Разблокируем кнопки действий
+    if (favoriteButton) favoriteButton.disabled = false;
+    if (addToSetlistButton) addToSetlistButton.disabled = false;
+    if (addToRepertoireButton) addToRepertoireButton.disabled = false;
+}
+
+
+/** Обновление текста песни при смене тональности в keySelect */
+function updateTransposedLyrics() {
+    if (!keySelect || !songContent || !sheetSelect) return;
+
+    const indexStr = keySelect.dataset.index;
+    const newKey = keySelect.value;
+    const sheetNameKey = sheetSelect.value; // Ключ выбранного листа
+    const sheetName = SHEETS[sheetNameKey];
+
+    if (indexStr === null || indexStr === undefined || indexStr === "" || !sheetName) {
+        // console.warn("updateTransposedLyrics: Индекс песни или имя листа не установлены.");
+        return; // Нет индекса или листа - нечего транспонировать
+    }
+
+    // Добавим проверку наличия данных в кэше
+    if (!cachedData[sheetName]?.[indexStr]) {
+         console.error("updateTransposedLyrics: Не найдены данные песни для транспонирования в кэше.", sheetName, indexStr);
+         return;
+    }
+
+    const songData = cachedData[sheetName][indexStr];
+    const originalKey = songData[2]; // Оригинальная тональность из таблицы
+    const lyrics = songData[1] || '';
+    const title = songData[0] || 'Без названия';
+
+    const preElement = songContent.querySelector('pre');
+    const h2Element = songContent.querySelector('h2');
+    if (!preElement || !h2Element) {
+        console.error("updateTransposedLyrics: Элементы H2 или PRE не найдены внутри songContent.");
+        return;
+    }
+
+    // Вычисляем транспозицию от оригинального ключа (из таблицы) к новому (из select)
+    const transposition = getTransposition(originalKey, newKey);
+
+    // Транспонируем ОРИГИНАЛЬНЫЙ текст
+    const transposedLyrics = transposeLyrics(lyrics, transposition);
+    // const processedTransposedLyrics = processLyrics(transposedLyrics); // Обработка пробелов
+    const highlightedTransposedLyrics = highlightChords(transposedLyrics); // Подсветка аккордов
+
+    // Обновляем DOM
+    preElement.innerHTML = highlightedTransposedLyrics;
+    h2Element.textContent = `${title} — ${newKey}`; // Обновляем тональность в заголовке
+    // Применяем текущий размер шрифта к обновленному <pre>
+    updateFontSize();
+}
+
+
+/** Загрузка песен в select#song-select для выбранного листа */
+async function loadSheetSongs() {
+    if (!sheetSelect || !songSelect) {
+        console.error("loadSheetSongs: sheetSelect или songSelect не найдены.");
+        return;
+    }
+    const sheetNameKey = sheetSelect.value; // Ключ выбранного листа
+    const sheetName = SHEETS[sheetNameKey];
+
+    // Сброс и блокировка songSelect, если лист не выбран
+    if (!sheetNameKey || !sheetName) {
+        songSelect.innerHTML = '<option value="">-- Сначала выберите лист --</option>';
+        songSelect.disabled = true;
+        displaySongDetails(null); // Сбрасываем отображение песни
+        return;
+    }
+
+    songSelect.innerHTML = '<option value="">Загрузка песен...</option>';
+    songSelect.disabled = true;
+
+    try {
+        const rows = await fetchSheetData(sheetName); // Используем функцию с кэшированием
+
+        songSelect.innerHTML = '<option value="">-- Выберите песню --</option>';
+        if (rows && rows.length > 0) {
+            rows.forEach((row, index) => {
+                // Добавляем песню, только если есть название (первая колонка)
+                if (row && row[0] && String(row[0]).trim() !== '') {
+                    const option = document.createElement('option');
+                    option.value = index; // Используем индекс строки как значение
+                    option.textContent = row[0].trim(); // Убираем лишние пробелы из названия
+                    songSelect.appendChild(option);
+                }
+            });
+            songSelect.disabled = false;
+        } else {
+            songSelect.innerHTML = '<option value="">-- Нет песен в листе --</option>';
+            songSelect.disabled = true; // Оставляем заблокированным, если песен нет
+        }
+    } catch (error) {
+        console.error(`Ошибка при загрузке песен для листа "${sheetName}":`, error);
+        songSelect.innerHTML = '<option value="">Ошибка загрузки песен</option>';
+        songSelect.disabled = true;
+    } finally {
+         // Сбрасываем отображение песни после загрузки списка (даже если выбрана та же песня)
+         // Это нужно, чтобы при смене листа всегда отображалось "Выберите песню"
+         displaySongDetails(null);
+    }
+}
+
+/** Обновление размера шрифта текста песни */
+function updateFontSize() {
+    const lyricsElement = songContent?.querySelector('pre');
+    if (lyricsElement) {
+        lyricsElement.style.fontSize = `${currentFontSize}px`;
+        // Можно сохранить в localStorage, если нужно запоминать размер шрифта
+        // localStorage.setItem('preferredFontSize', currentFontSize);
+    }
+}
+
+/** Сброс размера шрифта к значению по умолчанию */
+// function resetFontSize() {
+//     currentFontSize = DEFAULT_FONT_SIZE;
+//     updateFontSize();
+//     // localStorage.removeItem('preferredFontSize'); // Удалить из localStorage
+// }
+
+/** Загрузка избранных песен из localStorage */
+function loadFavorites(container = favoritesList) {
+    if (!container) {
+        console.error("Контейнер для избранных песен не найден."); return;
+    }
+    container.innerHTML = ''; // Очищаем
+
+    try {
+        favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    } catch (e) {
+        console.error("Ошибка парсинга избранного из localStorage:", e);
+        favorites = [];
+        localStorage.removeItem('favorites'); // Очистить некорректные данные
+    }
+
+
+    if (favorites.length === 0) {
+        container.innerHTML = '<div class="empty-message">Нет избранных песен</div>';
+        return;
+    }
+
+    // Сортировка избранного по имени песни
+    favorites.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+
+    favorites.forEach(fav => {
+        // Проверяем валидность записи в избранном
+        if (!fav || !fav.name || !fav.sheet || fav.index === undefined || !fav.key) {
+             console.warn("Пропуск некорректной записи в избранном:", fav);
+             return; // Пропускаем эту запись
+        }
+
+        const favoriteItem = document.createElement('div');
+        favoriteItem.className = 'favorite-item';
+
+        const songInfo = document.createElement('span');
+        songInfo.className = 'song-name';
+        songInfo.textContent = `${fav.name} — ${fav.key}`;
+        favoriteItem.appendChild(songInfo);
+
+        const removeBtn = document.createElement('button');
+        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        removeBtn.className = 'remove-button';
+        removeBtn.title = 'Удалить из Моего списка';
+        removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            removeFromFavorites(fav);
+        });
+        favoriteItem.appendChild(removeBtn);
+
+        favoriteItem.addEventListener('click', async () => {
+             console.log("Клик по избранной песне:", fav);
+             const sheetNameValue = Object.keys(SHEETS).find(key => SHEETS[key] === fav.sheet);
+             if(!sheetNameValue) {
+                  alert(`Ошибка: Лист "${fav.sheet}" для избранной песни не найден в конфигурации.`);
+                  return;
+             }
+             // Убедимся, что данные для листа загружены
+             if (!cachedData[fav.sheet]) {
+                  console.log(`Загрузка данных листа "${fav.sheet}" для избранной песни...`);
+                  await fetchSheetData(fav.sheet);
+                  if (!cachedData[fav.sheet]) {
+                      alert(`Не удалось загрузить данные листа "${fav.sheet}" для избранной песни.`);
+                      return;
+                  }
+             }
+             // Убедимся, что данные самой песни существуют по индексу
+              const songDataFromCache = cachedData[fav.sheet]?.[fav.index];
+             if (!songDataFromCache) {
+                  alert(`Данные для песни "${fav.name}" (индекс ${fav.index}) не найдены на листе "${fav.sheet}". Возможно, песня была удалена или перемещена. Удалите ее из избранного.`);
+                  return;
+             }
+
+             if(sheetSelect) sheetSelect.value = sheetNameValue;
+             await loadSheetSongs(); // Перезагрузить список песен
+             if(songSelect) songSelect.value = fav.index; // Выбрать песню
+             displaySongDetails(songDataFromCache, fav.index, fav.key); // Отобразить с сохраненным ключом
+
+             if (favoritesPanel) favoritesPanel.classList.remove('open');
+             if (repertoirePanel) repertoirePanel.classList.remove('open');
+        });
+        container.appendChild(favoriteItem);
+    });
+}
+
+/** Удаление песни из избранного */
+function removeFromFavorites(favToRemove) {
+    console.log("Попытка удаления из избранного:", favToRemove);
+    let found = false;
+    // Фильтруем массив, оставляя все, КРОМЕ удаляемого элемента
+    favorites = favorites.filter(item => {
+        const match = item.sheet === favToRemove.sheet && String(item.index) === String(favToRemove.index); // Сравниваем как строки на всякий случай
+        if (match) found = true;
+        return !match; // Оставляем элемент, если он НЕ совпадает
+    });
+
+    if (found) {
+        try {
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            console.log("Элемент удален, localStorage обновлен.");
+             // Обновляем отображение списка избранного, если панель открыта
+             if (favoritesPanel?.classList.contains('open') && favoritesList) {
+                  loadFavorites(favoritesList);
+             } else {
+                  // Если панель закрыта, просто уменьшаем счетчик или удаляем элемент из DOM,
+                  // но проще перерисовать при следующем открытии.
+             }
+            alert(`Песня "${favToRemove.name}" удалена из 'Моего списка'.`);
+        } catch (e) {
+            console.error("Ошибка сохранения избранного в localStorage после удаления:", e);
+            alert("Ошибка при сохранении изменений в избранном.");
+            // Возможно, стоит перезагрузить 'favorites' из localStorage, чтобы отменить изменения в памяти
+            favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        }
+    } else {
+        console.warn("Не удалось найти песню для удаления в массиве favorites:", favToRemove);
+        alert("Не удалось удалить песню из 'Моего списка'. Возможно, она уже была удалена.");
+        // На всякий случай обновим UI, если вдруг была рассинхронизация
+        if (favoritesPanel?.classList.contains('open') && favoritesList) {
+             loadFavorites(favoritesList);
+        }
+    }
+}
+
+/** Обновление отображения и логики BPM */
+function updateBPM(newBPM) {
+    if (!bpmDisplay) return;
+    const bpmValue = parseInt(newBPM, 10);
+    const displayValue = (!isNaN(bpmValue) && bpmValue > 0) ? bpmValue : 'N/A';
+    bpmDisplay.textContent = displayValue;
+
+    if (isMetronomeActive) {
+        if (displayValue !== 'N/A') {
+            // Перезапуск метронома с новым BPM
+            console.log("Metronome: Restarting with new BPM:", bpmValue);
+            toggleMetronome(0); // Остановить
+            toggleMetronome(bpmValue); // Запустить с новым BPM
+        } else {
+             // Останавливаем, если BPM стал некорректным
+             console.log("Metronome: Stopping due to invalid BPM.");
+             toggleMetronome(0);
+        }
+    }
+}
+
+// --- METRONOME FUNCTIONS ---
+
+/** Настройка AudioContext */
+function setupAudioContext() {
+    if (audioContext) return; // Уже создан
+    try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        console.log("AudioContext успешно создан. State:", audioContext.state);
+        // Возобновляем контекст сразу после создания, если он в suspended
+        resumeAudioContext();
+    } catch(e) {
+        console.error("Не удалось создать AudioContext:", e);
+        alert("Ошибка: Ваш браузер не поддерживает Web Audio API, метроном не будет работать.");
+        audioContext = null; // Убедимся, что он null при ошибке
+    }
+}
+
+/** Возобновление AudioContext */
+function resumeAudioContext() {
+    if (audioContext && audioContext.state === 'suspended') {
+        console.log("Attempting to resume AudioContext...");
+        audioContext.resume().then(() => {
+            console.log('AudioContext успешно возобновлен.');
+        }).catch((error) => {
+            console.error('Ошибка возобновления AudioContext:', error);
+            // Можно показать сообщение пользователю, что нужно взаимодействие
+            // alert("Не удалось активировать звук. Пожалуйста, кликните где-нибудь на странице.");
+        });
+    }
+}
+
+/** Загрузка аудиофайла для метронома */
+async function loadAudioFile() {
+    if (!audioContext) {
+         console.warn("loadAudioFile: AudioContext not ready, attempting setup.");
+         setupAudioContext();
+         if (!audioContext) {
+              console.error("loadAudioFile: Failed to setup AudioContext.");
+              return; // Не можем грузить без контекста
+         }
+    }
+    if (audioBuffer) return; // Уже загружено
+
+    // URL может быть вынесен в константы
+    const fileUrl = 'https://firebasestorage.googleapis.com/v0/b/song-archive-389a6.firebasestorage.app/o/metronome-85688%20(mp3cut.net).mp3?alt=media&token=97b66349-7568-43eb-80c3-c2278ff38c10';
+    console.log("Загрузка аудиофайла метронома...");
+    try {
+        const response = await fetch(fileUrl);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const arrayBuffer = await response.arrayBuffer();
+        // Используем async/await с decodeAudioData для чистоты кода
+        audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+        console.log("Аудиофайл метронома успешно загружен и декодирован.");
+    } catch (error) {
+        console.error('Ошибка загрузки или декодирования аудиофайла:', error);
+        alert("Не удалось загрузить звук метронома. Метроном может не работать.");
+        audioBuffer = null;
+    }
+}
+
+/** Воспроизведение одного клика метронома */
+function playClick() {
+    // Проверки перед воспроизведением
+    if (!audioContext || !audioBuffer || audioContext.state !== 'running') {
+         console.warn(`playClick stopped: Context state: ${audioContext?.state}, Buffer ready: ${!!audioBuffer}`);
+         // Попытка возобновить контекст, если он suspended
+         if (audioContext?.state === 'suspended') resumeAudioContext();
+         // Если метроном должен быть активен, но не может играть - останавливаем его
+         if (isMetronomeActive) toggleMetronome(0);
+         return;
+    }
+
+    if (!timeSignatureSelect) {
+        console.error("playClick: timeSignatureSelect not found.");
+        if (isMetronomeActive) toggleMetronome(0);
+        return;
+    }
+
+    const beatsPerMeasure = parseInt(timeSignatureSelect.value, 10) || 4;
+
+    try {
+        const source = audioContext.createBufferSource();
+        source.buffer = audioBuffer;
+        const gainNode = audioContext.createGain();
+
+        // Громкость первого удара выше
+        const gainValue = (currentBeat % beatsPerMeasure === 0) ? 1.0 : 0.6;
+        gainNode.gain.setValueAtTime(gainValue, audioContext.currentTime);
+
+        source.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        source.start(audioContext.currentTime); // Воспроизводим немедленно
+
+        // source.onended = () => { console.log("Metronome click source ended."); }; // Для отладки
+
+        currentBeat = (currentBeat + 1) % beatsPerMeasure; // Обновляем счетчик ударов
+
+    } catch (error) {
+        console.error("!!! Error during playClick execution:", error);
+        if(isMetronomeActive) toggleMetronome(0); // Останавливаем при ошибке
+    }
+}
+
+/** Включение/выключение метронома */
+function toggleMetronome(bpm) {
+    const playIcon = '<i class="fas fa-play"></i>';
+    const stopIcon = '<i class="fas fa-stop"></i>';
+    const playText = '<span class="button-text">Метроном</span>'; // Упростил текст
+    const stopText = '<span class="button-text">Метроном</span>'; // Текст одинаковый
+
+    if (!metronomeButton) return;
+
+    // Перед любым действием убедимся, что AudioContext в рабочем состоянии
+    resumeAudioContext();
+
+    if (isMetronomeActive) {
+        // --- ВЫКЛЮЧЕНИЕ ---
+        console.log("Metronome: Stopping. Interval ID:", metronomeInterval);
+        clearInterval(metronomeInterval);
+        metronomeInterval = null;
+        isMetronomeActive = false;
+        currentBeat = 0; // Сброс счетчика
+        metronomeButton.innerHTML = playIcon + (isMobileView() ? '' : playText);
+        metronomeButton.setAttribute('aria-label', 'Включить метроном');
+        metronomeButton.classList.remove('active'); // Убираем класс активности
+        console.log("Metronome: Stopped.");
+    } else if (bpm > 0) {
+        // --- ВКЛЮЧЕНИЕ ---
+        console.log("Metronome: Attempting to start with BPM:", bpm);
+        if (!audioContext || !audioBuffer) {
+            console.warn("Metronome: Cannot start, audio not ready.");
+             alert("Звук метронома еще не загружен или аудиосистема не готова. Попробуйте еще раз.");
+             // Попытка загрузить снова, если буфера нет
+             if (!audioBuffer) loadAudioFile();
+             return;
+        }
+        // Убедимся, что контекст запущен перед стартом интервала
+        if (audioContext.state !== 'running') {
+             console.warn("Metronome: AudioContext not running. Attempting resume.");
+             resumeAudioContext();
+             // Можно добавить задержку и повторную попытку или просто выйти
+             alert("Не удалось запустить метроном. Аудиосистема не активна. Попробуйте кликнуть на странице.");
+             return;
+        }
+
+        const intervalMilliseconds = 60000 / bpm;
+        if (intervalMilliseconds <= 0 || !isFinite(intervalMilliseconds)) {
+            console.error("Metronome: Invalid interval calculated:", intervalMilliseconds);
+            alert("Некорректный BPM для запуска метронома.");
+            return;
+        }
+
+        currentBeat = 0; // Сброс счетчика перед запуском
+
+        // --- ЗАПУСК ИНТЕРВАЛА ---
+        isMetronomeActive = true; // Ставим флаг ДО первого вызова playClick
+        metronomeInterval = setInterval(playClick, intervalMilliseconds);
+        console.log("Metronome: Started. Interval ID:", metronomeInterval, "Interval (ms):", intervalMilliseconds);
+        metronomeButton.innerHTML = stopIcon + (isMobileView() ? '' : stopText);
+        metronomeButton.setAttribute('aria-label', 'Выключить метроном');
+        metronomeButton.classList.add('active'); // Добавляем класс активности
+        console.log("Metronome: Playing first click...");
+        playClick(); // Сразу играем первый удар
+        console.log("Metronome: First click function call finished.");
+    } else {
+         console.log("Metronome: Start requested with invalid BPM:", bpm);
+         alert("Не указан или некорректный BPM для запуска метронома.");
+    }
+}
+
+
+// --- THEME FUNCTIONS ---
+
+/** Применяет указанную тему (light/dark) */
+function applyTheme(themeName) {
+    const newTheme = (themeName === 'light' || themeName === 'dark') ? themeName : 'dark'; // Валидация
+    console.log("Применяется тема:", newTheme);
+    document.body.dataset.theme = newTheme; // Устанавливаем атрибут data-theme
+
+    if (themeToggleButton) {
+        const icon = themeToggleButton.querySelector('i');
+        if (icon) {
+            if (newTheme === 'light') {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                themeToggleButton.title = "Переключить на темную тему";
+            } else {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                themeToggleButton.title = "Переключить на светлую тему";
+            }
+        }
+    }
+    try {
+        localStorage.setItem('theme', newTheme); // Сохраняем валидную тему
+    } catch (e) {
+        console.error("Ошибка сохранения темы в localStorage:", e);
+    }
+}
+
+/** Переключает между светлой и темной темой */
+function toggleTheme() {
+    const currentTheme = document.body.dataset.theme || 'dark'; // Получаем текущую
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark'; // Определяем новую
+    applyTheme(newTheme); // Применяем
+}
+
+
+// --- EVENT LISTENER SETUP ---
+function setupEventListeners() {
+    console.log("Настройка слушателей событий...");
+
+    // Выбор листа
+    if(sheetSelect) sheetSelect.addEventListener('change', async () => {
+        console.log("Sheet selected:", sheetSelect.value);
+        if(searchInput) searchInput.value = ''; // Очистка поиска
+        if(searchResults) searchResults.innerHTML = ''; // Очистка результатов поиска
+        await loadSheetSongs(); // Загрузка песен и сброс отображения
+    });
+
+    // Выбор песни
+    if(songSelect) songSelect.addEventListener('change', () => {
+        if (!sheetSelect) return; // Нужен выбранный лист
+        const sheetNameKey = sheetSelect.value;
+        const sheetName = SHEETS[sheetNameKey];
+        const songIndex = songSelect.value;
+        console.log(`Song selected: Index ${songIndex} in Sheet ${sheetName}`);
+        if (!sheetName || songIndex === "" || !cachedData[sheetName]?.[songIndex]) {
+            displaySongDetails(null); // Сброс, если что-то не так
+            return;
+        }
+        displaySongDetails(cachedData[sheetName][songIndex], songIndex); // Отображаем выбранную
+    });
+
+    // Поиск песни
+    if(searchInput) {
+        searchInput.addEventListener('input', () => searchSongs(searchInput.value));
+        // Скрытие результатов при потере фокуса (с задержкой)
+        searchInput.addEventListener('blur', () => {
+            setTimeout(() => {
+                if(searchResults) searchResults.innerHTML = '';
+            }, 200); // Задержка, чтобы успел сработать click на результате
+        });
+    }
+
+    // Выбор тональности
+    if(keySelect) keySelect.addEventListener('change', updateTransposedLyrics);
+
+    // Увеличение/уменьшение шрифта
+    if(zoomInButton) zoomInButton.addEventListener('click', () => {
+        currentFontSize = Math.min(currentFontSize + 2, 30); // Ограничение максимального размера
+        updateFontSize();
+    });
+    if(zoomOutButton) zoomOutButton.addEventListener('click', () => {
+        currentFontSize = Math.max(MIN_FONT_SIZE, currentFontSize - 2); // Используем MIN_FONT_SIZE
+        updateFontSize();
+    });
+
+    // Разделение текста (основное окно)
+    if(splitTextButton && songContent) {
+        const splitIcon = '<i class="fas fa-columns"></i>';
+        const mergeIcon = '<i class="fas fa-align-justify"></i>';
+        const splitText = '<span class="button-text">Разделить</span>'; // Короче
+        const mergeText = '<span class="button-text">Объединить</span>'; // Короче
+
+        const updateSplitButton = () => {
+            const isSplit = songContent.classList.contains('split-columns');
+            const currentIcon = isSplit ? mergeIcon : splitIcon;
+            const currentTextSpan = isSplit ? mergeText : splitText;
+            splitTextButton.innerHTML = currentIcon + (isMobileView() ? '' : currentTextSpan);
+            splitTextButton.setAttribute('aria-label', isSplit ? 'Объединить колонки' : 'Разделить текст');
+        };
+
+        splitTextButton.addEventListener('click', () => {
+            const lyricsElement = songContent.querySelector('pre');
+            if (!lyricsElement || !lyricsElement.textContent?.trim()) {
+                alert('Нет текста песни для разделения.'); return;
+            }
+            songContent.classList.toggle('split-columns');
+            updateSplitButton();
+        });
+
+        updateSplitButton(); // Начальное состояние
+
+        // Обновление кнопки при ресайзе
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(updateSplitButton, 150);
+        });
+    }
+
+    // Добавление в избранное
+    if(favoriteButton) {
+        favoriteButton.addEventListener('click', () => {
+            if (!sheetSelect || !songSelect || !keySelect) return;
+            const sheetNameKey = sheetSelect.value;
+            const sheetName = SHEETS[sheetNameKey];
+            const songIndex = songSelect.value;
+            const selectedKey = keySelect.value;
+
+            if (!sheetName || songIndex === "") {
+                alert("Пожалуйста, сначала выберите песню."); return;
+            }
+            const songData = cachedData[sheetName]?.[songIndex];
+            if (!songData) {
+                alert("Не найдены данные для выбранной песни."); return;
+            }
+
+            const song = {
+                name: songData[0],
+                sheet: sheetName,
+                index: songIndex, // Сохраняем как строку (из select)
+                key: selectedKey
+            };
+
+            // Проверка на существование (сравнение sheet и index)
+            if (!favorites.some(f => f.sheet === song.sheet && String(f.index) === song.index)) {
+                favorites.push(song);
+                 try {
+                      localStorage.setItem('favorites', JSON.stringify(favorites));
+                      // Обновляем UI избранного, если панель открыта
+                      if (favoritesPanel?.classList.contains('open') && favoritesList) {
+                           loadFavorites(favoritesList);
+                      }
+                      alert(`"${song.name}" (${song.key}) добавлена в 'Мой список'.`);
+                 } catch (e) {
+                     console.error("Ошибка сохранения избранного:", e);
+                     alert("Не удалось сохранить песню в избранное.");
+                     // Удаляем только что добавленную песню из массива в памяти, если сохранение не удалось
+                     favorites.pop();
+                 }
+            } else {
+                 // Песня уже есть, спросим об обновлении ключа?
+                 const existingFavIndex = favorites.findIndex(f => f.sheet === song.sheet && String(f.index) === song.index);
+                 if (existingFavIndex !== -1 && favorites[existingFavIndex].key !== song.key) {
+                      if (confirm(`Песня "${song.name}" уже есть в 'Моем списке' с тональностью ${favorites[existingFavIndex].key}. Обновить на ${song.key}?`)) {
+                          favorites[existingFavIndex].key = song.key; // Обновляем ключ
+                          try {
+                              localStorage.setItem('favorites', JSON.stringify(favorites));
+                              if (favoritesPanel?.classList.contains('open') && favoritesList) {
+                                   loadFavorites(favoritesList);
+                              }
+                              alert(`Тональность песни "${song.name}" в 'Моем списке' обновлена на ${song.key}.`);
+                          } catch (e) {
+                               console.error("Ошибка обновления ключа в избранном:", e);
+                               alert("Не удалось обновить тональность в избранном.");
+                               // Возвращаем старый ключ при ошибке
+                               favorites[existingFavIndex].key = songData[2] || chords[0]; // Или какой был до этого
+                          }
+                      }
+                 } else {
+                     alert(`Песня "${song.name}" уже есть в 'Моем списке'.`);
+                 }
+            }
+        });
+    }
+
+    // Добавление в СЕТ-ЛИСТ
+    if (addToSetlistButton) {
+        addToSetlistButton.addEventListener('click', addToCurrentSetlist);
+    } else { console.warn("Кнопка #add-to-setlist-button не найдена."); }
+
+    // Добавление в РЕПЕРТУАР
+    if(addToRepertoireButton) {
+         addToRepertoireButton.addEventListener('click', addToRepertoire);
+    } else { console.warn("Кнопка #add-to-repertoire-button не найдена."); }
+
+    // Выбор вокалиста
+    if(vocalistSelect) vocalistSelect.addEventListener('change', (e) => {
+        currentVocalistId = e.target.value;
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        currentVocalistName = selectedOption.value ? selectedOption.text : null; // Имя только если выбран не пустой option
+        console.log(`Vocalist selected: ${currentVocalistName || 'none'} (ID: ${currentVocalistId || 'none'})`);
+        loadRepertoire(currentVocalistId); // Загрузка репертуара для выбранного
+    });
+
+    // Открытие/закрытие панели "Списки" (Избранное + Сет-листы)
+    if (toggleFavoritesButton && favoritesPanel) {
+        toggleFavoritesButton.addEventListener('click', () => {
+            const isOpen = favoritesPanel.classList.toggle('open');
+            if (isOpen) {
+                if (repertoirePanel?.classList.contains('open')) repertoirePanel.classList.remove('open'); // Закрыть другую панель
+                // Перезагружаем содержимое панели при открытии
+                 loadFavorites();
+                 loadSetlists();
+                 // Обновляем состояние текущего сет-листа (песни и кнопки)
+                 selectSetlist(currentSetlistId, currentSetlistName);
+            }
+        });
+    } else { console.error("Elements for 'Списки' toggle not found"); }
+
+    // Открытие/закрытие панели "Репертуар"
+    if (toggleRepertoireButton && repertoirePanel) {
+        toggleRepertoireButton.addEventListener('click', () => {
+            const isOpen = repertoirePanel.classList.toggle('open');
+            if (isOpen) {
+                if (favoritesPanel?.classList.contains('open')) favoritesPanel.classList.remove('open'); // Закрыть другую панель
+                // Перезагружаем репертуар только если выбран вокалист
+                 if (currentVocalistId) {
+                      loadRepertoire(currentVocalistId);
+                 } else {
+                      if(repertoirePanelList) repertoirePanelList.innerHTML = '<div class="empty-message">Выберите вокалиста...</div>';
+                 }
+            }
+        });
+    } else { console.error("Elements for 'Репертуар' toggle not found"); }
+
+     // Создание нового сет-листа
+     if (createSetlistButton) {
+         createSetlistButton.addEventListener('click', createSetlist);
+     } else { console.warn("Кнопка #create-setlist-button не найдена."); }
+
+     // Запуск презентации для текущего сет-листа
+     if (startPresentationButton) {
+         startPresentationButton.addEventListener('click', () => {
+             console.log("Клик по кнопке 'Презентация' для сет-листа ID:", currentSetlistId);
+             if (currentSetlistId && currentSetlistSongs && currentSetlistSongs.length > 0) {
+                 if (favoritesPanel) favoritesPanel.classList.remove('open');
+                 if (repertoirePanel) repertoirePanel.classList.remove('open');
+                 // Запускаем презентацию с песнями текущего сет-листа
+                 // Массив currentSetlistSongs уже отсортирован
+                 showPresentationView(currentSetlistSongs);
+             } else {
+                 alert("Сет-лист не выбран или в нем нет песен для презентации.");
+             }
+         });
+     } else { console.warn("Кнопка #start-presentation-button не найдена."); }
+
+     // Удаление текущего сет-листа
+     if (deleteSetlistButton) {
+         deleteSetlistButton.addEventListener('click', deleteCurrentSetlist);
+     } else { console.warn("Кнопка #delete-setlist-button не найдена."); }
+
+
+    // --- Слушатели для режима Презентации ---
+    if (presentationCloseBtn && presentationOverlay) { // Закрытие презентации
+        presentationCloseBtn.addEventListener('click', () => {
+            presentationOverlay.classList.remove('visible');
+            document.body.style.overflow = ''; // Восстанавливаем скролл body
+            clearTimeout(controlsHideTimeout); // Отменяем таймер скрытия
+            // Выход из полноэкранного режима, если он активен
+            if (document.fullscreenElement) {
+                 document.exitFullscreen().catch(err => console.error(`Error attempting to exit fullscreen: ${err.message} (${err.name})`));
+            }
+            // Останавливаем метроном, если он был активен
+             if (isMetronomeActive) {
+                  toggleMetronome(0); // Выключаем
+             }
+            // Сбрасываем список песен презентации
+            presentationSongs = [];
+            currentPresentationIndex = 0;
+        });
+    }
+    if (presPrevBtn) { presPrevBtn.addEventListener('click', prevPresentationSong); }
+    if (presNextBtn) { presNextBtn.addEventListener('click', nextPresentationSong); }
+    if (presSplitTextBtn) { // Кнопка разделения в презентации
+          presSplitTextBtn.addEventListener('click', togglePresentationSplit);
+    }
+    // Настройка свайпов и кликов для показа контролов
+    setupSwipeListeners();
+
+
+     // --- Слушатели для Метронома ---
+     if(metronomeButton){
+         metronomeButton.addEventListener('click', async () => {
+             // Инициализация AudioContext при первом клике, если еще не создан
+              if (!audioContext) setupAudioContext();
+              if (!audioContext) {
+                  alert("Не удалось инициализировать аудиосистему.");
+                  return;
+              }
+              // Попытка возобновить контекст при клике
+              resumeAudioContext();
+             // Предзагрузка файла, если еще не загружен
+              if (!audioBuffer) await loadAudioFile();
+              // Проверка готовности после попытки загрузки/возобновления
+              if (!audioBuffer || audioContext.state !== 'running') {
+                  alert("Аудиосистема не готова. Попробуйте кликнуть еще раз или обновить страницу.");
+                  return;
+              }
+
+              const bpmText = bpmDisplay?.textContent;
+              const bpmValue = parseInt(bpmText, 10);
+
+             // Переключаем метроном только если BPM корректный
+             if (!isNaN(bpmValue) && bpmValue > 0) {
+                  toggleMetronome(bpmValue);
+             } else if (isMetronomeActive) {
+                  // Если метроном активен, но BPM некорректный, выключаем его
+                  toggleMetronome(0);
+             } else {
+                  // Если не активен и BPM некорректный
+                  alert('Не указан или некорректный BPM для запуска метронома.');
+             }
+         });
+     }
+
+     // Редактирование BPM (опционально)
+     if(bpmDisplay && bpmDisplay.isContentEditable) { // Проверка, можно ли редактировать
+         bpmDisplay.addEventListener('blur', () => {
+             const newText = bpmDisplay.textContent || '';
+             updateBPM(newText.trim()); // Обновляем BPM после потери фокуса
+         });
+         // Предотвращение ввода не-цифр (простой вариант)
+         bpmDisplay.addEventListener('input', () => {
+             const currentText = bpmDisplay.textContent || '';
+             // Оставляем только цифры, но позволяем временно быть пустым
+             const digitsOnly = currentText.replace(/[^0-9]/g, '');
+             // Чтобы избежать мерцания курсора, обновляем только если текст изменился
+             if (bpmDisplay.textContent !== digitsOnly) {
+                 // Сохраняем позицию курсора (если возможно)
+                 const selection = window.getSelection();
+                 const range = selection?.rangeCount > 0 ? selection.getRangeAt(0) : null;
+                 const startOffset = range?.startOffset || 0;
+
+                 bpmDisplay.textContent = digitsOnly;
+
+                 // Восстанавливаем позицию курсора
+                 if (range && bpmDisplay.firstChild) {
+                     const newOffset = Math.min(startOffset, digitsOnly.length);
+                     const newRange = document.createRange();
+                     newRange.setStart(bpmDisplay.firstChild, newOffset);
+                     newRange.collapse(true);
+                     selection.removeAllRanges();
+                     selection.addRange(newRange);
+                 }
+             }
+         });
+         // Обработка Enter для завершения редактирования
+         bpmDisplay.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter') {
+                  e.preventDefault(); // Предотвращаем перенос строки
+                  bpmDisplay.blur(); // Завершаем редактирование (вызовет событие blur)
+              }
+         });
+     }
+
+     // Клик по ссылке Holychords
+     if(holychordsButton) holychordsButton.addEventListener('click', (e) => {
+         if (!holychordsButton.href || holychordsButton.getAttribute('href') === '#') {
+             e.preventDefault();
+             alert('Ссылка на Holychords для этой песни отсутствует.');
+         }
+         // Дополнительно: можно открывать в новой вкладке
+         // holychordsButton.target = "_blank";
+     });
+
+
+    // --- Переключение темы ---
+    if (themeToggleButton) {
+        themeToggleButton.addEventListener('click', toggleTheme);
+    }
+
+    console.log("Настройка слушателей событий завершена.");
+} // <--- КОНЕЦ setupEventListeners
+
+
+// --- INITIALIZATION ---
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log("DOM loaded.");
+    // Проверка наличия ключевых элементов интерфейса
+    const criticalElements = [
+        favoritesPanel, repertoirePanel, songContent, sheetSelect, songSelect, keySelect,
+        favoritesList, setlistsListContainer, currentSetlistSongsContainer, repertoirePanelList
+        // Добавьте другие критические элементы, если нужно
+    ];
+    if (criticalElements.some(el => !el)) {
+        console.error("Критически важные элементы интерфейса не найдены в HTML! Проверьте ID элементов.");
+        // Показываем сообщение пользователю
+        document.body.innerHTML = '<div style="padding: 20px; text-align: center; color: red; font-size: 1.2em;">Ошибка инициализации интерфейса. Пожалуйста, проверьте консоль разработчика (F12) или свяжитесь с администратором.</div>';
+        return; // Прерываем дальнейшую инициализацию
+    }
+
+    // Определение и применение начальной темы
+    let initialTheme = 'dark'; // По умолчанию темная
+    try {
+         const savedTheme = localStorage.getItem('theme');
+         // Проверяем системные настройки, ТОЛЬКО если нет сохраненной темы
+         if (!savedTheme) {
+              if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                  initialTheme = 'light';
+              }
+              console.log("Сохраненная тема не найдена, используется системная/умолчание:", initialTheme);
+         } else if (savedTheme === 'light' || savedTheme === 'dark') {
+              initialTheme = savedTheme;
+              console.log("Найдена сохраненная тема:", initialTheme);
+         } else {
+              console.warn("Некорректное значение темы в localStorage, используется тема по умолчанию.");
+              localStorage.removeItem('theme'); // Удаляем некорректное значение
+         }
+    } catch (e) {
+         console.error("Ошибка доступа к localStorage для темы:", e);
+         // Используем тему по умолчанию
+    }
+    applyTheme(initialTheme);
+
+    // Настройка слушателей событий (после применения темы)
+    setupEventListeners();
+
+    // Загрузка начальных данных
+    // Используем Promise.all для параллельной загрузки, где возможно
+    if (loadingIndicator) loadingIndicator.style.display = 'block';
+    try {
+         await Promise.all([
+              loadAllSheetsData(), // Загрузка всех данных из таблиц
+              loadVocalists(),     // Загрузка списка вокалистов
+              loadAudioFile()      // Предзагрузка звука метронома
+         ]);
+         console.log("Sheets, Vocalists, Audio pre-loaded.");
+
+         // Загрузка песен для первого листа (если он есть)
+         if (sheetSelect && sheetSelect.options.length > 0) {
+              // Устанавливаем первый лист как выбранный (если нужно)
+              // sheetSelect.selectedIndex = 0; // или оставить '-- Выберите лист --'
+              await loadSheetSongs(); // Загрузит песни для выбранного (или пустого) листа
+         } else {
+             displaySongDetails(null); // Сброс, если листов нет
+         }
+
+         // Загрузка списков (сет-листы и репертуар)
+         loadSetlists();      // Загрузка списка сет-листов
+         loadRepertoire(null); // Инициализация репертуара (покажет "Выберите вокалиста")
+         loadFavorites();     // Загрузка избранного (это быстро, можно не ждать)
+
+    } catch (error) {
+         console.error("Критическая ошибка во время инициализации:", error);
+         alert("Произошла ошибка при загрузке данных приложения. Попробуйте обновить страницу.");
+         // Можно отобразить сообщение об ошибке в UI
+    } finally {
+         if (loadingIndicator) loadingIndicator.style.display = 'none';
+    }
+
+    console.log("Инициализация приложения завершена.");
+});
