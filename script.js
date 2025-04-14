@@ -97,39 +97,38 @@ const themeToggleButton = document.getElementById('theme-toggle-button'); // К�
 // Кнопки действий с песней
 const favoriteButton = document.getElementById('favorite-button'); // Добавить в Мой список
 const addToSetlistButton = document.getElementById('add-to-setlist-button'); // Добавить В СЕТ-ЛИСТ
-const addToRepertoireButton = document.getElementById('add-to-repertoire-button'); // Добавить в репертуар вокалиста
+const addToRepertoireButton = document.getElementById('add-to-repertoire-button'); // Добавить в репертуар
 
-// Элементы боковых панелей
-const toggleFavoritesButton = document.getElementById('toggle-favorites'); // Кнопка откр/закр Левой панели (Списки)
-const favoritesPanel = document.getElementById('favorites-panel');       // Сама Левая панель (Списки)
-const toggleRepertoireButton = document.getElementById('toggle-repertoire'); // Кнопка откр/закр Правой панели (Репертуар)
-const repertoirePanel = document.getElementById('repertoire-panel');       // Сама Правая панель (Репертуар)
+// --- Элементы боковых панелей и их кнопки (ИЗМЕНЕНО) ---
+const toggleFavoritesButton = document.getElementById('toggle-favorites'); // Кнопка "Сет-листы" (ID остался старый)
+const setlistsPanel = document.getElementById('setlists-panel');       // Панель Сет-листов (бывшая favoritesPanel)
 
-// Элементы панели "Мой список" (внутри Левой панели)
-const favoritesList = document.getElementById('favorites-list'); // Контейнер для песен "Моего списка"
+const toggleMyListButton = document.getElementById('toggle-my-list');  // !!! НОВАЯ КНОПКА "Мой список" !!!
+const myListPanel = document.getElementById('my-list-panel');       // !!! НОВАЯ ПАНЕЛЬ "Мой список" !!!
 
-// Элементы панели "Сет-листы" (внутри Левой панели)
-const newSetlistNameInput = document.getElementById('new-setlist-name-input'); // Поле ввода имени нового сет-листа
-const createSetlistButton = document.getElementById('create-setlist-button'); // Кнопка "Создать" сет-лист
-const setlistsListContainer = document.getElementById('setlists-list-container'); // Контейнер для списка всех сет-листов
+const toggleRepertoireButton = document.getElementById('toggle-repertoire'); // Кнопка "Репертуар"
+const repertoirePanel = document.getElementById('repertoire-panel');       // Панель "Репертуар"
+// --- Конец изменений в ссылках на панели ---
 
-// Элементы панели "Текущий сет-лист" (внутри Левой панели)
-const currentSetlistTitle = document.getElementById('current-setlist-title'); // Заголовок с именем выбранного сет-листа
-const currentSetlistControls = document.querySelector('.current-setlist-controls'); // Блок кнопок "Презентация" и "Удалить сет-лист"
-const startPresentationButton = document.getElementById('start-presentation-button'); // Кнопка "Презентация" для сет-листа
-const deleteSetlistButton = document.getElementById('delete-setlist-button'); // Кнопка "Удалить" сет-лист
-const currentSetlistSongsContainer = document.getElementById('current-setlist-songs-container'); // Контейнер для песен ВНУТРИ выбранного сет-листа
-
-// Элементы панели "Репертуар" (внутри Правой панели)
-const vocalistSelect = document.getElementById('vocalist-select');
-const repertoirePanelList = document.getElementById('repertoire-panel-list'); // Контейнер для аккордеона репертуара
+// Элементы внутри панелей
+const favoritesList = document.getElementById('favorites-list'); // Внутри myListPanel
+const newSetlistNameInput = document.getElementById('new-setlist-name-input'); // Внутри setlistsPanel
+const createSetlistButton = document.getElementById('create-setlist-button'); // Внутри setlistsPanel
+const setlistsListContainer = document.getElementById('setlists-list-container'); // Внутри setlistsPanel
+const currentSetlistTitle = document.getElementById('current-setlist-title'); // Внутри setlistsPanel
+const currentSetlistControls = document.querySelector('.current-setlist-controls'); // Внутри setlistsPanel
+const startPresentationButton = document.getElementById('start-presentation-button'); // Внутри setlistsPanel
+const deleteSetlistButton = document.getElementById('delete-setlist-button'); // Внутри setlistsPanel
+const currentSetlistSongsContainer = document.getElementById('current-setlist-songs-container'); // Внутри setlistsPanel
+const vocalistSelect = document.getElementById('vocalist-select'); // Внутри repertoirePanel
+const repertoirePanelList = document.getElementById('repertoire-panel-list'); // Внутри repertoirePanel
 
 // Элементы режима Презентации
 const presentationOverlay = document.getElementById('presentation-overlay');
 const presentationContent = document.getElementById('presentation-content');
 const presentationCloseBtn = document.getElementById('presentation-close-btn');
-const presSplitTextBtn = document.getElementById('pres-split-text-btn'); // Кнопка разделения в презентации
-const presentationControls = document.querySelector('.presentation-controls'); // Нижняя панель в презентации
+const presSplitTextBtn = document.getElementById('pres-split-text-btn');
+const presentationControls = document.querySelector('.presentation-controls');
 const presPrevBtn = document.getElementById('pres-prev-btn');
 const presNextBtn = document.getElementById('pres-next-btn');
 const presCounter = document.getElementById('pres-counter');
@@ -2095,6 +2094,16 @@ function toggleTheme() {
 }
 
 
+
+// --- Вспомогательная функция для панелей ---
+/** Закрывает все боковые панели */
+function closeAllSidePanels() {
+    if (setlistsPanel) setlistsPanel.classList.remove('open'); // Используем новое имя
+    if (myListPanel) myListPanel.classList.remove('open');     // Добавляем новую панель
+    if (repertoirePanel) repertoirePanel.classList.remove('open');
+    console.log("Все боковые панели закрыты."); // Лог для отладки
+}
+
 // --- EVENT LISTENER SETUP ---
 function setupEventListeners() {
     console.log("Настройка слушателей событий...");
@@ -2264,36 +2273,60 @@ function setupEventListeners() {
         loadRepertoire(currentVocalistId); // Загрузка репертуара для выбранного
     });
 
-    // Открытие/закрытие панели "Списки" (Избранное + Сет-листы)
-    if (toggleFavoritesButton && favoritesPanel) {
-        toggleFavoritesButton.addEventListener('click', () => {
-            const isOpen = favoritesPanel.classList.toggle('open');
-            if (isOpen) {
-                if (repertoirePanel?.classList.contains('open')) repertoirePanel.classList.remove('open'); // Закрыть другую панель
-                // Перезагружаем содержимое панели при открытии
-                 loadFavorites();
-                 loadSetlists();
-                 // Обновляем состояние текущего сет-листа (песни и кнопки)
-                 selectSetlist(currentSetlistId, currentSetlistName);
-            }
-        });
-    } else { console.error("Elements for 'Списки' toggle not found"); }
+    // 1. Кнопка "Сет-листы" (бывшая toggle-favorites)
+if (toggleFavoritesButton && setlistsPanel) {
+    toggleFavoritesButton.addEventListener('click', () => {
+        const isAlreadyOpen = setlistsPanel.classList.contains('open');
+        closeAllSidePanels(); // Закрываем все
+        if (!isAlreadyOpen) { // Если была закрыта, открываем эту
+            setlistsPanel.classList.add('open');
+            console.log("Открываем панель Сет-листов...");
+            // Загружаем актуальный список сет-листов
+            loadSetlists();
+            // Обновляем отображение песен текущего сет-листа (если он был выбран)
+            selectSetlist(currentSetlistId, currentSetlistName);
+        }
+        // Если была открыта, она уже закрылась через closeAllSidePanels()
+    });
+} else { console.error("Элементы для 'Сет-листы' не найдены (#toggle-favorites / #setlists-panel)"); }
 
-    // Открытие/закрытие панели "Репертуар"
-    if (toggleRepertoireButton && repertoirePanel) {
-        toggleRepertoireButton.addEventListener('click', () => {
-            const isOpen = repertoirePanel.classList.toggle('open');
-            if (isOpen) {
-                if (favoritesPanel?.classList.contains('open')) favoritesPanel.classList.remove('open'); // Закрыть другую панель
-                // Перезагружаем репертуар только если выбран вокалист
-                 if (currentVocalistId) {
-                      loadRepertoire(currentVocalistId);
-                 } else {
-                      if(repertoirePanelList) repertoirePanelList.innerHTML = '<div class="empty-message">Выберите вокалиста...</div>';
-                 }
-            }
-        });
-    } else { console.error("Elements for 'Репертуар' toggle not found"); }
+
+
+// 2. НОВЫЙ слушатель для кнопки "Мой список"
+if (toggleMyListButton && myListPanel) {
+    toggleMyListButton.addEventListener('click', () => {
+        const isAlreadyOpen = myListPanel.classList.contains('open');
+        closeAllSidePanels(); // Закрываем все
+        if (!isAlreadyOpen) { // Если была закрыта, открываем эту
+            myListPanel.classList.add('open');
+            console.log("Открываем панель 'Мой список'...");
+            loadFavorites(); // Загружаем избранное
+        }
+        // Если была открыта, она уже закрылась через closeAllSidePanels()
+    });
+} else { console.error("Элементы для 'Мой список' не найдены (#toggle-my-list / #my-list-panel)"); }
+
+
+
+    // 3. Кнопка "Репертуар" (обновлена логика закрытия других панелей)
+if (toggleRepertoireButton && repertoirePanel) {
+    toggleRepertoireButton.addEventListener('click', () => {
+         const isAlreadyOpen = repertoirePanel.classList.contains('open');
+         closeAllSidePanels(); // Закрываем все
+         if (!isAlreadyOpen) { // Если была закрыта, открываем эту
+             repertoirePanel.classList.add('open');
+             console.log("Открываем панель 'Репертуар'...");
+             // Загружаем репертуар, только если вокалист выбран
+             if (currentVocalistId) {
+                loadRepertoire(currentVocalistId);
+             } else {
+                if(repertoirePanelList) repertoirePanelList.innerHTML = '<div class="empty-message">Выберите вокалиста...</div>';
+             }
+         }
+          // Если была открыта, она уже закрылась через closeAllSidePanels()
+    });
+  } else { console.error("Элементы для 'Репертуар' не найдены (#toggle-repertoire / #repertoire-panel)"); }
+
 
      // Создание нового сет-листа
      if (createSetlistButton) {
