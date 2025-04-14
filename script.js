@@ -2213,7 +2213,6 @@ const themeToggleButton = document.getElementById('theme-toggle-button');
 
 
 // --- INITIALIZATION ---
-// --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("DOM loaded.");
     if (!favoritesPanel || !repertoirePanel || !songContent || !sheetSelect || !songSelect || !keySelect) {
@@ -2222,34 +2221,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // --- Определение и применение начальной темы ---
-    let initialTheme = localStorage.getItem('theme'); // 1. Проверяем сохраненную тему
+    let initialTheme = localStorage.getItem('theme');
     if (!initialTheme) {
-        // 2. Если не сохранена, проверяем системные настройки
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-            initialTheme = 'light'; // Предпочитает светлую
+            initialTheme = 'light';
         } else {
-            initialTheme = 'dark'; // По умолчанию или предпочитает темную
+            initialTheme = 'dark';
         }
         console.log("Сохраненная тема не найдена, используется системная/умолчание:", initialTheme);
     } else {
          console.log("Найдена сохраненная тема:", initialTheme);
     }
-    applyTheme(initialTheme); // Применяем найденную или дефолтную тему
-    // --- Конец определения темы ---
+    applyTheme(initialTheme);
 
-    // Настраиваем слушатели событий ПОСЛЕ применения темы
-    setupEventListeners();
+    setupEventListeners(); // <--- Вызов настройки слушателей
 
-    // --- Остальная инициализация (как было) ---
     await loadAllSheetsData();
     await loadSheetSongs();
     await loadVocalists();
-    // await loadAudioFile();
+    // await loadAudioFile(); // Можно загружать по первому клику
 
     displaySongDetails(null);
-    loadSetlists(); // <-- НОВАЯ СТРОКА (Загружаем список сет-листов)
-    loadRepertoire(null);
+    loadSetlists(); // Загружаем список сет-листов
+    loadRepertoire(null); // Загрузка репертуара (если вокалист не выбран, покажет сообщение)
 
     console.log("App initialization complete.");
-});
+}); // <--- Конец DOMContentLoaded listener
