@@ -657,6 +657,179 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active {
 #loading-indicator { display: none; position: fixed; top: 15px; left: 50%; transform: translateX(-50%); background-color: rgba(40, 40, 40, 0.9); color: white; padding: 8px 18px; border-radius: var(--radius); z-index: 1002; font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
 
+
+/* Общая секция для сет-листов и текущего сет-листа */
+.list-section.setlist-section,
+.list-section.current-setlist-section {
+    border-top: 1px solid var(--border-color); /* Добавим разделитель сверху */
+    margin-top: 15px;  /* Отступ сверху */
+    padding-top: 15px; /* Внутренний отступ сверху */
+}
+
+/* Заголовки этих секций */
+.list-section.setlist-section h3,
+.list-section.current-setlist-section h3 {
+    text-align: left; /* Выравнивание по левому краю */
+    font-size: 1.05rem;
+    margin-bottom: 10px; /* Уменьшили отступ снизу */
+    border-bottom: none; /* Убираем нижнюю границу у заголовков */
+    padding-bottom: 5px;
+}
+
+/* Форма создания нового сет-листа */
+.create-setlist-form {
+    display: flex;      /* Элементы в строку */
+    gap: 8px;           /* Промежуток между полем и кнопкой */
+    margin-bottom: 15px;/* Отступ под формой */
+}
+#new-setlist-name-input {
+    flex-grow: 1;       /* Поле ввода занимает доступное место */
+    font-size: 0.9rem;  /* Немного меньше шрифт */
+    padding: 8px 12px;  /* Уменьшили паддинг */
+}
+#create-setlist-button {
+    flex-shrink: 0;     /* Кнопка не сжимается */
+    padding: 8px 15px;  /* Уменьшили паддинг */
+    font-size: 0.85rem;
+}
+#create-setlist-button:disabled { /* Стиль для неактивной кнопки "Создать" */
+    background: var(--border-color);
+}
+
+/* Контейнер списка сет-листов */
+#setlists-list-container {
+    /* Наследует стили .list-container */
+    max-height: 180px; /* Ограничим высоту, если список будет длинным */
+    margin-bottom: 0; /* Убрали нижний отступ у этого списка */
+}
+
+/* Элемент списка сет-листов */
+.setlist-item {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Троеточие для длинных названий */
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.setlist-item:last-child {
+    border-bottom: none;
+}
+.setlist-item:hover {
+    background-color: var(--hover-color);
+}
+/* Активный (выбранный) сет-лист */
+.setlist-item.active {
+    background-color: var(--primary-color);
+    color: var(--button-text-color) !important; /* Цвет текста кнопки, !important для надежности */
+    font-weight: 600;
+}
+/* Убедимся что ховер не перебивает активный стиль */
+.setlist-item.active:hover {
+     background-color: var(--primary-color);
+     filter: brightness(110%); /* Легкое осветление при наведении на активный */
+}
+
+
+/* Секция текущего (выбранного) сет-листа */
+.current-setlist-section {
+    margin-top: 15px;  /* Отступ сверху от списка сет-листов */
+    padding-top: 10px; /* Уменьшили верхний паддинг */
+    display: flex;      /* Включаем flex для растягивания списка песен */
+    flex-direction: column;
+    flex-grow: 1;       /* Эта секция занимает оставшееся место в панели */
+    min-height: 150px;  /* Минимальная высота */
+}
+
+/* Заголовок текущего сет-листа */
+#current-setlist-title {
+    text-align: center; /* Выравнивание по центру */
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color); /* Основной цвет текста */
+    margin-bottom: 10px;
+    padding: 5px; /* Добавим немного воздуха */
+    border-bottom: none; /* Убираем границу */
+    background-color: var(--input-bg-color); /* Фон как у поля ввода */
+    border-radius: var(--radius);
+    /* Добавим перенос, если имя длинное */
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+/* Контролы для текущего сет-листа (кнопки) */
+.current-setlist-controls {
+    display: flex; /* По умолчанию flex, видимость управляется JS */
+    justify-content: space-around; /* Кнопки по краям */
+    gap: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color); /* Разделитель под кнопками */
+}
+.current-setlist-controls button {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    border-radius: 6px;
+}
+.current-setlist-controls button i {
+    margin-right: 5px;
+}
+#delete-setlist-button {
+    background: var(--danger-color);
+    color: #fff !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+#delete-setlist-button:hover {
+     background: color-mix(in srgb, var(--danger-color) 85%, black);
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+#delete-setlist-button:active {
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Контейнер для песен текущего сет-листа */
+#current-setlist-songs-container {
+    /* Наследует .list-container */
+    flex-grow: 1;       /* Растягивается на доступную высоту */
+    max-height: none;   /* Снимаем ограничение по высоте */
+    background: var(--background-color); /* Фон как у body */
+}
+
+/* Элемент песни в текущем сет-листе */
+.setlist-song-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 10px; /* Изменили паддинг */
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s ease;
+}
+.setlist-song-item:last-child {
+    border-bottom: none;
+}
+.setlist-song-item .song-name {
+    flex-grow: 1;
+    margin-right: 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.setlist-song-item:hover {
+     background-color: var(--hover-color);
+}
+
+/* Кнопка удаления песни из сет-листа */
+.delete-song-from-setlist-button {
+    /* Наследует стили .delete-button */
+    margin-left: 5px; /* Небольшой отступ слева */
+    font-size: 0.9rem !important; /* Чуть меньше иконка удаления */
+}
+
 /* ============================================ */
 /* АДАПТИВНОСТЬ                                 */
 /* ============================================ */
