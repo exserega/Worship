@@ -2481,16 +2481,29 @@ if (toggleRepertoireButton && repertoirePanel) {
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("DOM loaded.");
-    // Проверка наличия ключевых элементов интерфейса
+    // Проверка наличия ключевых элементов интерфейса (ИСПРАВЛЕНО)
     const criticalElements = [
-        favoritesPanel, repertoirePanel, songContent, sheetSelect, songSelect, keySelect,
-        favoritesList, setlistsListContainer, currentSetlistSongsContainer, repertoirePanelList
+        setlistsPanel,          // <--- ИСПРАВЛЕНО
+        myListPanel,            // <--- ДОБАВЛЕНО
+        repertoirePanel,
+        songContent,
+        sheetSelect,
+        songSelect,
+        keySelect,
+        favoritesList,          // Для панели "Мой список"
+        setlistsListContainer,  // Для панели "Сет-листы"
+        currentSetlistSongsContainer, // Для панели "Сет-листы"
+        repertoirePanelList     // Для панели "Репертуар"
         // Добавьте другие критические элементы, если нужно
     ];
     if (criticalElements.some(el => !el)) {
-        console.error("Критически важные элементы интерфейса не найдены в HTML! Проверьте ID элементов.");
+        // Находим, какой именно элемент отсутствует для более точной отладки
+        const missingElement = criticalElements.findIndex(el => !el);
+        const elementNames = [ 'setlistsPanel', 'myListPanel', 'repertoirePanel', 'songContent', 'sheetSelect', 'songSelect', 'keySelect', 'favoritesList', 'setlistsListContainer', 'currentSetlistSongsContainer', 'repertoirePanelList'];
+        const missingElementName = elementNames[missingElement] || 'Неизвестный элемент';
+        console.error(`Критически важный элемент интерфейса не найден в HTML! Отсутствует: ${missingElementName}. Проверьте ID элемента в HTML.`);
         // Показываем сообщение пользователю
-        document.body.innerHTML = '<div style="padding: 20px; text-align: center; color: red; font-size: 1.2em;">Ошибка инициализации интерфейса. Пожалуйста, проверьте консоль разработчика (F12) или свяжитесь с администратором.</div>';
+        document.body.innerHTML = `<div style="padding: 20px; text-align: center; color: red; font-size: 1.2em;">Ошибка инициализации интерфейса (отсутствует ${missingElementName}). Пожалуйста, проверьте консоль разработчика (F12) или свяжитесь с администратором.</div>`;
         return; // Прерываем дальнейшую инициализацию
     }
 
@@ -2498,22 +2511,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     let initialTheme = 'dark'; // По умолчанию темная
     try {
          const savedTheme = localStorage.getItem('theme');
-         // Проверяем системные настройки, ТОЛЬКО если нет сохраненной темы
          if (!savedTheme) {
-              if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-                  initialTheme = 'light';
+              if (window.matchMedia?.('(prefers-color-scheme: light)')?.matches) {
+                   initialTheme = 'light';
               }
               console.log("Сохраненная тема не найдена, используется системная/умолчание:", initialTheme);
          } else if (savedTheme === 'light' || savedTheme === 'dark') {
-              initialTheme = savedTheme;
-              console.log("Найдена сохраненная тема:", initialTheme);
+               initialTheme = savedTheme;
+               console.log("Найдена сохраненная тема:", initialTheme);
          } else {
-              console.warn("Некорректное значение темы в localStorage, используется тема по умолчанию.");
-              localStorage.removeItem('theme'); // Удаляем некорректное значение
+               console.warn("Некорректное значение темы в localStorage, используется тема по умолчанию.");
+               localStorage.removeItem('theme');
          }
     } catch (e) {
          console.error("Ошибка доступа к localStorage для темы:", e);
-         // Используем тему по умолчанию
     }
     applyTheme(initialTheme);
 
@@ -2521,37 +2532,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupEventListeners();
 
     // Загрузка начальных данных
-    // Используем Promise.all для параллельной загрузки, где возможно
     if (loadingIndicator) loadingIndicator.style.display = 'block';
     try {
          await Promise.all([
-              loadAllSheetsData(), // Загрузка всех данных из таблиц
-              loadVocalists(),     // Загрузка списка вокалистов
-              loadAudioFile()      // Предзагрузка звука метронома
+               loadAllSheetsData(),
+               loadVocalists(),
+               loadAudioFile() // Предзагрузка метронома
          ]);
          console.log("Sheets, Vocalists, Audio pre-loaded.");
 
          // Загрузка песен для первого листа (если он есть)
-         if (sheetSelect && sheetSelect.options.length > 0) {
-              // Устанавливаем первый лист как выбранный (если нужно)
-              // sheetSelect.selectedIndex = 0; // или оставить '-- Выберите лист --'
-              await loadSheetSongs(); // Загрузит песни для выбранного (или пустого) листа
+         if (sheetSelect?.options.length > 0) {
+              await loadSheetSongs();
          } else {
-             displaySongDetails(null); // Сброс, если листов нет
+              displaySongDetails(null);
          }
 
-         // Загрузка списков (сет-листы и репертуар)
-         loadSetlists();      // Загрузка списка сет-листов
-         loadRepertoire(null); // Инициализация репертуара (покажет "Выберите вокалиста")
-         loadFavorites();     // Загрузка избранного (это быстро, можно не ждать)
+         // Загрузка списков (вызываем после загрузки данных таблиц)
+         loadSetlists();     // Загрузка списка сет-листов
+         loadRepertoire(null); // Инициализация репертуара
+         loadFavorites();      // Загрузка избранного
 
     } catch (error) {
          console.error("Критическая ошибка во время инициализации:", error);
          alert("Произошла ошибка при загрузке данных приложения. Попробуйте обновить страницу.");
-         // Можно отобразить сообщение об ошибке в UI
     } finally {
          if (loadingIndicator) loadingIndicator.style.display = 'none';
     }
 
     console.log("Инициализация приложения завершена.");
-});
+}); // <--- Конец DOMContentLoaded listener
