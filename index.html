@@ -59,7 +59,7 @@
                 <span class="button-text">Разделить текст</span>
             </button>
             <div class="font-size-controls">
-                 <button id="zoom-out" aria-label="Уменьшить масштаб">
+                <button id="zoom-out" aria-label="Уменьшить масштаб">
                     <i class="fas fa-search-minus"></i>
                 </button>
                 <button id="zoom-in" aria-label="Увеличить масштаб">
@@ -76,7 +76,7 @@
 
     <div class="control-buttons">
         <button id="favorite-button" aria-label="Добавить в избранное">❤️ Мой список</button>
-       <button id="add-to-setlist-button" aria-label="Добавить в сет-лист">➕ В сет-лист</button>
+        <button id="add-to-setlist-button" aria-label="Добавить в сет-лист">➕ В сет-лист</button>
     </div>
 
     <div class="controls-footer">
@@ -92,65 +92,61 @@
             <span id="bpm-display" contenteditable="true">N/A</span>
             <button id="metronome-button" aria-label="Включить метроном">
                  <i class="fas fa-play"></i>
-                 <span class="button-text">Включить метроном</span>
+                 <span class="button-text">Метроном</span>
             </button>
         </div>
         <a id="holychords-button" href="#" target="_blank">Holychords</a>
-        <button id="add-to-repertoire-button" aria-label="Добавить в мой репертуар">🎤 В мой репертуар</button>
+        <button id="add-to-repertoire-button" aria-label="Добавить в мой репертуар">🎤 В репертуар</button>
     </div>
-</main> <aside id="favorites-panel" class="side-panel favorites-panel">
-    <div id="my-list" class="list-section">
-        <h3>Мой список</h3>
-        <div id="favorites-list" class="list-container">
-            </div>
-    </div>
-
+</main> <aside id="setlists-panel" class="side-panel setlists-panel">
     <div class="list-section setlist-section">
         <h3>Сет-листы</h3>
-
         <div class="create-setlist-form">
             <input type="text" id="new-setlist-name-input" placeholder="Название нового сет-листа...">
             <button id="create-setlist-button" title="Создать сет-лист">Создать</button>
         </div>
-
         <div id="setlists-list-container" class="list-container setlists-list">
             <div class="empty-message">Загрузка сет-листов...</div>
-        </div>
+            </div>
     </div>
 
     <div class="list-section current-setlist-section">
         <h3 id="current-setlist-title">Выберите сет-лист</h3>
-        <div class="current-setlist-controls" style="display: none;"> <button id="start-presentation-button" title="Начать презентацию для этого сет-листа">
+        <div class="current-setlist-controls" style="display: none;">
+            <button id="start-presentation-button" title="Начать презентацию для этого сет-листа">
                  <i class="fas fa-play"></i> Презентация
-             </button>
-             <button id="delete-setlist-button" title="Удалить этот сет-лист">
+            </button>
+            <button id="delete-setlist-button" title="Удалить этот сет-лист">
                  <i class="fas fa-trash-alt"></i> Удалить
-             </button>
+            </button>
         </div>
         <div id="current-setlist-songs-container" class="list-container current-setlist-songs">
             <div class="empty-message">Сначала выберите сет-лист</div>
+            </div>
+    </div>
+</aside> <aside id="my-list-panel" class="side-panel my-list-panel">
+    <div id="my-list" class="list-section">
+        <h3>Мой список</h3>
+        <div id="favorites-list" class="list-container">
+            <div class="empty-message">Загрузка...</div>
         </div>
     </div>
-</aside>
-<aside id="repertoire-panel" class="side-panel repertoire-panel">
+</aside> <aside id="repertoire-panel" class="side-panel repertoire-panel">
     <h3 class="panel-header">Репертуар</h3>
-
     <div class="repertoire-vocalist-selector">
         <label for="vocalist-select">Вокалист:</label>
         <select id="vocalist-select">
             <option value="">-- Выберите вокалиста --</option>
             </select>
     </div>
-
-    <div id="repertoire-panel-list" class="repertoire-list-container list-container"> <div class="empty-message">Выберите вокалиста для просмотра репертуара.</div>
+    <div id="repertoire-panel-list" class="repertoire-list-container list-container">
+        <div class="empty-message">Выберите вокалиста для просмотра репертуара.</div>
         </div>
-</aside>
-<div id="presentation-overlay" class="presentation-overlay">
+</aside> <div id="presentation-overlay" class="presentation-overlay">
     <button id="presentation-close-btn" class="presentation-close-btn" title="Закрыть режим презентации">&times;</button>
-<button id="pres-split-text-btn" class="presentation-control-btn" title="Разделить текст">
+ <button id="pres-split-text-btn" class="presentation-control-btn" title="Разделить текст">
         <i class="fas fa-columns"></i>
     </button>
-
     <div class="presentation-controls">
         <button id="pres-prev-btn" class="presentation-nav-btn" title="Предыдущая песня">
             <i class="fas fa-chevron-left"></i>
@@ -160,30 +156,34 @@
             <i class="fas fa-chevron-right"></i>
         </button>
     </div>
-
     <div id="presentation-content" class="presentation-content">
         </div>
 </div>
+
 
 <section id="youtube-player-section" style="margin-top: 20px; display: none;">
     <h3>Видео / Аудио</h3>
       <p id="youtube-video-key-display" style="text-align: center; margin-bottom: 10px; display: none; font-size: 0.9rem; color: var(--label-color);"></p>
       <div id="youtube-player-container" style="max-width: 100%; margin: auto;">
-      </div>
+          </div>
 </section>
 
 <div id="loading-indicator">Загрузка...</div>
 
+
 <nav class="mobile-bottom-nav">
     <button id="toggle-favorites" class="mobile-nav-button">
-        <i class="fas fa-list"></i>
-        <span>Список</span>
+        <i class="fas fa-list-alt"></i> <span>Сет-листы</span> </button>
+    <button id="toggle-my-list" class="mobile-nav-button">
+        <i class="fas fa-heart"></i>
+        <span>Мой список</span>
     </button>
     <button id="toggle-repertoire" class="mobile-nav-button">
         <i class="fas fa-users"></i>
         <span>Репертуар</span>
     </button>
 </nav>
+
 
 <script type="module" src="script.js"></script>
 </body>
