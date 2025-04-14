@@ -766,22 +766,6 @@ function loadCurrentSetlistSongs(setlistId) {
          if (currentSetlistSongsUnsubscribe) { currentSetlistSongsUnsubscribe(); currentSetlistSongsUnsubscribe = null; } });
  } // Конец loadCurrentSetlistSongs
 
-    }, (error) => {
-        // Обработка ошибок слушателя песен
-        if (setlistId !== currentSetlistId) {
-            console.warn(`Получена ошибка для ${setlistId}, но текущий сет-лист уже ${currentSetlistId}. Игнорируем.`);
-            return;
-        }
-        console.error(`Ошибка при загрузке песен для сет-листа ${setlistId}:`, error);
-        currentSetlistSongsContainer.innerHTML = '<div class="empty-message">Ошибка загрузки песен.</div>';
-        currentSetlistSongs = [];
-        // Отписка при ошибке
-        if (currentSetlistSongsUnsubscribe) {
-            currentSetlistSongsUnsubscribe();
-            currentSetlistSongsUnsubscribe = null;
-        }
-    });
-}
 
 /** Добавляет текущую песню в ВЫБРАННЫЙ сет-лист */
 async function addToCurrentSetlist() {
