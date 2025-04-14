@@ -964,15 +964,9 @@ function startEditSetlistName(itemElement, id, currentName) {
     // чтобы позволить Enter сработать первым и избежать двойного сохранения.
     let blurTimeout;
     input.addEventListener('blur', () => {
-        clearTimeout(blurTimeout); // Очищаем предыдущий таймаут, если есть
-        blurTimeout = setTimeout(() => {
-             // Проверяем, что элемент еще в фокусе (возможно, сработал Escape)
-             // и что он все еще часть DOM
-             if (document.activeElement !== input && itemElement.contains(input)) {
-                 saveHandler();
-             }
-        }, 150); // Немного увеличим задержку
-    });
+       // Сразу вызываем сохранение при потере фокуса
+       saveSetlistName(id, input, itemElement);
+   });
 
     input.addEventListener('keydown', keydownHandler);
 
@@ -980,81 +974,95 @@ function startEditSetlistName(itemElement, id, currentName) {
     itemElement.dataset.keydownHandler = keydownHandler; // Сохраняем ссылку
 }
 
-/** Сохранение нового имени сет-листа */
+/** Сохранение нового имени сет-листа (ИСПРАВЛЕНО) */
 async function saveSetlistName(id, inputElement, itemElement) {
-    if (!inputElement || !itemElement.contains(inputElement)) {
-        return; // Элемент уже удален (возможно, через Escape)
+    // Проверяем, существует ли еще элемент ввода
+    // (важно, т.к. blur может сработать после Escape или Enter)
+    if (!inputElement || !itemElement || !itemElement.contains(inputElement)) {
+        // console.log("saveSetlistName: Input element no longer exists or not in itemElement.");
+        return;
+    }
+    // Добавим проверку, не в процессе ли уже сохранение (на всякий случай)
+    if (itemElement.dataset.isSaving === 'true') {
+        // console.log("saveSetlistName: Already saving...");
+        return;
     }
 
     const newName = inputElement.value.trim();
     const originalName = inputElement.dataset.originalName;
 
-    // Убираем поле ввода *до* асинхронной операции, чтобы избежать двойного сохранения
-    const tempName = newName || originalName; // Используем новое имя или старое, если новое пустое
-    cancelEditSetlistName(itemElement, tempName); // Передаем имя для немедленного отображения
-
-    // Если имя пустое или не изменилось, просто выходим после cancelEditSetlistName
+    // Если имя пустое или не изменилось, просто отменяем редактирование
     if (!newName || newName === originalName) {
-        console.log("Редактирование имени отменено (имя не изменилось или пустое).");
+        cancelEditSetlistName(itemElement); // Возвращаем старый вид
         return;
     }
+
+    // Помечаем, что началось сохранение
+    itemElement.dataset.isSaving = 'true';
+    inputElement.disabled = true; // Блокируем поле ввода
 
     console.log(`Сохранение нового имени "${newName}" для сет-листа ${id}`);
     try {
         const setlistDocRef = doc(db, "setlists", id);
+        // --- СНАЧАЛА СОХРАНЯЕМ В FIRESTORE ---
         await updateDoc(setlistDocRef, { name: newName });
         console.log("Имя сет-листа успешно обновлено в Firestore.");
 
+        // --- ПОТОМ ОБНОВЛЯЕМ UI УСПЕШНО ---
         // Обновляем имя в заголовке текущего сетлиста, если редактировали его
         if(id === currentSetlistId && currentSetlistTitle){
             currentSetlistTitle.textContent = newName;
             currentSetlistName = newName; // Обновляем и глобальное состояние
         }
-        // Имя в списке уже обновлено в cancelEditSetlistName
+        // Убираем поле ввода и показываем НОВОЕ имя
+        cancelEditSetlistName(itemElement, newName);
+        // alert("Имя сет-листа обновлено!"); // Можно раскомментировать
+
     } catch (error) {
         console.error("Ошибка при обновлении имени сет-листа:", error);
-        alert("Не удалось обновить имя сет-листа.");
-        // Возвращаем старое имя в UI, если сохранение не удалось
-        const nameSpan = itemElement.querySelector('span.setlist-name-display');
-        if (nameSpan) {
-            nameSpan.textContent = originalName; // Возвращаем старое имя
-        }
-        // Если редактировали текущий, вернем старое имя и в заголовок
-         if(id === currentSetlistId && currentSetlistTitle){
-            currentSetlistTitle.textContent = originalName;
-            currentSetlistName = originalName;
-        }
-    }
-}
+        alert("Не удалось обновить имя сет-листа. Попробуйте еще раз.");
+        // --- ОБНОВЛЯЕМ UI ПРИ ОШИБКЕ (возвращаем старое имя) ---
+        cancelEditSetlistName(itemElement, originalName); // Убираем поле, показываем СТАРОЕ имя
 
-/** Отмена режима редактирования имени сет-листа */
-function cancelEditSetlistName(itemElement, nameToShow) {
+    } finally {
+        // Снимаем флаг сохранения в любом случае
+         if (itemElement) { // Элемент мог быть удален
+             delete itemElement.dataset.isSaving;
+         }
+        // Разблокируем поле ввода (хотя оно уже должно быть удалено)
+        // if (inputElement) inputElement.disabled = false; // Не нужно, т.к. удаляем через cancel
+    }
+} // Конец saveSetlistName
+
+/** Отмена режима редактирования имени сет-листа (ИСПРАВЛЕНО) */
+function cancelEditSetlistName(itemElement, nameToShow) { // Добавлен второй аргумент
     if (!itemElement || !itemElement.classList.contains('is-editing')) {
         return;
     }
 
     const input = itemElement.querySelector('input.edit-setlist-input');
     if (input) {
-        // Удаляем слушатели перед удалением элемента
-        input.removeEventListener('blur', () => {}); // Удаление пустого обработчика не сработает, нужно сохранять ссылки
-        input.removeEventListener('keydown', itemElement.dataset.keydownHandler); // Используем сохраненную ссылку
-        delete itemElement.dataset.keydownHandler; // Удаляем сохраненную ссылку
-
+        // Удаляем слушатели перед удалением элемента (хотя это может быть излишним)
+        input.removeEventListener('blur', () => {}); // Простая заглушка, т.к. ссылки нет
+        const keydownHandlerRef = itemElement.dataset.keydownHandler; // Пытаемся получить ссылку (не очень надежно)
+        if (keydownHandlerRef) {
+            // input.removeEventListener('keydown', keydownHandlerRef); // Удаление по ссылке не всегда работает
+            delete itemElement.dataset.keydownHandler; // Удаляем атрибут
+        }
         itemElement.removeChild(input);
     }
 
-    // Обновляем текст в span, если передано имя
-    if (nameToShow !== undefined) {
-        const nameSpan = itemElement.querySelector('span.setlist-name-display');
-        if (nameSpan) {
-            nameSpan.textContent = nameToShow;
-        }
+    // Обновляем текст в span ПЕРЕД тем, как сделать его видимым
+    const nameSpan = itemElement.querySelector('span.setlist-name-display');
+    if (nameSpan) {
+        // Используем переданное имя (новое или старое) или оригинальное из data-атрибута
+         const originalNameFromData = input?.dataset?.originalName; // Пытаемся получить из удаленного инпута
+        nameSpan.textContent = nameToShow !== undefined ? nameToShow : (originalNameFromData || 'Без названия');
     }
 
-    itemElement.classList.remove('is-editing');
-    // Не фокусируем элемент здесь, чтобы избежать конфликта с blur
-    // itemElement.focus();
-}
+    itemElement.classList.remove('is-editing'); // Убираем класс (показывает span/кнопку)
+    // itemElement.focus(); // Не фокусируем здесь, чтобы blur успел отработать
+} // Конец cancelEditSetlistName
 
 // --- КОНЕЦ НОВЫХ ФУНКЦИЙ ДЛЯ СЕТ-ЛИСТОВ ---
 
