@@ -1,14 +1,15 @@
 /* ======================================== */
-/* Styles for Agape Worship              */
-/* Версия включает:                       */
-/* - Рефакторинг панелей                  */
-/* - Режим Презентации v2                 */
-/* - Темы + Переключение                  */
-/* - Визуальные улучшения                 */
-/* - Исправление SVG URL                  */
-/* - Исправление контраста кнопок         */
-/* - Улучшение видимости кнопок презент.   */
+/* Styles for Agape Worship             */
+/* Версия включает:                     */
+/* - Рефакторинг панелей                */
+/* - Режим Презентации v2               */
+/* - Темы + Переключение                */
+/* - Визуальные улучшения               */
+/* - Исправление SVG URL                */
+/* - Исправление контраста кнопок       */
+/* - Улучшение видимости кнопок презент.  */
 /* - !!! ИЗМЕНЕНИЯ CSS ДЛЯ РАЗДЕЛЕНИЯ ПАНЕЛЕЙ И 3 КНОПОК НАВИГАЦИИ !!! */
+/* - !!! ИСПРАВЛЕНИЕ КНОПОК СЕТ-ЛИСТА !!! */
 /* ======================================== */
 
 /* --- Theme Variables --- */
@@ -258,7 +259,7 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
 
 
 /* ============================================ */
-/* СТИЛИ ДЛЯ РЕЖИМА ПРЕЗЕНТАЦИИ                 */
+/* СТИЛИ ДЛЯ РЕЖИМА ПРЕЗЕНТАЦИИ                */
 /* ============================================ */
 .presentation-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--background-color); z-index: 2000; display: none; scroll-behavior: smooth; overflow-y: hidden; transition: background-color 0.3s ease; }
 .presentation-overlay.visible { display: block; }
@@ -300,7 +301,7 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
 
 
 /* ============================================ */
-/* СТИЛИ ДЛЯ БОКОВЫХ ПАНЕЛЕЙ                    */
+/* СТИЛИ ДЛЯ БОКОВЫХ ПАНЕЛЕЙ                   */
 /* ============================================ */
 .side-panel {
     position: fixed; top: 0; width: 90%; max-width: 360px; height: 100%;
@@ -349,6 +350,18 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
 #setlists-panel .setlist-section { /* Секция со списком сет-листов */
     flex-shrink: 0; /* Не сжимается */
 }
+#setlists-panel .create-setlist-form { /* Добавили класс форме в HTML? Если нет, стилизуем по-другому */
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px; /* Отступ после формы */
+}
+#setlists-panel #new-setlist-name-input {
+    flex-grow: 1; /* Поле ввода занимает доступное место */
+}
+#setlists-panel #create-setlist-button {
+    flex-shrink: 0; /* Кнопка не сжимается */
+}
+
 #setlists-panel .current-setlist-section { /* Секция с выбранным сет-листом */
     flex-grow: 1; /* Занимает оставшееся место */
     display: flex; flex-direction: column;
@@ -360,41 +373,59 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
 }
 
 
+/* ================================================================ */
+/* === ИСПРАВЛЕННЫЕ СТИЛИ ДЛЯ КНОПОК "Презентация" и "Удалить" === */
+/* ================================================================ */
+
 /* Контейнер для кнопок "Презентация" и "Удалить" */
-.current-setlist-controls {
-    display: flex;        /* Включаем Flexbox */
-    flex-wrap: wrap;      /* Позволяем переноситься на новую строку, если не влезают */
-    gap: 10px;            /* Добавляем отступ в 10px между кнопками */
-    margin-top: 10px;     /* Небольшой отступ сверху от названия сет-листа */
-    margin-bottom: 15px;  /* Отступ снизу до списка песен */
-    justify-content: flex-start; /* Выравниваем кнопки по левому краю (можно center или space-between) */
+#setlists-panel .current-setlist-controls {
+    display: flex !important;      /* Включаем Flexbox (с !important для надежности) */
+    flex-wrap: wrap;             /* Позволяем переноситься */
+    gap: 10px;                   /* Отступ между кнопками */
+    margin-top: 10px;            /* Отступ сверху от заголовка */
+    margin-bottom: 15px;         /* Отступ снизу до списка песен */
+    justify-content: flex-start; /* Выравнивание по левому краю */
+    width: 100%;                 /* Контейнер занимает всю ширину */
+    box-sizing: border-box;
 }
 
-/* Стили для самих кнопок внутри контейнера */
-.current-setlist-controls button {
-    flex-grow: 0;        /* Запрещаем кнопкам растягиваться, чтобы занять все место */
-    flex-shrink: 0;      /* Запрещаем кнопкам сжиматься (опционально) */
-    width: auto;         /* Ширина кнопки будет зависеть от контента (текст + иконка) */
-    padding: 8px 15px;   /* Уменьшим вертикальные отступы и немного увеличим горизонтальные для баланса */
-    font-size: 0.9em;    /* Можно немного уменьшить шрифт, если нужно */
-    /* Можно добавить и другие стили для единообразия с кнопкой "Создать",
-       например, border-radius, background-color, color и т.д. */
+/* Стили для САМИХ кнопок внутри этого контейнера */
+#setlists-panel .current-setlist-controls button {
+    flex-grow: 0 !important;       /* Запрещаем растягиваться */
+    flex-shrink: 0;                /* Запрещаем сжиматься */
+    width: auto !important;        /* Ширина по контенту */
+    max-width: calc(50% - 5px);    /* Макс. ширина ~половина (на случай переноса) */
+    padding: 8px 15px !important;  /* Внутренние отступы (можно настроить) */
+    font-size: 0.85em !important;  /* Размер шрифта (можно настроить) */
+    margin: 0 !important;          /* Убираем внешние отступы от базовых стилей */
+    /* Наследует border-radius и базовый градиент, если не переопределено ниже */
 }
 
-/* Опционально: Стили для кнопки "Удалить", чтобы выделить ее */
-#delete-setlist-button {
-    background-color: #dc3545; /* Красный цвет для опасного действия */
-    border-color: #dc3545;
-    color: white;
+/* Стили для кнопки "Презентация" (если нужно ее отличить) */
+#setlists-panel #start-presentation-button {
+    /* Можно оставить базовый синий градиент или задать свой фон */
+    /* background: linear-gradient(145deg, var(--primary-color), var(--secondary-color)) !important; */
+    /* color: var(--button-text-color) !important; */
 }
 
-#delete-setlist-button:hover {
-    background-color: #c82333;
-    border-color: #bd2130;
+/* Стили для кнопки "Удалить", чтобы выделить ее */
+#setlists-panel #delete-setlist-button {
+    background: var(--danger-color) !important; /* Ярко-красный фон */
+    border: none !important;                 /* Убираем границу, если есть */
+    color: white !important;                 /* Белый текст */
+    /* Убираем тень, если она есть у базовой кнопки и мешает */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
 }
 
-
-
+#setlists-panel #delete-setlist-button:hover {
+    background: color-mix(in srgb, var(--danger-color) 85%, black) !important; /* Чуть темнее при наведении */
+    color: white !important;
+    transform: none !important; /* Отключаем подпрыгивание, если не нужно */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3) !important; /* Небольшая тень при наведении */
+}
+/* ================================================================ */
+/* === КОНЕЦ ИСПРАВЛЕННЫХ СТИЛЕЙ ДЛЯ КНОПОК СЕТ-ЛИСТА === */
+/* ================================================================ */
 
 
 /* Элементы списков (Общее) */
@@ -468,7 +499,7 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
 
 
 /* ============================================ */
-/* НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ                      */
+/* НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ                     */
 /* ============================================ */
 .mobile-bottom-nav {
     position: fixed; bottom: 0; left: 0; width: 100%; height: 60px;
@@ -528,7 +559,7 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 
 
 /* ============================================ */
-/* АДАПТИВНОСТЬ                                 */
+/* АДАПТИВНОСТЬ                                */
 /* ============================================ */
 @media (max-width: 768px) { /* Можно добавить стили для планшетов */ }
 
@@ -580,12 +611,21 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
     #repertoire-panel-list { padding: 5px; }
     #repertoire-panel .repertoire-item { font-size: 0.85rem; padding: 7px 8px 7px 15px; }
     /* Форма создания сет-листа */
-    .create-setlist-form { margin-bottom: 10px; }
+    #setlists-panel .create-setlist-form { margin-bottom: 10px; }
     #new-setlist-name-input { font-size: 0.9rem; padding: 7px 10px; }
     #create-setlist-button { padding: 7px 12px; font-size: 0.8rem; }
-    /* Контролы текущего сет-листа */
-    .current-setlist-controls { margin-bottom: 8px; padding-bottom: 8px; }
-    .current-setlist-controls button { font-size: 0.75rem; padding: 5px 8px;}
+
+    /* Контролы текущего сет-листа на мобильных */
+    #setlists-panel .current-setlist-controls {
+        margin-bottom: 8px;
+        /* padding-bottom: 8px; */ /* Убедитесь, что это закомментировано или удалено, если не нужно */
+        gap: 8px; /* Можно уменьшить отступ на мобильных */
+    }
+    #setlists-panel .current-setlist-controls button {
+        font-size: 0.75em !important; /* Уменьшаем шрифт еще */
+        padding: 6px 10px !important; /* Уменьшаем паддинги */
+        max-width: calc(50% - 4px); /* Пересчитываем макс. ширину под новый gap */
+    }
 
 
     /* Презентация на мобильных */
