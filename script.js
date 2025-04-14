@@ -43,65 +43,105 @@ const MAX_SHARED_SONGS = 8;
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
-const sharedListCollection = collection(db, "sharedList"); // Reference to the shared list collection
+const setlistsCollection = collection(db, "setlists");
 
 // --- GLOBAL STATE ---
-let currentRepertoireUnsubscribe = null; // <--- ДОБАВИТЬ ЭТУ ПЕРЕМЕННУЮ
+let currentRepertoireUnsubscribe = null; // Для отписки от слушателя репертуара
 let cachedData = {}; // Кэш данных из Google Sheets ({ sheetName: [rows...] })
 let favorites = JSON.parse(localStorage.getItem('favorites')) || []; // Избранные песни
 let currentVocalistId = null; // ID выбранного вокалиста
 let currentVocalistName = null; // Имя выбранного вокалиста
 let allSheetsData = []; // Данные всех листов для поиска
-let searchIndex = []; // Индекс для поиска (пока не используется эффективно)
+// let searchIndex = []; // Индекс для поиска (пока не используется) - Можно удалить, если не планируется
 let currentFontSize = DEFAULT_FONT_SIZE; // Текущий размер шрифта
-let currentSharedListData = []; // Для режима презентации
-let presentationSongs = []; // Список песен для режима презентации
+
+// --- НОВЫЕ ПЕРЕМЕННЫЕ СОСТОЯНИЯ ДЛЯ СЕТ-ЛИСТОВ ---
+let currentSetlistId = null; // ID текущего выбранного сет-листа
+let currentSetlistName = null; // Имя текущего выбранного сет-листа (для заголовка)
+let currentSetlistSongs = []; // Массив объектов песен ТЕКУЩЕГО выбранного сет-листа (поля: id, sheet, index, name, preferredKey, order, ...)
+let currentSetlistSongsUnsubscribe = null; // Для отписки от слушателя песен ТЕКУЩЕГО сет-листа
+// --- КОНЕЦ НОВЫХ ПЕРЕМЕННЫХ ---
+
+// --- СОСТОЯНИЕ ПРЕЗЕНТАЦИИ ---
+// let presentationSongs = []; // УДАЛЕНО - будем использовать currentSetlistSongs напрямую
 let currentPresentationIndex = 0; // Индекс текущей отображаемой песни
 let controlsHideTimeout = null; // ID таймера для автоскрытия панели управления
 let isPresentationSplit = false; // Состояние разделения текста в презентации
 
-// Metronome State
+// --- СОСТОЯНИЕ МЕТРОНОМА ---
 let audioContext;
 let audioBuffer;
 let metronomeInterval = null;
 let isMetronomeActive = false;
 let currentBeat = 0;
 
+// --- УДАЛЕНО (старое состояние Общего Списка) ---
+// let currentSharedListData = [];
 
-// --- DOM ELEMENT REFERENCES (Исправлено от дубликатов) ---
+
+// --- DOM ELEMENT REFERENCES ---
+// Основные элементы управления
 const sheetSelect = document.getElementById('sheet-select');
 const songSelect = document.getElementById('song-select');
 const keySelect = document.getElementById('key-select');
 const searchInput = document.getElementById('search-input');
 const searchResults = document.getElementById('search-results');
 const loadingIndicator = document.getElementById('loading-indicator');
-const vocalistSelect = document.getElementById('vocalist-select');
 const songContent = document.getElementById('song-content');
-const favoriteButton = document.getElementById('favorite-button');
-const addToListButton = document.getElementById('add-to-list-button');
-const addToRepertoireButton = document.getElementById('add-to-repertoire-button');
 const splitTextButton = document.getElementById('split-text-button');
-const toggleFavoritesButton = document.getElementById('toggle-favorites'); // Кнопка Списки (слева)
-const favoritesPanel = document.getElementById('favorites-panel');        // Панель Списки (слева)
-const favoritesList = document.getElementById('favorites-list');
-const sharedSongsList = document.getElementById('shared-songs-list');
-const toggleRepertoireButton = document.getElementById('toggle-repertoire'); // Кнопка Репертуар (справа)
-const repertoirePanel = document.getElementById('repertoire-panel');          // Панель Репертуар (справа)
-const repertoirePanelVocalistName = document.getElementById('repertoire-panel-vocalist-name');
-const repertoirePanelList = document.getElementById('repertoire-panel-list');
-const repertoirePanelTitle = document.getElementById('repertoire-panel-title'); // Можно удалить, если не используется
+const zoomInButton = document.getElementById('zoom-in');
+const zoomOutButton = document.getElementById('zoom-out');
 const bpmDisplay = document.getElementById('bpm-display');
 const holychordsButton = document.getElementById('holychords-button');
 const timeSignatureSelect = document.getElementById('time-signature');
 const metronomeButton = document.getElementById('metronome-button');
-const zoomInButton = document.getElementById('zoom-in');
-const zoomOutButton = document.getElementById('zoom-out');
 const playerContainer = document.getElementById('youtube-player-container');
 const playerSection = document.getElementById('youtube-player-section');
+
+// Кнопки действий с песней
+const favoriteButton = document.getElementById('favorite-button'); // Добавить в Мой список
+const addToSetlistButton = document.getElementById('add-to-setlist-button'); // Добавить В СЕТ-ЛИСТ (бывший add-to-list-button)
+const addToRepertoireButton = document.getElementById('add-to-repertoire-button'); // Добавить в репертуар вокалиста
+
+// Элементы боковых панелей
+const toggleFavoritesButton = document.getElementById('toggle-favorites'); // Кнопка откр/закр Левой панели (Списки)
+const favoritesPanel = document.getElementById('favorites-panel');      // Сама Левая панель (Списки)
+const toggleRepertoireButton = document.getElementById('toggle-repertoire'); // Кнопка откр/закр Правой панели (Репертуар)
+const repertoirePanel = document.getElementById('repertoire-panel');       // Сама Правая панель (Репертуар)
+
+// Элементы панели "Мой список" (внутри Левой панели)
+const favoritesList = document.getElementById('favorites-list'); // Контейнер для песен "Моего списка"
+
+// Элементы панели "Сет-листы" (НОВЫЕ, внутри Левой панели)
+const newSetlistNameInput = document.getElementById('new-setlist-name-input'); // Поле ввода имени нового сет-листа
+const createSetlistButton = document.getElementById('create-setlist-button'); // Кнопка "Создать" сет-лист
+const setlistsListContainer = document.getElementById('setlists-list-container'); // Контейнер для списка всех сет-листов
+
+// Элементы панели "Текущий сет-лист" (НОВЫЕ, внутри Левой панели)
+const currentSetlistTitle = document.getElementById('current-setlist-title'); // Заголовок с именем выбранного сет-листа
+const currentSetlistControls = document.querySelector('.current-setlist-controls'); // Блок кнопок "Презентация" и "Удалить сет-лист"
+const startPresentationButton = document.getElementById('start-presentation-button'); // Кнопка "Презентация" для сет-листа
+const deleteSetlistButton = document.getElementById('delete-setlist-button'); // Кнопка "Удалить" сет-лист
+const currentSetlistSongsContainer = document.getElementById('current-setlist-songs-container'); // Контейнер для песен ВНУТРИ выбранного сет-листа
+
+// Элементы панели "Репертуар" (внутри Правой панели)
+const vocalistSelect = document.getElementById('vocalist-select');
+const repertoirePanelList = document.getElementById('repertoire-panel-list'); // Контейнер для аккордеона репертуара
+
+// Элементы режима Презентации
 const presentationOverlay = document.getElementById('presentation-overlay');
 const presentationContent = document.getElementById('presentation-content');
 const presentationCloseBtn = document.getElementById('presentation-close-btn');
-const sharedListHeading = document.getElementById('shared-list-heading'); // ID добавлен в HTML
+const presSplitTextBtn = document.getElementById('pres-split-text-btn'); // Кнопка разделения в презентации
+const presentationControls = document.querySelector('.presentation-controls'); // Нижняя панель в презентации
+const presPrevBtn = document.getElementById('pres-prev-btn');
+const presNextBtn = document.getElementById('pres-next-btn');
+const presCounter = document.getElementById('pres-counter');
+
+// Удаленные/переименованные ссылки (можно удалить эти строки или оставить как комментарий)
+// const addToListButton = document.getElementById('add-to-list-button'); // ЗАМЕНЕНА на addToSetlistButton
+// const sharedSongsList = document.getElementById('shared-songs-list'); // УДАЛЕНО из HTML
+// const sharedListHeading = document.getElementById('shared-list-heading'); // УДАЛЕНО из HTML
 
 
 
@@ -186,132 +226,7 @@ async function loadVocalists() {
     }
 }
 
-/** Загрузка и отображение общего списка песен (Firestore) */
-function loadSharedList(container = sharedSongsList) {
-    if (!container) {
-        console.error("Контейнер для общего списка песен не найден.");
-        return;
-    }
-    container.innerHTML = '<div>Загрузка общего списка...</div>'; // Начальное состояние
 
-    const q = query(sharedListCollection, orderBy("timestamp", "asc")); // Сортировка по времени добавления
-
-    // Устанавливаем слушатель (onSnapshot)
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-        container.innerHTML = ''; // Очищаем перед обновлением
-        if (snapshot.empty) {
-            container.innerHTML = '<div class="empty-message">Нет песен в общем списке</div>';
-            currentSharedListData = []; // Очищаем данные, если список пуст
-            return;
-        }
-
-       currentSharedListData = snapshot.docs.map(doc => ({
-            id: doc.id, // Сохраняем ID документа Firestore
-            ...doc.data() // Сохраняем остальные данные (name, key, sheet, index, timestamp)
-       }));
-
-        snapshot.docs.forEach((doc) => {
-            const song = doc.data();
-            const docId = doc.id;
-            // Создаем элемент списка (listItem)
-            const listItem = document.createElement('div');
-            listItem.className = 'shared-item';
-            // Имя песни и тональность
-            const songNameElement = document.createElement('span');
-            songNameElement.textContent = `${song.name} — ${song.key}`;
-            songNameElement.className = 'song-name';
-            songNameElement.addEventListener('click', async () => {
-                // Логика клика по песне в общем списке... (оставлена как есть)
-                 const sheetNameValue = Object.keys(SHEETS).find(key => SHEETS[key] === song.sheet);
-                 if(sheetNameValue) sheetSelect.value = sheetNameValue;
-                 if (!cachedData[song.sheet]) await fetchSheetData(song.sheet);
-                 await loadSheetSongs();
-                 songSelect.value = song.index;
-                 displaySongDetails(cachedData[song.sheet]?.[song.index], song.index, song.key);
-                 if (favoritesPanel) favoritesPanel.classList.remove('open');
-                 if (repertoirePanel) repertoirePanel.classList.remove('open'); // Закрываем и репертуар
-            });
-            // Кнопка удаления
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = '❌';
-            deleteButton.className = 'delete-button';
-            deleteButton.addEventListener('click', () => {
-                if (confirm(`Удалить песню "${song.name}" из общего списка?`)) {
-                    deleteFromSharedList(docId);
-                }
-            });
-
-            listItem.appendChild(songNameElement);
-            listItem.appendChild(deleteButton);
-            container.appendChild(listItem);
-        });
-    }, (error) => {
-        console.error("Ошибка при получении данных общего списка:", error);
-        container.innerHTML = '<div class="empty-message">Не удалось загрузить общий список.</div>';
-        currentSharedListData = []; // Очищаем данные при ошибке
-    });
-    // Примечание: unsubscribe можно сохранить, если нужно будет отключать слушатель
-}
-
-/** Добавление песни в общий список (Firestore) */
-async function addToSharedList(songData) {
-    const sheetName = SHEETS[sheetSelect.value];
-    const songIndex = songSelect.value;
-
-    if (!sheetName || !songIndex || !songData || !songData[0]) {
-        console.error("addToSharedList: Данные для добавления песни отсутствуют или некорректны.");
-        alert("Не удалось добавить песню: недостаточно данных. Выберите песню.");
-        return;
-    }
-    const song = {
-        name: songData[0],
-        sheet: sheetName,
-        index: songIndex,
-        key: keySelect.value,
-        timestamp: new Date().toISOString() // Используем ISO строку для простоты
-    };
-    console.log("addToSharedList: Попытка добавить песню:", song);
-
-    try {
-        // Проверка лимита
-        const countSnapshot = await getDocs(query(sharedListCollection));
-        console.log(`addToSharedList: Текущий размер списка: ${countSnapshot.size}`);
-        if (countSnapshot.size >= MAX_SHARED_SONGS) {
-            alert(`В общем списке уже ${countSnapshot.size} песен. Достигнут лимит (${MAX_SHARED_SONGS}).`);
-            return;
-        }
-        // Проверка дубликатов
-        const duplicateQuery = query(sharedListCollection, where("sheet", "==", song.sheet), where("index", "==", song.index));
-        const duplicateSnapshot = await getDocs(duplicateQuery);
-        console.log(`addToSharedList: Найдено дубликатов: ${duplicateSnapshot.size}`);
-        if (!duplicateSnapshot.empty) {
-            alert(`Песня "${song.name}" уже есть в общем списке.`);
-            return;
-        }
-        // Добавление
-        await addDoc(sharedListCollection, song);
-        console.log(`addToSharedList: Песня "${song.name}" успешно добавлена.`);
-        alert(`Песня "${song.name}" добавлена в общий список.`);
-    } catch (error) {
-        console.error("addToSharedList: Ошибка при проверке или добавлении:", error);
-        alert("Произошла ошибка при добавлении песни в общий список.");
-    }
-}
-
-/** Удаление песни из общего списка (Firestore) */
-async function deleteFromSharedList(docId) {
-    console.log(`Попытка удалить из общего списка: ${docId}`);
-    if (!docId) return;
-    try {
-        await deleteDoc(doc(db, "sharedList", docId));
-        console.log("Песня удалена из общего списка.");
-        // Список обновится через onSnapshot, но можно вызвать loadGroupPanel для немедленной реакции, если нужно
-        // loadGroupPanel(); // Можно раскомментировать, если обновление onSnapshot медленное
-    } catch (error) {
-        console.error("Ошибка при удалении песни из общего списка:", error);
-        alert("Не удалось удалить песню из общего списка.");
-    }
-}
 
 
 
@@ -610,6 +525,426 @@ async function removeFromRepertoire(vocalistId, repertoireDocId) {
      }
 }
 
+
+
+// --- НОВЫЕ ФУНКЦИИ ДЛЯ СЕТ-ЛИСТОВ ---
+
+/** Загрузка и отображение списка сет-листов */
+function loadSetlists() {
+    if (!setlistsListContainer) {
+        console.error("Контейнер для списка сет-листов (#setlists-list-container) не найден.");
+        return;
+    }
+    setlistsListContainer.innerHTML = '<div class="empty-message">Загрузка сет-листов...</div>';
+
+    const q = query(setlistsCollection, orderBy("name", "asc")); // Сортируем по имени
+
+    // Слушаем изменения в коллекции сет-листов
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+        setlistsListContainer.innerHTML = ''; // Очищаем контейнер
+        if (snapshot.empty) {
+            setlistsListContainer.innerHTML = '<div class="empty-message">Нет созданных сет-листов.</div>';
+            // Если нет сет-листов, сбрасываем выбор текущего
+            selectSetlist(null, null); // Вызываем сброс
+            return;
+        }
+
+        snapshot.docs.forEach((doc) => {
+            const setlist = doc.data();
+            const setlistId = doc.id;
+            const setlistItem = document.createElement('div');
+            setlistItem.className = 'setlist-item'; // Класс для стилизации
+            setlistItem.textContent = setlist.name || 'Без названия';
+            setlistItem.dataset.id = setlistId; // Сохраняем ID в data-атрибут
+
+            // Добавляем обработчик клика для выбора сет-листа
+            setlistItem.addEventListener('click', () => {
+                selectSetlist(setlistId, setlist.name);
+            });
+
+            // Если этот сет-лист был выбран ранее, подсвечиваем его
+            if (setlistId === currentSetlistId) {
+                setlistItem.classList.add('active');
+            }
+
+            setlistsListContainer.appendChild(setlistItem);
+        });
+    }, (error) => {
+        console.error("Ошибка при загрузке списка сет-листов:", error);
+        setlistsListContainer.innerHTML = '<div class="empty-message">Не удалось загрузить сет-листы.</div>';
+        selectSetlist(null, null); // Сброс при ошибке
+    });
+
+    // !!! Важно: Пока не сохраняем unsubscribe, т.к. список сет-листов должен обновляться всегда.
+}
+
+/** Обработка выбора сет-листа */
+function selectSetlist(setlistId, setlistName) {
+     console.log(`Выбран сет-лист: ID=<span class="math-inline">\{setlistId\}, Имя\=</span>{setlistName}`);
+     currentSetlistId = setlistId; // Обновляем глобальное состояние
+     currentSetlistName = setlistName;
+
+     // Обновляем подсветку в списке сет-листов
+     if (setlistsListContainer) {
+         const items = setlistsListContainer.querySelectorAll('.setlist-item');
+         items.forEach(item => {
+             item.classList.toggle('active', item.dataset.id === setlistId);
+         });
+     }
+
+     // Обновляем заголовок текущего сет-листа и кнопки управления
+     if (currentSetlistTitle && currentSetlistControls) {
+         if (setlistId) {
+             currentSetlistTitle.textContent = setlistName || 'Сет-лист без названия';
+             currentSetlistControls.style.display = 'flex'; // Показываем кнопки Презентация/Удалить
+         } else {
+             currentSetlistTitle.textContent = 'Выберите сет-лист';
+             currentSetlistControls.style.display = 'none'; // Скрываем кнопки
+             currentSetlistSongs = []; // Очищаем песни при сбросе
+             if (currentSetlistSongsContainer) {
+                  currentSetlistSongsContainer.innerHTML = '<div class="empty-message">Сначала выберите сет-лист</div>';
+             }
+         }
+     }
+
+     // Загружаем песни для выбранного сет-листа (функцию напишем на след. шаге)
+     loadCurrentSetlistSongs(setlistId);
+}
+
+
+/** Создание нового сет-листа */
+async function createSetlist() {
+    if (!newSetlistNameInput || !createSetlistButton) return;
+
+    const setlistName = newSetlistNameInput.value.trim();
+    if (!setlistName) {
+        alert("Пожалуйста, введите название сет-листа.");
+        newSetlistNameInput.focus();
+        return;
+    }
+
+    createSetlistButton.disabled = true; // Блокируем кнопку на время создания
+    createSetlistButton.textContent = 'Создание...';
+
+    const dataToSave = {
+        name: setlistName,
+        createdAt: new Date() // Добавляем дату создания
+        // Можно добавить serverTimestamp() если нужно точное время сервера:
+        // createdAt: serverTimestamp() // Потребует импорта serverTimestamp
+    };
+
+    try {
+        const docRef = await addDoc(setlistsCollection, dataToSave);
+        console.log("Новый сет-лист создан с ID:", docRef.id);
+        newSetlistNameInput.value = ''; // Очищаем поле ввода
+        // Список обновится автоматически благодаря onSnapshot в loadSetlists
+        alert(`Сет-лист "${setlistName}" создан!`);
+    } catch (error) {
+        console.error("Ошибка при создании сет-листа:", error);
+        alert("Не удалось создать сет-лист. Попробуйте еще раз.");
+    } finally {
+        createSetlistButton.disabled = false; // Разблокируем кнопку
+        createSetlistButton.textContent = 'Создать';
+    }
+}
+
+
+/** Загрузка и отображение песен для ТЕКУЩЕГО выбранного сет-листа */
+function loadCurrentSetlistSongs(setlistId) {
+    if (!currentSetlistSongsContainer) {
+        console.error("Контейнер для песен текущего сет-листа (#current-setlist-songs-container) не найден.");
+        return;
+    }
+
+    // 1. Отписываемся от предыдущего слушателя песен (если он был)
+    if (currentSetlistSongsUnsubscribe) {
+        console.log("Отписка от предыдущего слушателя песен сет-листа.");
+        currentSetlistSongsUnsubscribe();
+        currentSetlistSongsUnsubscribe = null;
+    }
+
+    // 2. Очищаем контейнер и массив песен, если сет-лист не выбран (или выбор сброшен)
+    if (!setlistId) {
+        currentSetlistSongsContainer.innerHTML = '<div class="empty-message">Сначала выберите сет-лист</div>';
+        currentSetlistSongs = []; // Очищаем массив
+        return;
+    }
+
+    // 3. Показываем индикатор загрузки
+    currentSetlistSongsContainer.innerHTML = '<div>Загрузка песен сет-листа...</div>';
+    currentSetlistSongs = []; // Очищаем массив перед загрузкой
+
+    // 4. Создаем путь к подколлекции песен и запрос с сортировкой по полю 'order'
+    const songsCollectionRef = collection(db, "setlists", setlistId, "songs");
+    const q = query(songsCollectionRef, orderBy("order", "asc")); // Сортируем по порядку
+
+    console.log(`Установка слушателя для песен сет-листа ${setlistId}`);
+
+    // 5. Устанавливаем нового слушателя (onSnapshot)
+    currentSetlistSongsUnsubscribe = onSnapshot(q, (snapshot) => {
+         // Проверяем, что ID сет-листа не изменился, пока мы ждали ответ
+         if (setlistId !== currentSetlistId) {
+             console.warn(`Получен снимок песен для ${setlistId}, но текущий сет-лист уже ${currentSetlistId}. Игнорируем.`);
+             return;
+         }
+
+        console.log(`Слушатель песен для ${setlistId} сработал. Документов: ${snapshot.size}`);
+        currentSetlistSongsContainer.innerHTML = ''; // Очищаем контейнер
+        currentSetlistSongs = []; // Очищаем массив перед заполнением
+
+        if (snapshot.empty) {
+            currentSetlistSongsContainer.innerHTML = '<div class="empty-message">В этом сет-листе пока нет песен.</div>';
+            return;
+        }
+
+
+if (createSetlistButton) {
+    createSetlistButton.addEventListener('click', createSetlist);
+} else {
+    console.warn("Кнопка #create-setlist-button не найдена.");
+}
+
+// Обработчик для кнопки "Презентация" сет-листа
+if (startPresentationButton) {
+     // ... обработчик для startPresentationButton ...
+} else { console.warn("Кнопка #start-presentation-button не найдена."); }
+
+// !!! ДОБАВИТЬ: Обработчик для кнопки "Удалить сет-лист" !!!
+if (deleteSetlistButton) {
+    deleteSetlistButton.addEventListener('click', deleteCurrentSetlist);
+} else {
+    console.warn("Кнопка #delete-setlist-button не найдена.");
+}
+
+        // 6. Обрабатываем и отображаем каждую песню
+        snapshot.docs.forEach((songDoc) => {
+            const songData = songDoc.data();
+            const songDocId = songDoc.id; // ID документа песни ВНУТРИ сет-листа
+
+            // Сохраняем данные песни в глобальный массив (для презентации)
+            currentSetlistSongs.push({ id: songDocId, ...songData });
+
+            // Создаем элемент для отображения в списке
+            const songItem = document.createElement('div');
+            songItem.className = 'setlist-song-item'; // Класс для стилизации
+            songItem.dataset.id = songDocId; // Сохраняем ID документа песни
+            // Добавим data-атрибуты оригинальной песни для возможности быстрого перехода (если нужно)
+            songItem.dataset.sheet = songData.sheet;
+            songItem.dataset.index = songData.index;
+
+            // Информация о песне (название и тональность)
+            const songInfo = document.createElement('span');
+            songInfo.className = 'song-name';
+            songInfo.textContent = `${songData.name || 'Без названия'} — ${songData.preferredKey || 'N/A'}`;
+            songItem.appendChild(songInfo);
+
+            // Кнопка удаления песни ИЗ СЕТ-ЛИСТА (логику добавим позже)
+            const deleteBtn = document.createElement('button');
+            deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
+            deleteBtn.className = 'delete-button delete-song-from-setlist-button'; // Добавляем специфичный класс
+            deleteBtn.title = 'Удалить песню из сет-листа';
+             deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Остановить всплытие, чтобы не сработал клик по item
+            deleteSongFromSetlist(songDocId); // <-- ВЫЗЫВАЕМ НОВУЮ ФУНКЦИЮ
+        });
+            songItem.appendChild(deleteBtn);
+
+            // Обработчик клика по элементу песни (для перехода к ней в основном окне)
+             songItem.addEventListener('click', async () => {
+                console.log(`Клик по песне "${songData.name}" в сет-листе.`);
+                // Проверяем, есть ли данные песни в кэше
+                if (!cachedData[songData.sheet]?.[songData.index]) {
+                    console.log(`Данные для <span class="math-inline">\{songData\.name\} \(</span>{songData.sheet}) не найдены в кэше, загружаем...`);
+                    await fetchSheetData(songData.sheet); // Загружаем лист
+                     if (!cachedData[songData.sheet]?.[songData.index]) {
+                         alert(`Не удалось найти или загрузить данные песни "${songData.name}". Возможно, она была удалена из исходного листа.`);
+                         return;
+                     }
+                }
+                const originalSongData = cachedData[songData.sheet][songData.index];
+                const sheetNameValue = Object.keys(SHEETS).find(sKey => SHEETS[sKey] === songData.sheet);
+
+                if(sheetNameValue) sheetSelect.value = sheetNameValue; // Выбираем нужный лист
+                await loadSheetSongs(); // Перезагружаем список песен для этого листа
+                songSelect.value = songData.index; // Выбираем нужную песню в select
+                displaySongDetails(originalSongData, songData.index, songData.preferredKey); // Отображаем песню с тональностью из сет-листа
+
+                // Закрываем панель
+                if (favoritesPanel) favoritesPanel.classList.remove('open');
+                if (repertoirePanel) repertoirePanel.classList.remove('open');
+             });
+
+
+            currentSetlistSongsContainer.appendChild(songItem); // Добавляем элемент песни в контейнер
+        });
+
+        // Здесь позже можно будет инициализировать Drag-and-Drop, если нужно
+
+    }, (error) => {
+         // Проверяем, что ID сет-листа не изменился, пока мы ждали ошибку
+         if (setlistId !== currentSetlistId) {
+             console.warn(`Получена ошибка для ${setlistId}, но текущий сет-лист уже ${currentSetlistId}. Игнорируем.`);
+             return;
+         }
+        console.error(`Ошибка при загрузке песен для сет-листа ${setlistId}:`, error);
+        currentSetlistSongsContainer.innerHTML = '<div class="empty-message">Ошибка загрузки песен.</div>';
+        currentSetlistSongs = []; // Очищаем массив при ошибке
+        // Отписываемся при ошибке, чтобы не пытаться слушать дальше
+        if (currentSetlistSongsUnsubscribe) {
+            currentSetlistSongsUnsubscribe();
+            currentSetlistSongsUnsubscribe = null;
+        }
+    });
+}
+
+
+
+
+/** Добавляет текущую песню в ВЫБРАННЫЙ сет-лист */
+async function addToCurrentSetlist() {
+    console.log("Попытка добавить песню в текущий сет-лист...");
+
+    // 1. Проверяем, выбран ли сет-лист
+    if (!currentSetlistId) {
+        alert("Пожалуйста, сначала выберите сет-лист в панели слева, куда нужно добавить песню.");
+        // Попытаемся открыть панель, если она закрыта
+        if (favoritesPanel && !favoritesPanel.classList.contains('open')) {
+            favoritesPanel.classList.add('open');
+            if (repertoirePanel) repertoirePanel.classList.remove('open');
+            loadSetlists(); // Перезагрузим список на всякий случай
+        }
+        return;
+    }
+
+    // 2. Получаем данные текущей песни из интерфейса
+    const sheetName = SHEETS[sheetSelect.value];
+    const songIndex = songSelect.value;
+    if (!sheetName || songIndex === "" || !cachedData[sheetName]?.[songIndex]) {
+        alert("Пожалуйста, сначала выберите песню, которую хотите добавить.");
+        return;
+    }
+    const songData = cachedData[sheetName][songIndex];
+    const songName = songData[0];
+    const preferredKey = keySelect.value; // Берем тональность из селектора
+
+    console.log(`Добавляем: Песня="<span class="math-inline">\{songName\}", Тональность\=</span>{preferredKey} в Сет-лист ID=<span class="math-inline">\{currentSetlistId\} \(</span>{currentSetlistName || ''})`);
+
+    // 3. Определяем порядок (order) для новой песни (в конец списка)
+    // Находим максимальный 'order' среди уже существующих песен + 1
+    // Если песен нет, order = 0
+    const nextOrder = currentSetlistSongs.length > 0
+        ? Math.max(...currentSetlistSongs.map(song => song.order ?? -1)) + 1
+        : 0;
+    console.log("Следующий порядок (order):", nextOrder);
+
+    // 4. Готовим данные для сохранения в Firestore
+    const songEntryData = {
+        sheet: sheetName,        // Лист, откуда песня
+        index: songIndex,        // Индекс песни на листе
+        name: songName,          // Название песни (дублируем для удобства)
+        preferredKey: preferredKey, // Выбранная тональность
+        order: nextOrder         // Порядковый номер в сет-листе
+        // createdAt: new Date() // Можно добавить время добавления
+    };
+
+    // 5. Добавляем песню в подколлекцию 'songs' текущего сет-листа
+    try {
+        // 5.1 (Опционально) Проверка на дубликаты ВНУТРИ этого сет-листа
+        const songsCollectionRef = collection(db, "setlists", currentSetlistId, "songs");
+        const q = query(songsCollectionRef, where("sheet", "==", sheetName), where("index", "==", songIndex));
+        const duplicateSnapshot = await getDocs(q);
+        if (!duplicateSnapshot.empty) {
+             // Песня уже есть, спросим, не обновить ли тональность?
+             const existingDoc = duplicateSnapshot.docs[0]; // Берем первый найденный дубликат
+             if (existingDoc.data().preferredKey !== preferredKey) {
+                 if (confirm(`Песня "<span class="math-inline">\{songName\}" уже есть в сет\-листе "</span>{currentSetlistName}". Обновить тональность на ${preferredKey}?`)) {
+                     await setDoc(doc(db, "setlists", currentSetlistId, "songs", existingDoc.id), { preferredKey: preferredKey }, { merge: true });
+                     alert(`Тональность песни "${songName}" в сет-листе обновлена на ${preferredKey}.`);
+                 }
+             } else {
+                 alert(`Песня "<span class="math-inline">\{songName\}" уже есть в сет\-листе "</span>{currentSetlistName}" с той же тональностью.`);
+             }
+             return; // Выходим, не добавляем заново
+        }
+
+        // 5.2 Дубликатов нет, добавляем новую песню
+        const docRef = await addDoc(songsCollectionRef, songEntryData);
+        console.log(`Песня добавлена в сет-лист ${currentSetlistId} с ID документа: ${docRef.id}`);
+        alert(`Песня "<span class="math-inline">\{songName\}" \(</span>{preferredKey}) добавлена в сет-лист "${currentSetlistName}".`);
+        // Список песен обновится автоматически через onSnapshot в loadCurrentSetlistSongs
+
+    } catch (error) {
+        console.error("Ошибка при добавлении песни в сет-лист:", error);
+        alert("Произошла ошибка при добавлении песни в сет-лист.");
+    }
+}
+
+
+/** Удаление ОДНОЙ песни из ТЕКУЩЕГО сет-листа */
+async function deleteSongFromSetlist(songDocId) {
+    // Проверяем, выбран ли сет-лист
+    if (!currentSetlistId) {
+        console.error("Не выбран сет-лист для удаления песни.");
+        alert("Произошла ошибка: не выбран сет-лист.");
+        return;
+    }
+
+    // Находим данные песни в текущем массиве, чтобы показать имя в подтверждении
+    const songToDelete = currentSetlistSongs.find(song => song.id === songDocId);
+    const songNameToConfirm = songToDelete ? `"${songToDelete.name}"` : "эту песню";
+
+    if (confirm(`Вы уверены, что хотите удалить <span class="math-inline">\{songNameToConfirm\} из сет\-листа "</span>{currentSetlistName || 'текущего'}"?`)) {
+        console.log(`Попытка удаления песни ${songDocId} из сет-листа ${currentSetlistId}`);
+        try {
+            const songDocRef = doc(db, "setlists", currentSetlistId, "songs", songDocId);
+            await deleteDoc(songDocRef);
+            console.log("Песня успешно удалена из сет-листа.");
+            alert("Песня удалена из сет-листа.");
+            // UI обновится автоматически через onSnapshot в loadCurrentSetlistSongs
+        } catch (error) {
+            console.error("Ошибка при удалении песни из сет-листа:", error);
+            alert("Не удалось удалить песню из сет-листа.");
+        }
+    }
+}
+
+/** Удаление ВСЕГО ТЕКУЩЕГО сет-листа */
+async function deleteCurrentSetlist() {
+    if (!currentSetlistId || !currentSetlistName) {
+        alert("Сначала выберите сет-лист, который хотите удалить.");
+        return;
+    }
+
+    if (confirm(`ВЫ УВЕРЕНЫ, что хотите ПОЛНОСТЬЮ удалить сет-лист "${currentSetlistName}"?\n\nЭто действие необратимо и удалит сам сет-лист (но не сами песни из общих таблиц).`)) {
+         console.log(`Попытка удаления сет-листа ${currentSetlistId}`);
+         try {
+             const setlistDocRef = doc(db, "setlists", currentSetlistId);
+             await deleteDoc(setlistDocRef);
+             console.log("Сет-лист успешно удален.");
+             alert(`Сет-лист "${currentSetlistName}" удален.`);
+
+             // Сбрасываем выбор текущего сет-листа в интерфейсе
+             selectSetlist(null, null);
+
+             // Список сет-листов обновится автоматически через onSnapshot в loadSetlists
+
+             // ВАЖНО: Удаление документа НЕ удаляет его подколлекции (песни внутри).
+             // Песни останутся в базе данных "осиротевшими".
+             // Для полного удаления нужен более сложный код (Firebase Functions).
+
+         } catch (error) {
+             console.error("Ошибка при удалении сет-листа:", error);
+             alert("Не удалось удалить сет-лист.");
+         }
+    }
+}
+
+
+
+// --- КОНЕЦ НОВЫХ ФУНКЦИЙ ДЛЯ СЕТ-ЛИСТОВ ---
+
+
+
 // --- CORE LOGIC / UTILITIES ---
 
 /** Расчет смещения для транспонирования */
@@ -837,7 +1172,7 @@ async function displayCurrentPresentationSong() {
         const songTitle = originalSongData[0];
         const originalLyrics = originalSongData[1] || '';
         const originalKey = originalSongData[2] || chords[0];
-        const targetKey = song.key;
+    const targetKey = song.preferredKey;
 
         const transposition = getTransposition(originalKey, targetKey);
         const transposedLyrics = transposeLyrics(originalLyrics, transposition);
@@ -1295,28 +1630,7 @@ function removeFromFavorites(fav) {
 }
 
 
-function loadGroupPanel() {
-    console.log("Загрузка панели 'Списки'");
-    // Проверяем, открыта ли панель СПИСКОВ
-    if (!favoritesPanel || !favoritesPanel.classList.contains('open')) {
-        // console.log("Панель 'Списки' закрыта, загрузка не требуется.");
-        return;
-    }
 
-    // Загружаем "Мой список" (Избранное)
-    if(favoritesList) loadFavorites(favoritesList);
-
-    // Загружаем "Общий список" (Firestore)
-    if(sharedSongsList) loadSharedList(sharedSongsList);
-
-    // Репертуар больше здесь НЕ загружаем
-    // if(repertoireList) loadRepertoire(currentVocalistId);
-}
-
-
-// --- Настройка слушателей событий (дополнения) ---
-// Слушатель для НОВОЙ кнопки "Репертуар" (#toggle-repertoire)
-// Этот слушатель уже находится внутри setupEventListeners ниже, здесь оставлять не нужно.
 
 /** Обновление отображения BPM */
 function updateBPM(newBPM) {
@@ -1568,6 +1882,8 @@ function setupEventListeners() {
         }
     });
 
+
+
     if(splitTextButton && songContent) {
         const splitIcon = '<i class="fas fa-columns"></i>';
         const mergeIcon = '<i class="fas fa-align-justify"></i>'; // Иконка для "Объединить"
@@ -1582,6 +1898,11 @@ function setupEventListeners() {
             splitTextButton.innerHTML = content;
             splitTextButton.setAttribute('aria-label', isSplit ? 'Объединить колонки' : 'Разделить текст');
         };
+if (createSetlistButton) {
+    createSetlistButton.addEventListener('click', createSetlist);
+} else {
+    console.warn("Кнопка #create-setlist-button не найдена.");
+}
 
         splitTextButton.addEventListener('click', () => { // Обработчик основной кнопки
             const lyricsElement = songContent.querySelector('pre');
@@ -1619,15 +1940,12 @@ function setupEventListeners() {
         });
     }
 
-    if(addToListButton) {
-        addToListButton.addEventListener('click', () => {
-            const sheetName = SHEETS[sheetSelect.value];
-            const songIndex = songSelect.value;
-            if (!sheetName || songIndex === "" || !cachedData[sheetName]?.[songIndex]) { alert("Пожалуйста, сначала выберите песню."); return; }
-            const songData = cachedData[sheetName][songIndex];
-            addToSharedList(songData);
-        });
-    }
+   // !!! ИЗМЕНЕНИЕ: Обработчик для кнопки "В сет-лист" !!!
+if (addToSetlistButton) { // Используем новую переменную кнопки
+    addToSetlistButton.addEventListener('click', addToCurrentSetlist); // Вызываем новую функцию
+} else {
+    console.warn("Кнопка #add-to-setlist-button не найдена.");
+}
 
     if(addToRepertoireButton) addToRepertoireButton.addEventListener('click', addToRepertoire);
 
@@ -1660,23 +1978,33 @@ function setupEventListeners() {
          });
      } else { console.error("Elements for 'Репертуар' toggle not found"); }
 
-     // --- Слушатели для режима презентации ---
-     if (sharedListHeading) { // Клик по заголовку для входа
-         sharedListHeading.addEventListener('click', (event) => {
-             event.stopPropagation(); // Предотвращаем другие клики
-             console.log("Клик по заголовку Общий список");
-             if (currentSharedListData && currentSharedListData.length > 0) {
-                 if (favoritesPanel?.classList.contains('open')) favoritesPanel.classList.remove('open');
-                 if (repertoirePanel?.classList.contains('open')) repertoirePanel.classList.remove('open');
-                 showPresentationView(currentSharedListData); // Вызов новой функции
-             } else {
-                 alert("Общий список пуст. Добавьте песни для презентации.");
-             }
-         });
-     } else { console.warn("Заголовок shared-list-heading не найден."); }
+
+// !!! ДОБАВИТЬ НОВЫЙ обработчик для кнопки "Презентация" сет-листа !!!
+if (startPresentationButton) {
+    startPresentationButton.addEventListener('click', () => {
+        console.log("Клик по кнопке 'Презентация' для сет-листа ID:", currentSetlistId);
+        // Проверяем, выбран ли сет-лист и есть ли в нем песни
+        if (currentSetlistId && currentSetlistSongs && currentSetlistSongs.length > 0) {
+            // Закрываем панели перед показом презентации
+            if (favoritesPanel?.classList.contains('open')) favoritesPanel.classList.remove('open');
+            if (repertoirePanel?.classList.contains('open')) repertoirePanel.classList.remove('open');
+
+            // Запускаем презентацию с песнями ТЕКУЩЕГО сет-листа
+            // Массив currentSetlistSongs уже отсортирован по 'order' функцией loadCurrentSetlistSongs
+            showPresentationView(currentSetlistSongs);
+        } else {
+            alert("Сет-лист не выбран или в нем нет песен для презентации.");
+        }
+    });
+} else { console.warn("Кнопка #start-presentation-button не найдена."); }
 
 
+if (presentationCloseBtn && presentationOverlay) { // Кнопка закрытия презентации
+     // ... остальной код обработчика закрытия без изменений ...
+}
 
+
+    
      if (presentationCloseBtn && presentationOverlay) { // Кнопка закрытия презентации
          presentationCloseBtn.addEventListener('click', () => {
              presentationOverlay.classList.remove('visible');
@@ -1803,7 +2131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // await loadAudioFile();
 
     displaySongDetails(null);
-    loadGroupPanel();
+    loadSetlists(); // <-- НОВАЯ СТРОКА (Загружаем список сет-листов)
     loadRepertoire(null);
 
     console.log("App initialization complete.");
