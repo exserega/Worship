@@ -359,6 +359,44 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
     flex-grow: 1; max-height: none; /* Снимаем ограничение */
 }
 
+
+/* Контейнер для кнопок "Презентация" и "Удалить" */
+.current-setlist-controls {
+    display: flex;        /* Включаем Flexbox */
+    flex-wrap: wrap;      /* Позволяем переноситься на новую строку, если не влезают */
+    gap: 10px;            /* Добавляем отступ в 10px между кнопками */
+    margin-top: 10px;     /* Небольшой отступ сверху от названия сет-листа */
+    margin-bottom: 15px;  /* Отступ снизу до списка песен */
+    justify-content: flex-start; /* Выравниваем кнопки по левому краю (можно center или space-between) */
+}
+
+/* Стили для самих кнопок внутри контейнера */
+.current-setlist-controls button {
+    flex-grow: 0;        /* Запрещаем кнопкам растягиваться, чтобы занять все место */
+    flex-shrink: 0;      /* Запрещаем кнопкам сжиматься (опционально) */
+    width: auto;         /* Ширина кнопки будет зависеть от контента (текст + иконка) */
+    padding: 8px 15px;   /* Уменьшим вертикальные отступы и немного увеличим горизонтальные для баланса */
+    font-size: 0.9em;    /* Можно немного уменьшить шрифт, если нужно */
+    /* Можно добавить и другие стили для единообразия с кнопкой "Создать",
+       например, border-radius, background-color, color и т.д. */
+}
+
+/* Опционально: Стили для кнопки "Удалить", чтобы выделить ее */
+#delete-setlist-button {
+    background-color: #dc3545; /* Красный цвет для опасного действия */
+    border-color: #dc3545;
+    color: white;
+}
+
+#delete-setlist-button:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+
+
+
+
 /* Элементы списков (Общее) */
 .favorite-item, .setlist-item, .repertoire-item, .setlist-song-item {
     display: flex; justify-content: space-between; align-items: center;
