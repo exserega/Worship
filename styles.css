@@ -250,7 +250,7 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
 #song-content { background: var(--container-background-color); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); margin-top: 25px; position: relative; overflow: hidden; border: 1px solid var(--border-color); transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
 #song-content pre { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; white-space: pre-wrap; word-wrap: break-word; line-height: 1.5; font-size: var(--lyrics-font-size, 1rem); color: var(--text-color); margin: 0; padding-top: 15px; /* Добавим отступ сверху под кнопку копирования */ overflow-x: auto; transition: color 0.3s ease; }
 .chord {
-    font-weight: 700 !important; /* <<< Сделали жирнее (700 или bold) + !important */
+    font-weight: 800 !important; /* <<< Сделали жирнее (700 или bold) + !important */
     color: var(--primary-color); /* <<< Используем основной цвет темы (ярче акцентного) */
     margin-right: 4px;
     transition: color 0.3s ease;
@@ -262,11 +262,7 @@ body[data-theme="light"] #song-content .chord {
     color: var(--secondary-color); /* Используем вторичный цвет (темнее основного синего) */
     /* text-shadow: none; */
 }
-/* Стили аккордов в светлой теме */
-body[data-theme="light"] #song-content .chord {
-    color: var(--secondary-color);
-    background-color: color-mix(in srgb, var(--accent-color) 15%, transparent);
-}
+
 #song-content.split-columns pre { column-count: 2; column-gap: 30px; position: relative;}
 #song-content.split-columns pre::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background-color: var(--border-color); transform: translateX(-50%); z-index: 1; transition: background-color 0.3s ease; }
 
@@ -349,7 +345,7 @@ body[data-theme="light"] .presentation-notes i.fas {
 
 /* --- Стиль аккордов в презентации --- */
 .presentation-song .chord {
-    font-weight: 700 !important; /* <<< Сделали жирнее (700 или bold) + !important */
+    font-weight: 800 !important; /* <<< Сделали жирнее (700 или bold) + !important */
     color: var(--primary-color); /* <<< Используем основной цвет темы */
     background-color: transparent;
     padding: 0;
