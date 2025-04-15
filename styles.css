@@ -268,7 +268,16 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
 .presentation-content::-webkit-scrollbar-track { background: var(--hover-color); border-radius: 4px;}
 .presentation-content::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 4px;}
 .presentation-song { margin-bottom: 0; border-bottom: none; }
-.presentation-song h2 { font-size: 1.5rem; color: var(--accent-color); text-align: center; margin-bottom: 15px; font-weight: 600; transition: color 0.3s ease; }
+.presentation-song h2 {
+    font-size: 1.1rem; /* <<< Уменьшили размер шрифта */
+    color: var(--accent-color);
+    text-align: center;
+    margin-top: 0; /* Убираем лишний верхний отступ */
+    margin-bottom: 8px; /* <<< Уменьшили нижний отступ */
+    font-weight: 500; /* Можно сделать чуть менее жирным */
+    line-height: 1.3; /* Слегка уменьшаем межстрочный интервал для заголовка */
+    transition: color 0.3s ease;
+}
 .presentation-song pre { font-size: clamp(12px, 2.8vw, 16px); font-family: 'Courier New', Courier, monospace; line-height: 1.4; white-space: pre-wrap; word-wrap: break-word; color: var(--text-color); transition: color 0.3s ease; }
 .presentation-song .chord { font-weight: bold; color: var(--accent-color); background-color: transparent; padding: 0; margin: 0; transition: color 0.3s ease;}
 /* Управление Презентацией */
@@ -646,34 +655,34 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 
 /* --- Стили для заметки в режиме презентации --- */
 .presentation-notes {
-    background-color: rgba(80, 80, 80, 0.2); /* Полупрозрачный фон для выделения */
-    border-left: 3px solid var(--accent-color); /* Цветная линия слева */
-    padding: 8px 12px;
-    margin-top: 5px;  /* Небольшой отступ от заголовка */
-    margin-bottom: 15px; /* Отступ до текста песни */
-    border-radius: 4px;
-    font-size: 0.8em;   /* Меньше основного текста */
-    line-height: 1.4;
-    color: var(--label-color); /* Цвет как у подсказок */
-    white-space: pre-wrap; /* Чтобы переносы строк (<br>) работали */
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    background-color: transparent; /* <<< Убираем фон */
+    border-left: none; /* <<< Убираем левую границу */
+    padding: 0 5px; /* <<< Уменьшаем паддинги */
+    margin-top: 0; /* <<< Убираем верхний отступ */
+    margin-bottom: 10px; /* <<< Уменьшаем нижний отступ */
+    border-radius: 0; /* Убираем скругление, т.к. фона нет */
+    font-size: 0.75em; /* <<< Делаем шрифт еще мельче */
+    line-height: 1.3; /* <<< Уменьшаем межстрочный интервал */
+    color: var(--label-color);
+    white-space: pre-wrap;
+    text-align: center; /* <<< Выравниваем по центру */
+    transition: color 0.3s ease;
 }
 
-/* Иконка внутри заметки */
 .presentation-notes i.fas {
-    margin-right: 6px;
-    color: var(--accent-color); /* Цвет иконки */
-    opacity: 0.8;
+    margin-right: 4px; /* <<< Уменьшаем отступ иконки */
+    font-size: 0.9em; /* <<< Делаем иконку чуть меньше относительно текста заметки */
+    color: var(--label-color); /* <<< Цвет иконки как у текста заметки */
+    opacity: 0.9;
+    vertical-align: middle; /* Выравниваем иконку по центру строки */
 }
-
-/* Стили для светлой темы */
+/* Корректируем стили для светлой темы (если они были) */
 body[data-theme="light"] .presentation-notes {
-    background-color: #eef2ff; /* Светло-голубой/лавандовый фон */
-    border-left-color: var(--primary-color);
-    color: #475569; /* Темно-серый текст */
+    background-color: transparent; /* <<< Убираем фон и там */
+    color: #5f6b7e; /* Чуть темнее серого */
 }
-body[data-theme="light"] .presentation-notes i.fas {
-     color: var(--primary-color);
+ body[data-theme="light"] .presentation-notes i.fas {
+     color: #5f6b7e;
 }
 
 
