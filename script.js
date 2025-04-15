@@ -2331,10 +2331,7 @@ if (toggleRepertoireButton && repertoirePanel) {
          startPresentationButton.addEventListener('click', () => {
              console.log("Клик по кнопке 'Презентация' для сет-листа ID:", currentSetlistId);
              if (currentSetlistId && currentSetlistSongs && currentSetlistSongs.length > 0) {
-                 if (favoritesPanel) favoritesPanel.classList.remove('open');
-                 if (repertoirePanel) repertoirePanel.classList.remove('open');
-                 // Запускаем презентацию с песнями текущего сет-листа
-                 // Массив currentSetlistSongs уже отсортирован
+                closeAllSidePanels();
                  showPresentationView(currentSetlistSongs);
              } else {
                  alert("Сет-лист не выбран или в нем нет песен для презентации.");
