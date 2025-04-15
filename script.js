@@ -1460,7 +1460,7 @@ async function displayCurrentPresentationSong() {
             <div class="presentation-song">
                 <h2>${songTitle} — ${targetKey}</h2>
                 ${songNote ? `<div class="presentation-notes"><i class="fas fa-info-circle"></i> ${songNote.replace(/\n/g, '<br>')}</div>` : ''}
-                <pre>${finalHighlightedLyrics}</pre> {/* Используем finalHighlightedLyrics */}
+                <pre>${finalHighlightedLyrics}</pre> 
             </div>
         `;
         presentationContent.innerHTML = songHtml;
