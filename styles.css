@@ -717,7 +717,7 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
     /* margin-right: -4px; */
 }
 
-/* Кнопка Скрыть/Показать аккорды */
+/* --- Кнопка Скрыть/Показать аккорды --- */
 #toggle-chords-button {
     /* Наследует .icon-button и .icon-button.simple */
     padding: 0 10px; /* Паддинг для текста и иконки */
@@ -725,28 +725,43 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
     height: 38px; /* Такая же высота, как у соседей */
     font-size: 0.85rem;
     margin-left: 5px; /* Небольшой отступ слева */
+    order: -1; /* Можно попробовать подвинуть левее кнопки Split */
 }
 #toggle-chords-button i {
     margin-right: 6px; /* Отступ иконки от текста */
     font-size: 0.9em;
 }
 
-/* На мобильных убираем текст, оставляем иконку */
-@media (max-width: 480px) {
-    #toggle-chords-button {
-        width: 36px; /* Фиксированная ширина как у других иконок */
-        height: 36px;
-        padding: 0;
-        margin-left: 5px;
-    }
-    #toggle-chords-button .button-text {
-        display: none; /* Скрываем текст */
-    }
-     #toggle-chords-button i {
-        margin-right: 0; /* Убираем отступ иконки */
-        font-size: 0.9rem;
-    }
+/* --- Кнопка Копировать текст --- */
+#copy-text-button {
+    position: absolute; /* Абсолютное позиционирование */
+    top: 10px;          /* Отступ сверху */
+    right: 10px;         /* Отступ справа */
+    z-index: 5;         /* Чтобы быть поверх текста, но ниже других элементов управления */
+    width: 32px;        /* Меньший размер */
+    height: 32px;
+    font-size: 0.85rem; /* Меньшая иконка */
+    /* Наследует стили .icon-button.simple */
+    opacity: 0.6; /* Слегка прозрачная по умолчанию */
+    transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    display: none; /* По умолчанию скрыта, пока не выбрана песня */
 }
+#copy-text-button:hover {
+    opacity: 1; /* Полностью видимая при наведении */
+}
+/* Стиль для состояния "Скопировано" */
+#copy-text-button.copied {
+     background-color: var(--secondary-color) !important;
+     border-color: var(--secondary-color) !important;
+     color: var(--button-text-color) !important;
+     opacity: 1;
+}
+body[data-theme="light"] #copy-text-button.copied {
+     background-color: var(--secondary-color) !important;
+     border-color: var(--secondary-color) !important;
+     color: white !important;
+}
+
 
 
 /* ============================================ */
@@ -856,4 +871,30 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
     /* Модальное окно на мобильных */
     .modal-content { padding: 20px; width: 90%; }
     .modal-title { font-size: 1.1rem; }
+}
+
+
+
+ #toggle-chords-button {
+        width: 36px; /* Фиксированная ширина как у других иконок */
+        height: 36px;
+        padding: 0;
+        margin-left: 5px;
+        order: 0; /* Возвращаем стандартный порядок на мобильных, если нужно */
+    }
+    #toggle-chords-button .button-text {
+        display: none; /* Скрываем текст */
+    }
+     #toggle-chords-button i {
+        margin-right: 0; /* Убираем отступ иконки */
+        font-size: 0.9rem;
+    }
+    /* Кнопка Копировать на мобильных */
+     #copy-text-button {
+         top: 8px;
+         right: 8px;
+         width: 30px;
+         height: 30px;
+         font-size: 0.8rem;
+     }
 }
