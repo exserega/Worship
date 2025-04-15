@@ -1374,7 +1374,7 @@ async function displayCurrentPresentationSong() {
     // Коррекция индекса, если он вышел за пределы
     currentPresentationIndex = Math.max(0, Math.min(currentPresentationIndex, presentationSongs.length - 1));
 
-    const song = presentationSongs[currentPresentationIndex];
+    const song = presentationSongs[currentPresentationIndex]; // Получаем текущий объект песни из массива презентации
     console.log(`Презентация: Показываем песню ${currentPresentationIndex + 1}/${presentationSongs.length}: ${song.name}`);
 
     presentationContent.innerHTML = `<div class="presentation-loading">Загрузка "${song.name}"...</div>`;
@@ -1394,26 +1394,38 @@ async function displayCurrentPresentationSong() {
         const songTitle = originalSongData[0];
         const originalLyrics = originalSongData[1] || '';
         const originalKey = originalSongData[2] || chords[0]; // Ключ из таблицы
+
+        // --- ИЗМЕНЕНИЕ: Используем ключ и заметку из объекта `song` (который из `presentationSongs`) ---
         const targetKey = song.preferredKey || originalKey; // Ключ из сет-листа или таблицы
+        const songNote = song.notes || ''; // Получаем заметку из объекта песни сет-листа
+        // --- КОНЕЦ ИЗМЕНЕНИЯ ---
 
         const transposition = getTransposition(originalKey, targetKey);
         const transposedLyrics = transposeLyrics(originalLyrics, transposition);
-        // const processedLyrics = processLyrics(transposedLyrics); // Обработка пробелов, возможно, не нужна в презентации
         const highlightedLyrics = highlightChords(transposedLyrics); // Выделяем аккорды
 
         // Формирование HTML
         const songHtml = `
             <div class="presentation-song">
                 <h2>${songTitle} — ${targetKey}</h2>
+                ${/* --- НАЧАЛО БЛОКА ДЛЯ ЗАМЕТКИ --- */ ''}
+                ${songNote ? /* Если заметка есть */
+                    `<div class="presentation-notes">
+                        <i class="fas fa-info-circle"></i> ${songNote.replace(/\n/g, '<br>')}
+                     </div>`
+                    : /* Если заметки нет */
+                    ''
+                }
+                ${/* --- КОНЕЦ БЛОКА ДЛЯ ЗАМЕТКИ --- */ ''}
                 <pre>${highlightedLyrics}</pre>
             </div>
         `;
-        presentationContent.innerHTML = songHtml;
+        presentationContent.innerHTML = songHtml; // Обновляем контент
 
         // Применение разделения, если активно
         presentationContent.classList.toggle('split-columns', isPresentationSplit);
 
-        // Прокрутка содержимого песни наверх
+        // Прокрутка содержимого песни наверх (на всякий случай, хотя презентация обычно не скроллится)
         const songElement = presentationContent.querySelector('.presentation-song pre');
         if (songElement) songElement.scrollTop = 0;
 
@@ -1428,7 +1440,7 @@ async function displayCurrentPresentationSong() {
     }
     if (presPrevBtn) presPrevBtn.disabled = (currentPresentationIndex === 0);
     if (presNextBtn) presNextBtn.disabled = (currentPresentationIndex >= presentationSongs.length - 1);
-}
+} // Конец функции displayCurrentPresentationSong
 
 /** Переключает на СЛЕДУЮЩУЮ песню в презентации */
 function nextPresentationSong() {
