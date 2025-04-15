@@ -719,6 +719,20 @@ function loadCurrentSetlistSongs(setlistId) {
              songInfo.textContent = `${songData.name || '...'} — ${songData.preferredKey || 'N/A'}`;
              songItem.appendChild(songInfo);
 
+// Создаем кнопку/иконку для заметок
+const noteBtn = document.createElement('button');
+noteBtn.innerHTML = '<i class="far fa-sticky-note"></i>'; // Иконка по умолчанию (пустая заметка)
+noteBtn.className = 'edit-setlist-song-note-button icon-button simple'; // Стили как у других иконок
+noteBtn.title = 'Добавить/Редактировать заметку';
+noteBtn.dataset.songdocid = songDocId; // Сохраняем ID документа песни из Firestore
+
+// Проверяем, есть ли заметка, и меняем иконку, если есть
+if (songData.notes && songData.notes.trim() !== '') {
+    noteBtn.innerHTML = '<i class="fas fa-sticky-note"></i>'; // Закрашенная иконка
+    noteBtn.classList.add('has-note'); // Добавляем класс для возможной доп. стилизации
+    noteBtn.title = 'Посмотреть/Редактировать заметку';
+}
+
              const deleteBtn = document.createElement('button');
              deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
              deleteBtn.className = 'delete-button delete-song-from-setlist-button';
@@ -728,6 +742,20 @@ function loadCurrentSetlistSongs(setlistId) {
                  deleteSongFromSetlist(songDocId);
              });
              songItem.appendChild(deleteBtn);
+
+// Создаем кнопку/иконку для заметок
+const noteBtn = document.createElement('button');
+noteBtn.innerHTML = '<i class="far fa-sticky-note"></i>'; // Иконка по умолчанию (пустая заметка)
+noteBtn.className = 'edit-setlist-song-note-button icon-button simple'; // Стили как у других иконок
+noteBtn.title = 'Добавить/Редактировать заметку';
+noteBtn.dataset.songdocid = songDocId; // Сохраняем ID документа песни из Firestore
+
+// Проверяем, есть ли заметка, и меняем иконку, если есть
+if (songData.notes && songData.notes.trim() !== '') {
+    noteBtn.innerHTML = '<i class="fas fa-sticky-note"></i>'; // Закрашенная иконка
+    noteBtn.classList.add('has-note'); // Добавляем класс для возможной доп. стилизации
+    noteBtn.title = 'Посмотреть/Редактировать заметку';
+}
 
              // Клик по песне в сет-листе
              songItem.addEventListener('click', async () => {
