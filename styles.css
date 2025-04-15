@@ -11,6 +11,7 @@
 /* - !!! ИЗМЕНЕНИЯ CSS ДЛЯ РАЗДЕЛЕНИЯ ПАНЕЛЕЙ И 3 КНОПОК НАВИГАЦИИ !!! */
 /* - !!! ИСПРАВЛЕНИЕ КНОПОК СЕТ-ЛИСТА !!! */
 /* - !!! КОРРЕКЦИЯ РАЗМЕРОВ В ПРЕЗЕНТАЦИИ !!! */
+/* - !!! ИСПРАВЛЕНИЕ СТРУКТУРЫ CSS + НОВЫЕ КНОПКИ !!! */
 /* ======================================== */
 
 /* --- Theme Variables --- */
@@ -98,6 +99,7 @@ body[data-theme="light"] h1 {
     text-align: center; color: var(--text-color); margin-top: 0;
     margin-bottom: 20px; font-size: 1.5rem; font-weight: 600;
     letter-spacing: 0.5px; transition: color 0.3s ease;
+    padding-right: 40px; /* Добавим отступ справа, чтобы текст не заезжал под кнопку копирования */
 }
 /* Заголовки секций в панелях (h3) */
 .list-section h3, #repertoire-panel .panel-header {
@@ -203,17 +205,17 @@ button:disabled { opacity: 0.5; cursor: not-allowed; background: color-mix(in sr
 
 /* Кнопки-иконки */
 button.icon-button { padding: 0; width: 38px; height: 38px; font-size: 1rem; line-height: 1; flex-shrink: 0; overflow: hidden; }
-button.icon-button.simple { background: transparent; box-shadow: none; border: 1px solid var(--border-color); color: var(--text-color); /* Базовый (светлый) цвет */ transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease; }
-button.icon-button.simple:hover:not(:disabled) { background: var(--hover-color); border-color: color-mix(in srgb, var(--border-color) 80%, black); color: var(--text-color); transform: none; box-shadow: none; }
+button.icon-button.simple { background: transparent; box-shadow: none; border: 1px solid var(--border-color); color: var(--text-color) !important; /* Явный цвет для темной темы */ transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease; }
+button.icon-button.simple:hover:not(:disabled) { background: var(--hover-color); border-color: color-mix(in srgb, var(--border-color) 80%, black); color: var(--text-color) !important; transform: none; box-shadow: none; }
 button.icon-button.simple:active:not(:disabled) { background: var(--primary-color); color: var(--button-text-color) !important; border-color: var(--primary-color); transform: translateY(1px); box-shadow: none; }
 /* Переопределение для светлой темы */
-body[data-theme="light"] button.icon-button.simple { color: var(--label-color); border-color: var(--border-color); }
-body[data-theme="light"] button.icon-button.simple:hover:not(:disabled) { background: var(--hover-color); border-color: color-mix(in srgb, var(--border-color) 80%, #475569); color: var(--text-color); }
+body[data-theme="light"] button.icon-button.simple { color: var(--label-color) !important; border-color: var(--border-color); }
+body[data-theme="light"] button.icon-button.simple:hover:not(:disabled) { background: var(--hover-color); border-color: color-mix(in srgb, var(--border-color) 80%, #475569); color: var(--text-color) !important; }
 body[data-theme="light"] button.icon-button.simple:active:not(:disabled) { background: var(--primary-color); color: var(--button-text-color) !important; border-color: var(--primary-color); }
 
 /* Кнопка темы */
-#theme-toggle-button { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; font-size: 1rem; /* Стили .icon-button.simple применяются */ color: var(--text-color) !important; /* Явный цвет для темной */ transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease; }
-body[data-theme="light"] #theme-toggle-button { color: var(--label-color) !important; /* Явный цвет для светлой */ }
+#theme-toggle-button { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; font-size: 1rem; /* Стили .icon-button.simple применяются */ /* color убран, т.к. simple его ставит */ transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease; }
+/* body[data-theme="light"] #theme-toggle-button { color: var(--label-color) !important; } */ /* Убрано, т.к. simple ставит */
 #theme-toggle-button:hover { background-color: var(--hover-color); }
 #theme-toggle-button:active { background-color: var(--primary-color); color: var(--button-text-color) !important; border-color: var(--primary-color); }
 
@@ -246,7 +248,7 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
 
 /* --- Отображение Песни --- */
 #song-content { background: var(--container-background-color); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); margin-top: 25px; position: relative; overflow: hidden; border: 1px solid var(--border-color); transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
-#song-content pre { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; white-space: pre-wrap; word-wrap: break-word; line-height: 1.5; font-size: var(--lyrics-font-size, 1rem); color: var(--text-color); margin: 0; overflow-x: auto; transition: color 0.3s ease; }
+#song-content pre { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; white-space: pre-wrap; word-wrap: break-word; line-height: 1.5; font-size: var(--lyrics-font-size, 1rem); color: var(--text-color); margin: 0; padding-top: 15px; /* Добавим отступ сверху под кнопку копирования */ overflow-x: auto; transition: color 0.3s ease; }
 .chord { font-weight: 600; color: var(--accent-color); margin-right: 4px; transition: color 0.3s ease;}
 #song-content.split-columns pre { column-count: 2; column-gap: 30px; position: relative;}
 #song-content.split-columns pre::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background-color: var(--border-color); transform: translateX(-50%); z-index: 1; transition: background-color 0.3s ease; }
@@ -273,11 +275,11 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
 /* --- ИЗМЕНЕНИЯ ДЛЯ ПРЕЗЕНТАЦИИ --- */
 /* Заголовок песни в презентации */
 .presentation-song h2 {
-    font-size: 1.0rem; /* <<< ЕЩЕ Уменьшили */
+    font-size: 1.0rem; /* <<< Уменьшили */
     color: var(--accent-color);
     text-align: center;
     margin-top: 0;
-    margin-bottom: 5px; /* <<< ЕЩЕ Уменьшили */
+    margin-bottom: 5px; /* <<< Уменьшили */
     font-weight: 500;
     line-height: 1.25; /* <<< Уменьшили */
     transition: color 0.3s ease;
@@ -707,8 +709,9 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 }
 .modal-close-x:hover { color: var(--danger-color); }
 
-
-
+/* ============================================ */
+/* === СТИЛИ ДЛЯ НОВЫХ КНОПОК (Аккорды и Копирование) === */
+/* ============================================ */
 
 /* --- Логика скрытия аккордов --- */
 #song-content.chords-hidden .chord {
@@ -762,8 +765,6 @@ body[data-theme="light"] #copy-text-button.copied {
      color: white !important;
 }
 
-
-
 /* ============================================ */
 /* АДАПТИВНОСТЬ                                */
 /* ============================================ */
@@ -774,7 +775,11 @@ body[data-theme="light"] #copy-text-button.copied {
     .container { padding: 12px; margin: 10px auto; }
     header { padding: 5px 15px; }
     h1 { font-size: 1.4rem; }
-    #song-content h2 { font-size: 1.2rem; }
+    #song-content h2 {
+        font-size: 1.1rem; /* Уменьшили для мобильных */
+        padding-right: 35px; /* Отступ под кнопку копирования */
+        margin-bottom: 15px; /* Слегка уменьшили */
+    }
 
     select, input { font-size: 14px; padding: 9px 12px; }
     button { font-size: 14px; }
@@ -793,6 +798,32 @@ body[data-theme="light"] #copy-text-button.copied {
     #zoom-in, #zoom-out { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; }
     #zoom-in > i, #zoom-out > i { margin: 0; }
 
+    /* --- Мобильные стили для новых кнопок --- */
+    #toggle-chords-button {
+        width: 36px; /* Фиксированная ширина как у других иконок */
+        height: 36px;
+        padding: 0;
+        margin-left: 5px;
+        order: 0; /* Возвращаем стандартный порядок на мобильных, если нужно */
+    }
+    #toggle-chords-button .button-text {
+        display: none; /* Скрываем текст */
+    }
+     #toggle-chords-button i {
+        margin-right: 0; /* Убираем отступ иконки */
+        font-size: 0.9rem;
+    }
+    /* Кнопка Копировать на мобильных */
+     #copy-text-button {
+         top: 8px;
+         right: 8px;
+         width: 30px;
+         height: 30px;
+         font-size: 0.8rem;
+     }
+     /* --- Конец мобильных стилей для новых кнопок --- */
+
+
     /* Footer */
     .controls-footer { align-items: stretch; flex-direction: column; gap: 10px; margin-top: 15px; }
     .controls-footer > * { width: auto; margin-bottom: 8px; align-self: center; }
@@ -806,7 +837,12 @@ body[data-theme="light"] #copy-text-button.copied {
 
     /* Другие мобильные стили */
     #song-content { padding: 15px; }
-    #song-content pre { font-size: 0.9rem; line-height: 1.5; }
+    #song-content pre {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        padding-top: 5px; /* Уменьшаем отступ сверху под кнопку */
+    }
+
 
     /* Панели */
     .side-panel { width: 95%; padding: 10px; gap: 10px; }
@@ -871,30 +907,8 @@ body[data-theme="light"] #copy-text-button.copied {
     /* Модальное окно на мобильных */
     .modal-content { padding: 20px; width: 90%; }
     .modal-title { font-size: 1.1rem; }
-}
+} /* <<< ЭТО ЗАКРЫВАЮЩАЯ СКОБКА ДЛЯ @media (max-width: 480px) */
 
-
-
- #toggle-chords-button {
-        width: 36px; /* Фиксированная ширина как у других иконок */
-        height: 36px;
-        padding: 0;
-        margin-left: 5px;
-        order: 0; /* Возвращаем стандартный порядок на мобильных, если нужно */
-    }
-    #toggle-chords-button .button-text {
-        display: none; /* Скрываем текст */
-    }
-     #toggle-chords-button i {
-        margin-right: 0; /* Убираем отступ иконки */
-        font-size: 0.9rem;
-    }
-    /* Кнопка Копировать на мобильных */
-     #copy-text-button {
-         top: 8px;
-         right: 8px;
-         width: 30px;
-         height: 30px;
-         font-size: 0.8rem;
-     }
-}
+/* ============================================ */
+/* === КОНЕЦ ФАЙЛА CSS === */
+/* ============================================ */
