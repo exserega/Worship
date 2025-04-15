@@ -10,6 +10,7 @@
 /* - Улучшение видимости кнопок презент.  */
 /* - !!! ИЗМЕНЕНИЯ CSS ДЛЯ РАЗДЕЛЕНИЯ ПАНЕЛЕЙ И 3 КНОПОК НАВИГАЦИИ !!! */
 /* - !!! ИСПРАВЛЕНИЕ КНОПОК СЕТ-ЛИСТА !!! */
+/* - !!! КОРРЕКЦИЯ РАЗМЕРОВ В ПРЕЗЕНТАЦИИ !!! */
 /* ======================================== */
 
 /* --- Theme Variables --- */
@@ -93,7 +94,7 @@ body[data-theme="light"] h1 {
 }
 
 /* --- Headings --- */
-#song-content h2 { /* Заголовок песни */
+#song-content h2 { /* Заголовок песни в основном виде */
     text-align: center; color: var(--text-color); margin-top: 0;
     margin-bottom: 20px; font-size: 1.5rem; font-weight: 600;
     letter-spacing: 0.5px; transition: color 0.3s ease;
@@ -263,23 +264,78 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
 /* ============================================ */
 .presentation-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--background-color); z-index: 2000; display: none; scroll-behavior: smooth; overflow-y: hidden; transition: background-color 0.3s ease; }
 .presentation-overlay.visible { display: block; }
-.presentation-content { padding: 30px 20px 70px 20px; max-width: 950px; margin: 0 auto; height: 100%; overflow-y: auto; box-sizing: border-box; }
+.presentation-content { padding: 20px 15px 70px 15px; /* Уменьшил вертикальные паддинги */ max-width: 950px; margin: 0 auto; height: 100%; overflow-y: auto; box-sizing: border-box; }
 .presentation-content::-webkit-scrollbar { width: 8px; }
 .presentation-content::-webkit-scrollbar-track { background: var(--hover-color); border-radius: 4px;}
 .presentation-content::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 4px;}
 .presentation-song { margin-bottom: 0; border-bottom: none; }
+
+/* --- ИЗМЕНЕНИЯ ДЛЯ ПРЕЗЕНТАЦИИ --- */
+/* Заголовок песни в презентации */
 .presentation-song h2 {
-    font-size: 1.1rem; /* <<< Уменьшили размер шрифта */
+    font-size: 1.0rem; /* <<< ЕЩЕ Уменьшили */
     color: var(--accent-color);
     text-align: center;
-    margin-top: 0; /* Убираем лишний верхний отступ */
-    margin-bottom: 8px; /* <<< Уменьшили нижний отступ */
-    font-weight: 500; /* Можно сделать чуть менее жирным */
-    line-height: 1.3; /* Слегка уменьшаем межстрочный интервал для заголовка */
+    margin-top: 0;
+    margin-bottom: 5px; /* <<< ЕЩЕ Уменьшили */
+    font-weight: 500;
+    line-height: 1.25; /* <<< Уменьшили */
     transition: color 0.3s ease;
 }
-.presentation-song pre { font-size: clamp(12px, 2.8vw, 16px); font-family: 'Courier New', Courier, monospace; line-height: 1.4; white-space: pre-wrap; word-wrap: break-word; color: var(--text-color); transition: color 0.3s ease; }
-.presentation-song .chord { font-weight: bold; color: var(--accent-color); background-color: transparent; padding: 0; margin: 0; transition: color 0.3s ease;}
+/* Заметки в презентации */
+.presentation-notes {
+    background-color: transparent;
+    border-left: none;
+    padding: 0 5px;
+    margin-top: 0;
+    margin-bottom: 8px; /* <<< Чуть уменьшили */
+    border-radius: 0;
+    font-size: 0.8em; /* <<< Можно чуть увеличить обратно, если 0.75 было слишком мелко */
+    line-height: 1.3;
+    color: var(--label-color);
+    white-space: pre-wrap;
+    text-align: center !important; /* <<< Добавили !important для надежности центрирования текста */
+    transition: color 0.3s ease;
+    display: block; /* Убедимся, что это блок */
+    width: 100%; /* Занимает всю ширину для центрирования текста */
+    box-sizing: border-box;
+}
+.presentation-notes i.fas {
+    margin-right: 4px;
+    font-size: 0.9em;
+    color: var(--label-color); /* <<< Цвет иконки как у текста */
+    opacity: 0.9;
+    vertical-align: middle;
+}
+/* Стили для светлой темы заметки */
+body[data-theme="light"] .presentation-notes {
+    background-color: transparent;
+    color: #5f6b7e;
+}
+body[data-theme="light"] .presentation-notes i.fas {
+    color: #5f6b7e;
+}
+
+/* Текст песни в презентации */
+.presentation-song pre {
+    font-size: clamp(12px, 2.9vw, 17px); /* <<< Слегка увеличил максимальный и базовый размер */
+    font-family: 'Courier New', Courier, monospace;
+    line-height: 1.45; /* <<< Чуть увеличил для читаемости аккордов */
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color: var(--text-color);
+    transition: color 0.3s ease;
+    margin-top: 0; /* Убедимся, что нет лишнего отступа сверху */
+}
+.presentation-song .chord {
+    font-weight: bold;
+    color: var(--accent-color);
+    background-color: transparent;
+    padding: 0; margin: 0;
+    transition: color 0.3s ease;
+}
+/* --- КОНЕЦ ИЗМЕНЕНИЙ ДЛЯ ПРЕЗЕНТАЦИИ --- */
+
 /* Управление Презентацией */
 .presentation-close-btn { position: fixed; top: 15px; right: 15px; z-index: 2003; background: rgba(80, 80, 80, 0.8); color: #fff; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 50%; width: 38px; height: 38px; font-size: 1.4rem; line-height: 1; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: none; transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease; }
 .presentation-close-btn:hover { background-color: rgba(100, 100, 100, 0.9); border-color: rgba(255, 255, 255, 0.5); }
@@ -383,7 +439,7 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
 
 
 /* ================================================================ */
-/* === ИСПРАВЛЕННЫЕ СТИЛИ ДЛЯ КНОПОК "Презентация" и "Удалить" === */
+/* === СТИЛИ ДЛЯ КНОПОК "Презентация" и "Удалить" (ВЕРСИЯ 2) === */
 /* ================================================================ */
 
 /* Контейнер для кнопок "Презентация" и "Удалить" */
@@ -433,7 +489,7 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3) !important; /* Небольшая тень при наведении */
 }
 /* ================================================================ */
-/* === КОНЕЦ ИСПРАВЛЕННЫХ СТИЛЕЙ ДЛЯ КНОПОК СЕТ-ЛИСТА === */
+/* === КОНЕЦ СТИЛЕЙ ДЛЯ КНОПОК СЕТ-ЛИСТА === */
 /* ================================================================ */
 
 
@@ -465,16 +521,39 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
 .empty-message { padding: 15px; text-align: center; color: var(--label-color); font-style: italic; font-size: 0.9rem; transition: color 0.3s ease;}
 .empty-message.small { font-size: 0.8rem; padding: 8px; }
 
-/* Кнопки удаления */
-.remove-button, .delete-button {
-    background: none !important; border: none !important; color: var(--danger-color) !important;
+/* Кнопки удаления и заметки в списках */
+.remove-button, .delete-button, .edit-setlist-song-note-button {
+    background: none !important; border: none !important;
     box-shadow: none !important; padding: 0 5px !important; font-size: 0.95rem !important;
     line-height: 1 !important; flex-shrink: 0; min-width: auto !important; height: auto !important;
     transition: color 0.2s ease, transform 0.2s ease !important;
     transform: none !important; cursor: pointer; border-radius: 50%;
 }
-.remove-button:hover, .delete-button:hover { color: color-mix(in srgb, var(--danger-color) 70%, white) !important; transform: scale(1.15) !important; box-shadow: none !important; text-decoration: none; }
+/* Цвет кнопки удаления */
+.remove-button, .delete-button {
+    color: var(--danger-color) !important;
+}
+.remove-button:hover, .delete-button:hover {
+    color: color-mix(in srgb, var(--danger-color) 70%, white) !important;
+    transform: scale(1.15) !important;
+    box-shadow: none !important; text-decoration: none;
+}
 .delete-song-from-setlist-button { margin-left: 5px; font-size: 0.9rem !important; }
+
+/* Цвет кнопки заметки */
+.edit-setlist-song-note-button {
+    margin-left: auto; /* Отодвигаем ее и кнопку удаления вправо */
+    margin-right: 5px; /* Небольшой отступ справа */
+    color: var(--label-color) !important; /* Серый цвет по умолчанию */
+    font-size: 0.9rem !important;
+}
+.edit-setlist-song-note-button.has-note i {
+     color: var(--accent-color) !important; /* Цвет иконки, если есть заметка */
+}
+.edit-setlist-song-note-button:hover i {
+     color: var(--primary-color) !important; /* Цвет при наведении */
+     transform: scale(1.15) !important;
+}
 
 
 /* Аккордеон Репертуара */
@@ -566,37 +645,19 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 /* --- Loading Indicator --- */
 #loading-indicator { display: none; position: fixed; top: 15px; left: 50%; transform: translateX(-50%); background-color: rgba(40, 40, 40, 0.9); color: white; padding: 8px 18px; border-radius: var(--radius); z-index: 1002; font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
-
-
-
-
-/* Стили для кнопки заметок */
-.edit-setlist-song-note-button {
-    padding: 0 5px !important; /* Компактный паддинг */
-    font-size: 0.9rem !important; /* Размер иконки */
-    margin-left: auto; /* Отодвигаем ее и кнопку удаления вправо */
-    margin-right: 5px; /* Небольшой отступ справа */
-    color: var(--label-color) !important; /* Серый цвет по умолчанию */
-}
-.edit-setlist-song-note-button.has-note i {
-     color: var(--accent-color) !important; /* Цвет иконки, если есть заметка */
-}
-.edit-setlist-song-note-button:hover i {
-     color: var(--primary-color) !important; /* Цвет при наведении */
-}
-
-
-
-
-/* Стили для модального окна */
+/* --- Стили для модального окна --- */
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px);
-    display: flex; justify-content: center; align-items: center;
+    display: none; /* Изначально скрыто */
+    justify-content: center; align-items: center;
     z-index: 2500; /* Выше чем боковые панели и презентация */
     opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
 }
-.modal-overlay.visible { opacity: 1; pointer-events: auto; }
+.modal-overlay.visible {
+    display: flex; /* Показываем через flex */
+    opacity: 1; pointer-events: auto;
+}
 
 .modal-content {
     background-color: var(--container-background-color); color: var(--text-color);
@@ -645,46 +706,6 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
     transition: color 0.2s ease;
 }
 .modal-close-x:hover { color: var(--danger-color); }
-
-@media (max-width: 480px) {
-    .modal-content { padding: 20px; width: 90%; }
-    .modal-title { font-size: 1.1rem; }
-}
-
-
-
-/* --- Стили для заметки в режиме презентации --- */
-.presentation-notes {
-    background-color: transparent; /* <<< Убираем фон */
-    border-left: none; /* <<< Убираем левую границу */
-    padding: 0 5px; /* <<< Уменьшаем паддинги */
-    margin-top: 0; /* <<< Убираем верхний отступ */
-    margin-bottom: 10px; /* <<< Уменьшаем нижний отступ */
-    border-radius: 0; /* Убираем скругление, т.к. фона нет */
-    font-size: 0.75em; /* <<< Делаем шрифт еще мельче */
-    line-height: 1.3; /* <<< Уменьшаем межстрочный интервал */
-    color: var(--label-color);
-    white-space: pre-wrap;
-    text-align: center; /* <<< Выравниваем по центру */
-    transition: color 0.3s ease;
-}
-
-.presentation-notes i.fas {
-    margin-right: 4px; /* <<< Уменьшаем отступ иконки */
-    font-size: 0.9em; /* <<< Делаем иконку чуть меньше относительно текста заметки */
-    color: var(--label-color); /* <<< Цвет иконки как у текста заметки */
-    opacity: 0.9;
-    vertical-align: middle; /* Выравниваем иконку по центру строки */
-}
-/* Корректируем стили для светлой темы (если они были) */
-body[data-theme="light"] .presentation-notes {
-    background-color: transparent; /* <<< Убираем фон и там */
-    color: #5f6b7e; /* Чуть темнее серого */
-}
- body[data-theme="light"] .presentation-notes i.fas {
-     color: #5f6b7e;
-}
-
 
 
 /* ============================================ */
@@ -743,7 +764,6 @@ body[data-theme="light"] .presentation-notes {
     #setlists-panel .create-setlist-form { margin-bottom: 10px; }
     #new-setlist-name-input { font-size: 0.9rem; padding: 7px 10px; }
     #create-setlist-button { padding: 7px 12px; font-size: 0.8rem; }
-
     /* Контролы текущего сет-листа на мобильных */
     #setlists-panel .current-setlist-controls {
         margin-bottom: 8px;
@@ -757,10 +777,33 @@ body[data-theme="light"] .presentation-notes {
     }
 
 
-    /* Презентация на мобильных */
-    .presentation-content { padding: 25px 10px 65px 10px; }
-    .presentation-song h2 { font-size: 1.3rem; }
-    .presentation-song pre { font-size: clamp(11px, 2.8vw, 14px); line-height: 1.35; }
+    /* --- Презентация на МОБИЛЬНЫХ --- */
+    .presentation-content {
+        padding: 15px 10px 65px 10px; /* <<< Еще уменьшил верхний паддинг */
+    }
+    .presentation-song h2 {
+         font-size: 0.9rem !important; /* <<< Сильно уменьшаем заголовок */
+         margin-bottom: 4px !important; /* <<< Минимальный отступ */
+         line-height: 1.2 !important;
+         font-weight: 500 !important;
+    }
+    .presentation-notes {
+        font-size: 0.7em !important; /* <<< Очень маленький шрифт для заметки */
+        margin-bottom: 8px !important; /* <<< Небольшой отступ */
+        padding: 2px 5px !important; /* <<< Минимальные паддинги */
+        line-height: 1.25 !important;
+    }
+     .presentation-notes i.fas {
+        font-size: 0.9em !important; /* Уменьшаем иконку в заметке */
+        margin-right: 3px !important;
+    }
+    .presentation-song pre {
+         font-size: clamp(11px, 2.8vw, 15px) !important; /* <<< Можно пробовать подбирать */
+         line-height: 1.4 !important; /* <<< Чуть уменьшил */
+         margin-top: 0 !important;
+    }
+    /* --- Конец стилей презентации на мобильных --- */
+
     .presentation-close-btn { width: 36px; height: 36px; font-size: 1.3rem; }
     .presentation-control-btn { width: 36px; height: 36px; font-size: 0.9rem; }
     #pres-split-text-btn { right: 58px; }
@@ -768,4 +811,8 @@ body[data-theme="light"] .presentation-notes {
     .presentation-nav-btn { font-size: 1.5rem; padding: 4px 10px; }
     .presentation-counter { font-size: 0.8rem; }
     #presentation-content.split-columns .presentation-song pre { column-gap: 25px; }
+
+    /* Модальное окно на мобильных */
+    .modal-content { padding: 20px; width: 90%; }
+    .modal-title { font-size: 1.1rem; }
 }
