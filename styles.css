@@ -352,7 +352,7 @@ body[data-theme="light"] .presentation-notes i.fas {
     font-weight: 700 !important;
     color: var(--primary-color);
     display: inline-block;
-    background-color: color-mix(in srgb, var(--accent-color) 5%, transparent);
+    background-color: color-mix(in srgb, var(--accent-color) 2%, transparent);
     padding: 1px 5px;
     border-radius: 4px;
     margin: 0 2px;
