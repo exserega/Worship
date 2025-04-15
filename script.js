@@ -52,9 +52,8 @@ let favorites = JSON.parse(localStorage.getItem('favorites')) || []; // Избр
 let currentVocalistId = null; // ID выбранного вокалиста
 let currentVocalistName = null; // Имя выбранного вокалиста
 let allSheetsData = []; // Данные всех листов для поиска
-// let searchIndex = []; // Индекс для поиска (пока не используется)
 let currentFontSize = DEFAULT_FONT_SIZE; // Текущий размер шрифта
-let areChordsVisible = true; // По умолчанию аккорды видны
+let areChordsVisible = true; // <<< НОВОЕ: Состояние видимости аккордов
 
 // --- СОСТОЯНИЕ СЕТ-ЛИСТОВ ---
 let currentSetlistId = null; // ID текущего выбранного сет-листа
@@ -94,7 +93,8 @@ const metronomeButton = document.getElementById('metronome-button');
 const playerContainer = document.getElementById('youtube-player-container');
 const playerSection = document.getElementById('youtube-player-section');
 const themeToggleButton = document.getElementById('theme-toggle-button'); // Кнопка темы
-const toggleChordsButton = document.getElementById('toggle-chords-button'); // <-- Новая кнопка
+const toggleChordsButton = document.getElementById('toggle-chords-button'); // <<< НОВОЕ: Кнопка Аккорды
+const copyTextButton = document.getElementById('copy-text-button'); // <<< НОВОЕ: Кнопка Копировать
 
 // Кнопки действий с песней
 const favoriteButton = document.getElementById('favorite-button'); // Добавить в Мой список
@@ -106,10 +106,10 @@ const toggleFavoritesButton = document.getElementById('toggle-favorites'); // К
 const setlistsPanel = document.getElementById('setlists-panel');       // Панель Сет-листов (бывшая favoritesPanel)
 
 const toggleMyListButton = document.getElementById('toggle-my-list');  // !!! НОВАЯ КНОПКА "Мой список" !!!
-const myListPanel = document.getElementById('my-list-panel');       // !!! НОВАЯ ПАНЕЛЬ "Мой список" !!!
+const myListPanel = document.getElementById('my-list-panel');         // !!! НОВАЯ ПАНЕЛЬ "Мой список" !!!
 
 const toggleRepertoireButton = document.getElementById('toggle-repertoire'); // Кнопка "Репертуар"
-const repertoirePanel = document.getElementById('repertoire-panel');       // Панель "Репертуар"
+const repertoirePanel = document.getElementById('repertoire-panel');        // Панель "Репертуар"
 // --- Конец изменений в ссылках на панели ---
 
 // Элементы внутри панелей
@@ -135,13 +135,12 @@ const presPrevBtn = document.getElementById('pres-prev-btn');
 const presNextBtn = document.getElementById('pres-next-btn');
 const presCounter = document.getElementById('pres-counter');
 
-
+// Элементы модального окна заметок (Добавлено ранее)
 const notesModal = document.getElementById('notes-modal');
 const noteEditTextarea = document.getElementById('note-edit-textarea');
 const saveNoteButton = document.getElementById('save-note-button');
 const cancelNoteButton = document.getElementById('cancel-note-button');
 const closeNoteModalX = document.getElementById('close-note-modal-x');
-// ... остальные ссылки ...
 
 // --- API FUNCTIONS (Sheets, Firestore) ---
 
@@ -1683,11 +1682,9 @@ function updateTransposedLyrics() {
     const sheetName = SHEETS[sheetNameKey];
 
     if (indexStr === null || indexStr === undefined || indexStr === "" || !sheetName) {
-        // console.warn("updateTransposedLyrics: Индекс песни или имя листа не установлены.");
         return; // Нет индекса или листа - нечего транспонировать
     }
 
-    // Добавим проверку наличия данных в кэше
     if (!cachedData[sheetName]?.[indexStr]) {
          console.error("updateTransposedLyrics: Не найдены данные песни для транспонирования в кэше.", sheetName, indexStr);
          return;
@@ -1700,6 +1697,9 @@ function updateTransposedLyrics() {
 
     const preElement = songContent.querySelector('pre');
     const h2Element = songContent.querySelector('h2');
+    // Находим кнопку копирования, если она уже есть
+    const copyBtn = songContent.querySelector('#copy-text-button');
+
     if (!preElement || !h2Element) {
         console.error("updateTransposedLyrics: Элементы H2 или PRE не найдены внутри songContent.");
         return;
@@ -1707,21 +1707,21 @@ function updateTransposedLyrics() {
 
     // Вычисляем транспозицию от оригинального ключа (из таблицы) к новому (из select)
     const transposition = getTransposition(originalKey, newKey);
-
-    // Транспонируем ОРИГИНАЛЬНЫЙ текст
     const transposedLyrics = transposeLyrics(lyrics, transposition);
-    // const processedTransposedLyrics = processLyrics(transposedLyrics); // Обработка пробелов
-    const highlightedTransposedLyrics = highlightChords(transposedLyrics); // Подсветка аккордов
+    const highlightedTransposedLyrics = highlightChords(transposedLyrics);
 
-    // Обновляем DOM
+    // Обновляем только текст, сохраняя кнопку копирования, если она была
     preElement.innerHTML = highlightedTransposedLyrics;
-    h2Element.textContent = `${title} — ${newKey}`; // Обновляем тональность в заголовке
+    h2Element.textContent = `${title} — ${newKey}`;
+
     // Применяем текущий размер шрифта к обновленному <pre>
     updateFontSize();
-if (songContent) {
-    songContent.classList.toggle('chords-hidden', !areChordsVisible);
-}
 
+    // <<< НОВОЕ: Применяем класс скрытия аккордов, если нужно
+    if (songContent) {
+        songContent.classList.toggle('chords-hidden', !areChordsVisible);
+    }
+} // Конец функции updateTransposedLyrics
 
 
 /** Загрузка песен в select#song-select для выбранного листа */
@@ -2241,21 +2241,27 @@ function setupEventListeners() {
 
 
 // Переключение видимости аккордов
-if (toggleChordsButton && songContent) {
+if (toggleChordsButton && songContent && songSelect) { // Добавили songSelect в проверку
     const iconGuitar = '<i class="fas fa-guitar"></i>';
     const iconMusic = '<i class="fas fa-music"></i>';
     const textShow = '<span class="button-text">Аккорды</span>'; // Текст "Показать"
     const textHide = '<span class="button-text">Аккорды</span>'; // Текст "Скрыть" (одинаковый, меняем иконку)
 
+    // Объявляем функцию обновления кнопки в области видимости setupEventListeners
     const updateToggleButton = () => {
+        if (!toggleChordsButton) return; // Доп. проверка
         const currentIcon = areChordsVisible ? iconGuitar : iconMusic;
         const currentText = areChordsVisible ? textHide : textShow;
         const currentTitle = areChordsVisible ? 'Скрыть аккорды' : 'Показать аккорды';
 
         toggleChordsButton.innerHTML = currentIcon + (isMobileView() ? '' : currentText);
         toggleChordsButton.title = currentTitle;
-        toggleChordsButton.disabled = !songSelect || songSelect.value === ""; // Блокируем, если песня не выбрана
+        // Блокируем, если песня не выбрана в songSelect
+        toggleChordsButton.disabled = !songSelect || songSelect.value === "";
     };
+    // Сохраняем ссылку на функцию, чтобы использовать ее в displaySongDetails
+    window.updateToggleButton = updateToggleButton;
+
 
     toggleChordsButton.addEventListener('click', () => {
         if (!songSelect || songSelect.value === "") return; // Не делаем ничего, если песня не выбрана
@@ -2275,7 +2281,60 @@ if (toggleChordsButton && songContent) {
      // Инициализация состояния кнопки при загрузке
      updateToggleButton();
 
-} else { console.warn("Кнопка #toggle-chords-button или #song-content не найдены."); }
+} else { console.warn("Кнопка #toggle-chords-button, #song-content или #songSelect не найдены."); }
+
+
+if (songContent) {
+    // Объявляем функцию-обработчик отдельно
+    window.handleCopyClick = () => {
+        const preElement = songContent.querySelector('pre');
+        const copyBtn = songContent.querySelector('#copy-text-button'); // Находим кнопку каждый раз
+        if (!preElement || !copyBtn) return;
+
+        // Используем innerText, т.к. он не копирует скрытые элементы (аккорды)
+        const textToCopy = preElement.innerText;
+
+        if (!textToCopy || textToCopy.trim() === '') {
+            alert('Нет текста для копирования.');
+            return;
+        }
+
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            // Успешно скопировано - меняем иконку и стиль
+            const originalIconHTML = '<i class="far fa-copy"></i>'; // Сохраняем HTML иконки
+            copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+            copyBtn.classList.add('copied');
+            copyBtn.title = 'Скопировано!';
+            copyBtn.disabled = true; // Блокируем на время
+
+            // Возвращаем иконку и стиль через 1.5 секунды
+            setTimeout(() => {
+                copyBtn.innerHTML = originalIconHTML;
+                copyBtn.classList.remove('copied');
+                copyBtn.title = 'Копировать текст песни';
+                copyBtn.disabled = false; // Разблокируем
+            }, 1500);
+
+        }).catch(err => {
+            console.error('Ошибка копирования в буфер обмена:', err);
+            alert('Не удалось скопировать текст. Проверьте разрешения браузера или попробуйте вручную.');
+        });
+    };
+
+     // Начальное скрытие кнопки (перенесено в displaySongDetails)
+     const initialCopyBtn = songContent.querySelector('#copy-text-button');
+     if (initialCopyBtn) initialCopyBtn.style.display = 'none';
+
+     // Привязываем слушатель к КОНТЕЙНЕРУ один раз
+     songContent.addEventListener('click', (event) => {
+         // Проверяем, был ли клик именно по кнопке копирования
+         if (event.target.closest('#copy-text-button')) {
+            handleCopyClick(); // Вызываем наш обработчик
+         }
+     });
+
+} else { console.warn("#song-content не найден для кнопки Копировать."); }
+
 
 
 // Открытие модалки по клику на иконку заметки (используем делегирование)
