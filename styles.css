@@ -253,7 +253,7 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
     font-weight: 700 !important;
     color: var(--primary-color);
     display: inline-block; /* Нужно для фона и паддингов */
-    background-color: color-mix(in srgb, var(--accent-color) 3%, transparent); /* Полупрозрачный фон */
+    background-color: color-mix(in srgb, var(--accent-color) 2%, transparent); /* Полупрозрачный фон */
     padding: 1px 5px; /* Небольшие отступы вокруг аккорда */
     border-radius: 4px; /* Скругленные углы */
     margin: 0 2px; /* Заменяем margin-right на горизонтальные отступы */
