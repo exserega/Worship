@@ -250,17 +250,21 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
 #song-content { background: var(--container-background-color); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); margin-top: 25px; position: relative; overflow: hidden; border: 1px solid var(--border-color); transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
 #song-content pre { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; white-space: pre-wrap; word-wrap: break-word; line-height: 1.5; font-size: var(--lyrics-font-size, 1rem); color: var(--text-color); margin: 0; padding-top: 15px; /* Добавим отступ сверху под кнопку копирования */ overflow-x: auto; transition: color 0.3s ease; }
 .chord {
-    font-weight: 700 !important; /* <<< Сделали жирнее (700 или bold) + !important */
-    color: var(--primary-color); /* <<< Используем основной цвет темы (ярче акцентного) */
-    margin-right: 4px;
-    transition: color 0.3s ease;
-    /* Добавим немного яркости через тень текста (опционально) */
-    /* text-shadow: 0 0 1px var(--primary-color); */
+    font-weight: 700 !important;
+    color: var(--primary-color);
+    display: inline-block; /* Нужно для фона и паддингов */
+    background-color: color-mix(in srgb, var(--accent-color) 10%, transparent); /* Полупрозрачный фон */
+    padding: 1px 5px; /* Небольшие отступы вокруг аккорда */
+    border-radius: 4px; /* Скругленные углы */
+    margin: 0 2px; /* Заменяем margin-right на горизонтальные отступы */
+    line-height: 1.2; /* Может понадобиться для выравнивания */
+    vertical-align: baseline; /* Выравнивание по базовой линии */
+    transition: color 0.3s ease, background-color 0.3s ease;
 }
-/* Цвет аккордов в светлой теме */
+/* Стили аккордов в светлой теме */
 body[data-theme="light"] #song-content .chord {
-    color: var(--secondary-color); /* Используем вторичный цвет (темнее основного синего) */
-    /* text-shadow: none; */
+    color: var(--secondary-color);
+    background-color: color-mix(in srgb, var(--accent-color) 15%, transparent);
 }
 #song-content.split-columns pre { column-count: 2; column-gap: 30px; position: relative;}
 #song-content.split-columns pre::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background-color: var(--border-color); transform: translateX(-50%); z-index: 1; transition: background-color 0.3s ease; }
@@ -341,20 +345,24 @@ body[data-theme="light"] .presentation-notes i.fas {
     transition: color 0.3s ease;
     margin-top: 0; /* Убедимся, что нет лишнего отступа сверху */
 }
-/* --- Стиль аккордов в презентации --- */
+
+/* --- Стиль аккордов в презентации (с фоном) --- */
 .presentation-song .chord {
-    font-weight: 700 !important; /* <<< Сделали жирнее (700 или bold) + !important */
-    color: var(--primary-color); /* <<< Используем основной цвет темы */
-    background-color: transparent;
-    padding: 0;
-    margin: 0;
-    transition: color 0.3s ease;
-    /* text-shadow: 0 0 1px var(--primary-color); */ /* Опционально */
+    font-weight: 700 !important;
+    color: var(--primary-color);
+    display: inline-block;
+    background-color: color-mix(in srgb, var(--accent-color) 10%, transparent);
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin: 0 2px;
+    line-height: 1.2;
+    vertical-align: baseline;
+    transition: color 0.3s ease, background-color 0.3s ease;
 }
-/* Цвет аккордов в светлой теме презентации */
+/* Стили аккордов в светлой теме презентации */
 body[data-theme="light"] .presentation-song .chord {
     color: var(--secondary-color);
-   /* text-shadow: none; */
+    background-color: color-mix(in srgb, var(--accent-color) 15%, transparent);
 }
 /* --- КОНЕЦ ИЗМЕНЕНИЙ ДЛЯ ПРЕЗЕНТАЦИИ --- */
 
