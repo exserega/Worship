@@ -133,6 +133,14 @@ const presPrevBtn = document.getElementById('pres-prev-btn');
 const presNextBtn = document.getElementById('pres-next-btn');
 const presCounter = document.getElementById('pres-counter');
 
+
+const notesModal = document.getElementById('notes-modal');
+const noteEditTextarea = document.getElementById('note-edit-textarea');
+const saveNoteButton = document.getElementById('save-note-button');
+const cancelNoteButton = document.getElementById('cancel-note-button');
+const closeNoteModalX = document.getElementById('close-note-modal-x');
+// ... остальные ссылки ...
+
 // --- API FUNCTIONS (Sheets, Firestore) ---
 
 /** Загрузка данных с одного листа Google Sheet (с кэшированием) */
@@ -2208,6 +2216,98 @@ function setupEventListeners() {
             resizeTimer = setTimeout(updateSplitButton, 150);
         });
     }
+
+// Открытие модалки по клику на иконку заметки (используем делегирование)
+if (currentSetlistSongsContainer) {
+    currentSetlistSongsContainer.addEventListener('click', (e) => {
+        const noteButton = e.target.closest('.edit-setlist-song-note-button');
+        if (!noteButton) return; // Клик был не по кнопке заметок
+
+        const songDocId = noteButton.dataset.songdocid;
+        if (!currentSetlistId || !songDocId) {
+            console.error("Не найден ID сет-листа или песни для заметки.");
+            return;
+        }
+
+        // Находим данные песни в текущем массиве (чтобы взять заметку)
+        const songData = currentSetlistSongs.find(song => song.id === songDocId);
+        const currentNote = songData ? (songData.notes || '') : '';
+
+        if (noteEditTextarea) noteEditTextarea.value = currentNote; // Помещаем текущую заметку в textarea
+        if (notesModal) {
+            notesModal.dataset.songdocid = songDocId; // Сохраняем ID песни на модалке
+            notesModal.style.display = 'flex'; // Показываем оверлей
+            setTimeout(() => notesModal.classList.add('visible'), 10); // Запускаем анимацию появления
+            if(noteEditTextarea) noteEditTextarea.focus(); // Фокус на поле ввода
+        }
+    });
+}
+
+// Функция для закрытия модального окна
+const closeNotesModal = () => {
+    if (notesModal) {
+        notesModal.classList.remove('visible');
+        // Ждем окончания анимации перед скрытием
+        setTimeout(() => {
+            notesModal.style.display = 'none';
+            if(noteEditTextarea) noteEditTextarea.value = ''; // Очищаем поле
+            delete notesModal.dataset.songdocid; // Удаляем ID песни
+        }, 300); // Время должно совпадать с transition в CSS
+    }
+};
+
+// Кнопка "Сохранить"
+if (saveNoteButton && notesModal) {
+    saveNoteButton.addEventListener('click', async () => {
+        const songDocId = notesModal.dataset.songdocid;
+        const newNoteText = noteEditTextarea ? noteEditTextarea.value.trim() : '';
+
+        if (!currentSetlistId || !songDocId) {
+            alert("Ошибка: Не удалось определить сет-лист или песню для сохранения заметки.");
+            return;
+        }
+
+        saveNoteButton.disabled = true; saveNoteButton.textContent = 'Сохранение...';
+
+        try {
+            const songDocRef = doc(db, "setlists", currentSetlistId, "songs", songDocId);
+            await updateDoc(songDocRef, {
+                notes: newNoteText // Обновляем только поле notes
+            });
+            console.log(`Заметка для песни ${songDocId} в сет-листе ${currentSetlistId} сохранена.`);
+            // UI обновится сам через onSnapshot, но можно добавить визуальное подтверждение
+            closeNotesModal(); // Закрываем окно после успеха
+        } catch (error) {
+            console.error("Ошибка сохранения заметки:", error);
+            alert("Не удалось сохранить заметку. Попробуйте еще раз.");
+        } finally {
+             if(saveNoteButton) {
+                saveNoteButton.disabled = false; saveNoteButton.textContent = 'Сохранить';
+             }
+        }
+    });
+}
+
+// Кнопка "Отмена" и крестик для закрытия
+if (cancelNoteButton) cancelNoteButton.addEventListener('click', closeNotesModal);
+if (closeNoteModalX) closeNoteModalX.addEventListener('click', closeNotesModal);
+
+// Закрытие модалки по клику на оверлей
+if (notesModal) {
+    notesModal.addEventListener('click', (e) => {
+        // Закрываем, только если клик был по самому оверлею (notes-modal), а не по контенту внутри (.modal-content)
+        if (e.target === notesModal) {
+            closeNotesModal();
+        }
+    });
+}
+
+// Закрытие модалки по Esc
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && notesModal && notesModal.classList.contains('visible')) {
+        closeNotesModal();
+    }
+});
 
     // Добавление в избранное
     if(favoriteButton) {
