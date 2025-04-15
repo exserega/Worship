@@ -253,7 +253,7 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
     font-weight: 700 !important;
     color: var(--primary-color);
     display: inline-block; /* Нужно для фона и паддингов */
-    background-color: color-mix(in srgb, var(--accent-color) 10%, transparent); /* Полупрозрачный фон */
+    background-color: color-mix(in srgb, var(--accent-color) 5%, transparent); /* Полупрозрачный фон */
     padding: 1px 5px; /* Небольшие отступы вокруг аккорда */
     border-radius: 4px; /* Скругленные углы */
     margin: 0 2px; /* Заменяем margin-right на горизонтальные отступы */
@@ -264,7 +264,7 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
 /* Стили аккордов в светлой теме */
 body[data-theme="light"] #song-content .chord {
     color: var(--secondary-color);
-    background-color: color-mix(in srgb, var(--accent-color) 15%, transparent);
+    background-color: color-mix(in srgb, var(--accent-color) 5%, transparent);
 }
 
 #song-content.split-columns pre { column-count: 2; column-gap: 30px; position: relative;}
@@ -338,7 +338,7 @@ body[data-theme="light"] .presentation-notes i.fas {
 /* Текст песни в презентации */
 .presentation-song pre {
     font-size: clamp(12px, 2.9vw, 17px); /* <<< Слегка увеличил максимальный и базовый размер */
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Tahoma', Courier, monospace;
     line-height: 1.45; /* <<< Чуть увеличил для читаемости аккордов */
     white-space: pre-wrap;
     word-wrap: break-word;
@@ -352,7 +352,7 @@ body[data-theme="light"] .presentation-notes i.fas {
     font-weight: 700 !important;
     color: var(--primary-color);
     display: inline-block;
-    background-color: color-mix(in srgb, var(--accent-color) 10%, transparent);
+    background-color: color-mix(in srgb, var(--accent-color) 5%, transparent);
     padding: 1px 5px;
     border-radius: 4px;
     margin: 0 2px;
@@ -363,7 +363,7 @@ body[data-theme="light"] .presentation-notes i.fas {
 /* Стили аккордов в светлой теме презентации */
 body[data-theme="light"] .presentation-song .chord {
     color: var(--secondary-color);
-    background-color: color-mix(in srgb, var(--accent-color) 15%, transparent);
+    background-color: color-mix(in srgb, var(--accent-color) 5%, transparent);
 }
 /* --- КОНЕЦ ИЗМЕНЕНИЙ ДЛЯ ПРЕЗЕНТАЦИИ --- */
 
