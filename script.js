@@ -250,26 +250,32 @@ async function loadVocalists() {
 function highlightStructure(lyrics) {
     if (!lyrics) return '';
 
-    // Список маркеров (можно вынести в глобальные константы)
+    // Список маркеров (можно вынести в глобальные константы, если хотите)
     const markers = [
         "куплет", "припев", "бридж", "мостик", "проигрыш", "интро",
         "вступление", "аутро", "окончание", "кода", "запев", "соло",
-         "предприпев", "прехорус" // Добавим еще варианты, если нужно
-         // Можно добавить варианты с цифрами, если они часто встречаются и отделены пробелом
+         "предприпев", "прехорус", "outro" // Добавил outro на всякий случай
     ];
-    // Создаем более гибкий шаблон для поиска (маркер + необязательный номер + необязательное двоеточие)
-    // Пример: ^\s*(Куплет|Припев|...)\s*\d*\s*:?\s*$
-    const markerRegex = new RegExp(`^\\s*(<span class="math-inline">\{markers\.join\('\|'\)\}\)\\\\s\*\\\\d\*\\\\s\*\:?\\\\s\*</span>`, 'i'); // i - флаг для case-insensitive
+
+    // --- ИСПРАВЛЕННОЕ РЕГУЛЯРНОЕ ВЫРАЖЕНИЕ ---
+    // Создаем шаблон: начало строки, необязательные пробелы,
+    // (один из маркеров),
+    // необязательные пробелы, необязательные цифры, необязательные пробелы,
+    // необязательное двоеточие или точка, необязательные пробелы, конец строки.
+    // Флаг 'i' делает поиск нечувствительным к регистру.
+    const markerPattern = `^\\s*(${markers.join('|')})\\s*\\d*\\s*[:.]?\\s*$`;
+    const markerRegex = new RegExp(markerPattern, 'i');
+    // --- КОНЕЦ ИСПРАВЛЕНИЯ РЕГУЛЯРКИ ---
 
     return lyrics.split('\n').map(line => {
         const trimmedLine = line.trim();
         // Проверяем, соответствует ли вся строка (после обрезки пробелов) нашему шаблону маркера
         if (markerRegex.test(trimmedLine)) {
             // Если да, оборачиваем в span с классом
-            // Используем trimmedLine, чтобы сохранить оригинальное написание и регистр из песни
+            // Используем trimmedLine, чтобы сохранить оригинальное написание и регистр
             return `<span class="song-structure">${trimmedLine}</span>`;
         } else {
-            // Если нет, возвращаем строку как есть
+            // Если нет, возвращаем строку как есть (для последующей обработки аккордов)
             return line;
         }
     }).join('\n'); // Собираем строки обратно
@@ -1410,22 +1416,23 @@ async function showPresentationView(songsToShow) {
 }
 
 /** Отображает ТЕКУЩУЮ песню в режиме презентации */
+/** Отображает ТЕКУЩУЮ песню в режиме презентации */
 async function displayCurrentPresentationSong() {
     if (!presentationContent || presentationSongs.length === 0) return;
 
     // Коррекция индекса, если он вышел за пределы
     currentPresentationIndex = Math.max(0, Math.min(currentPresentationIndex, presentationSongs.length - 1));
 
-    const song = presentationSongs[currentPresentationIndex]; // Получаем текущий объект песни из массива презентации
+    const song = presentationSongs[currentPresentationIndex];
     console.log(`Презентация: Показываем песню ${currentPresentationIndex + 1}/${presentationSongs.length}: ${song.name}`);
 
     presentationContent.innerHTML = `<div class="presentation-loading">Загрузка "${song.name}"...</div>`;
 
     try {
-        // Получение данных (с дозагрузкой, если нужно)
+        // Получение данных
         if (!cachedData[song.sheet]?.[song.index]) {
             console.log(`Presentation: Загрузка данных для ${song.name} (${song.sheet})`);
-            await fetchSheetData(song.sheet); // Используем существующую функцию загрузки/кэширования
+            await fetchSheetData(song.sheet);
         }
         const originalSongData = cachedData[song.sheet]?.[song.index];
         if (!originalSongData) {
@@ -1435,39 +1442,31 @@ async function displayCurrentPresentationSong() {
         // Подготовка текста
         const songTitle = originalSongData[0];
         const originalLyrics = originalSongData[1] || '';
-        const originalKey = originalSongData[2] || chords[0]; // Ключ из таблицы
+        const originalKey = originalSongData[2] || chords[0];
+        const targetKey = song.preferredKey || originalKey;
+        const songNote = song.notes || '';
 
-        // --- ИЗМЕНЕНИЕ: Используем ключ и заметку из объекта `song` (который из `presentationSongs`) ---
-        const targetKey = song.preferredKey || originalKey; // Ключ из сет-листа или таблицы
-        const songNote = song.notes || ''; // Получаем заметку из объекта песни сет-листа
-        // --- КОНЕЦ ИЗМЕНЕНИЯ ---
-
+        // --- ИСПРАВЛЕНИЕ: Добавлен вызов highlightStructure ---
         const transposition = getTransposition(originalKey, targetKey);
         const transposedLyrics = transposeLyrics(originalLyrics, transposition);
-        const highlightedLyrics = highlightChords(transposedLyrics); // Выделяем аккорды
+        // 1. Выделяем структуру
+        const structureHighlightedLyrics = highlightStructure(transposedLyrics);
+        // 2. Выделяем аккорды
+        const finalHighlightedLyrics = highlightChords(structureHighlightedLyrics);
+        // --- КОНЕЦ ИСПРАВЛЕНИЯ ---
 
         // Формирование HTML
         const songHtml = `
             <div class="presentation-song">
                 <h2>${songTitle} — ${targetKey}</h2>
-                ${/* --- НАЧАЛО БЛОКА ДЛЯ ЗАМЕТКИ --- */ ''}
-                ${songNote ? /* Если заметка есть */
-                    `<div class="presentation-notes">
-                        <i class="fas fa-info-circle"></i> ${songNote.replace(/\n/g, '<br>')}
-                     </div>`
-                    : /* Если заметки нет */
-                    ''
-                }
-                ${/* --- КОНЕЦ БЛОКА ДЛЯ ЗАМЕТКИ --- */ ''}
-                <pre>${highlightedLyrics}</pre>
+                ${songNote ? `<div class="presentation-notes"><i class="fas fa-info-circle"></i> ${songNote.replace(/\n/g, '<br>')}</div>` : ''}
+                <pre>${finalHighlightedLyrics}</pre> {/* Используем finalHighlightedLyrics */}
             </div>
         `;
-        presentationContent.innerHTML = songHtml; // Обновляем контент
+        presentationContent.innerHTML = songHtml;
 
-        // Применение разделения, если активно
         presentationContent.classList.toggle('split-columns', isPresentationSplit);
 
-        // Прокрутка содержимого песни наверх (на всякий случай, хотя презентация обычно не скроллится)
         const songElement = presentationContent.querySelector('.presentation-song pre');
         if (songElement) songElement.scrollTop = 0;
 
