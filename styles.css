@@ -558,6 +558,27 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 #loading-indicator { display: none; position: fixed; top: 15px; left: 50%; transform: translateX(-50%); background-color: rgba(40, 40, 40, 0.9); color: white; padding: 8px 18px; border-radius: var(--radius); z-index: 1002; font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
 
+
+
+
+/* Стили для кнопки заметок */
+.edit-setlist-song-note-button {
+    padding: 0 5px !important; /* Компактный паддинг */
+    font-size: 0.9rem !important; /* Размер иконки */
+    margin-left: auto; /* Отодвигаем ее и кнопку удаления вправо */
+    margin-right: 5px; /* Небольшой отступ справа */
+    color: var(--label-color) !important; /* Серый цвет по умолчанию */
+}
+.edit-setlist-song-note-button.has-note i {
+     color: var(--accent-color) !important; /* Цвет иконки, если есть заметка */
+}
+.edit-setlist-song-note-button:hover i {
+     color: var(--primary-color) !important; /* Цвет при наведении */
+}
+
+
+
+
 /* ============================================ */
 /* АДАПТИВНОСТЬ                                */
 /* ============================================ */
