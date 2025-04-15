@@ -690,117 +690,116 @@ function loadCurrentSetlistSongs(setlistId) {
 
     // 5. Установка нового слушателя
     currentSetlistSongsUnsubscribe = onSnapshot(q, (snapshot) => {
-          // Проверка актуальности
-          if (setlistId !== currentSetlistId) {
-              console.warn(`Получен снимок песен для ${setlistId}, но текущий ${currentSetlistId}. Игнор.`);
-              return;
-          }
+        // Проверка актуальности
+        if (setlistId !== currentSetlistId) {
+            console.warn(`Получен снимок песен для ${setlistId}, но текущий ${currentSetlistId}. Игнор.`);
+            return;
+        }
 
-         console.log(`Слушатель песен ${setlistId} сработал. Документов: ${snapshot.size}`);
-         currentSetlistSongsContainer.innerHTML = ''; currentSetlistSongs = [];
+        console.log(`Слушатель песен ${setlistId} сработал. Документов: ${snapshot.size}`);
+        currentSetlistSongsContainer.innerHTML = ''; currentSetlistSongs = []; // Очищаем перед отрисовкой
 
-         if (snapshot.empty) {
-             currentSetlistSongsContainer.innerHTML = '<div class="empty-message">Нет песен в сет-листе.</div>';
-             return;
-         }
+        if (snapshot.empty) {
+            currentSetlistSongsContainer.innerHTML = '<div class="empty-message">Нет песен в сет-листе.</div>';
+            return;
+        }
 
-         // 6. Обработка и отображение песен
-         snapshot.docs.forEach((songDoc) => {
-             const songData = songDoc.data();
-             const songDocId = songDoc.id;
+        // 6. Обработка и отображение песен
+        snapshot.docs.forEach((songDoc) => {
+            const songData = songDoc.data();
+            const songDocId = songDoc.id;
 
-             currentSetlistSongs.push({ id: songDocId, ...songData }); // Сохраняем в массив
+            currentSetlistSongs.push({ id: songDocId, ...songData }); // Сохраняем в массив
 
-             const songItem = document.createElement('div');
-             songItem.className = 'setlist-song-item';
-             songItem.dataset.id = songDocId;
-             songItem.dataset.sheet = songData.sheet;
-             songItem.dataset.index = songData.index;
-             // songItem.draggable = true; // Если нужен drag-n-drop
-             // songItem.dataset.order = songData.order;
+            const songItem = document.createElement('div');
+            songItem.className = 'setlist-song-item';
+            songItem.dataset.id = songDocId;
+            songItem.dataset.sheet = songData.sheet;
+            songItem.dataset.index = songData.index;
 
-             // Добавляем ручку, если нужна
-             // const dragHandle = document.createElement('span'); dragHandle.className = 'drag-handle'; dragHandle.innerHTML = '☰'; songItem.appendChild(dragHandle);
+            // Элемент с названием песни
+            const songInfo = document.createElement('span');
+            songInfo.className = 'song-name';
+            songInfo.textContent = `${songData.name || '...'} — ${songData.preferredKey || 'N/A'}`;
+            songItem.appendChild(songInfo);
 
-             const songInfo = document.createElement('span');
-             songInfo.className = 'song-name';
-             songInfo.textContent = `${songData.name || '...'} — ${songData.preferredKey || 'N/A'}`;
-             songItem.appendChild(songInfo);
+            // --- Кнопка Заметки (ОДИН БЛОК!) ---
+            const noteBtn = document.createElement('button');
+            noteBtn.innerHTML = '<i class="far fa-sticky-note"></i>'; // Иконка по умолчанию (пустая заметка)
+            noteBtn.className = 'edit-setlist-song-note-button icon-button simple'; // Стили как у других иконок
+            noteBtn.title = 'Добавить/Редактировать заметку';
+            noteBtn.dataset.songdocid = songDocId; // Сохраняем ID документа песни из Firestore
 
-// Создаем кнопку/иконку для заметок
-const noteBtn = document.createElement('button');
-noteBtn.innerHTML = '<i class="far fa-sticky-note"></i>'; // Иконка по умолчанию (пустая заметка)
-noteBtn.className = 'edit-setlist-song-note-button icon-button simple'; // Стили как у других иконок
-noteBtn.title = 'Добавить/Редактировать заметку';
-noteBtn.dataset.songdocid = songDocId; // Сохраняем ID документа песни из Firestore
+            // Проверяем, есть ли заметка, и меняем иконку/title, если есть
+            if (songData.notes && songData.notes.trim() !== '') {
+                noteBtn.innerHTML = '<i class="fas fa-sticky-note"></i>'; // Закрашенная иконка
+                noteBtn.classList.add('has-note'); // Добавляем класс для возможной доп. стилизации
+                noteBtn.title = 'Посмотреть/Редактировать заметку';
+            }
+            // --- Конец блока кнопки Заметки ---
 
-// Проверяем, есть ли заметка, и меняем иконку, если есть
-if (songData.notes && songData.notes.trim() !== '') {
-    noteBtn.innerHTML = '<i class="fas fa-sticky-note"></i>'; // Закрашенная иконка
-    noteBtn.classList.add('has-note'); // Добавляем класс для возможной доп. стилизации
-    noteBtn.title = 'Посмотреть/Редактировать заметку';
-}
+            // --- Кнопка Удаления ---
+            const deleteBtn = document.createElement('button');
+            deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
+            deleteBtn.className = 'delete-button delete-song-from-setlist-button';
+            deleteBtn.title = 'Удалить из сет-листа';
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Остановить всплытие, чтобы не сработал клик по songItem
+                deleteSongFromSetlist(songDocId);
+            });
+            // --- Конец блока кнопки Удаления ---
 
-             const deleteBtn = document.createElement('button');
-             deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
-             deleteBtn.className = 'delete-button delete-song-from-setlist-button';
-             deleteBtn.title = 'Удалить из сет-листа';
-             deleteBtn.addEventListener('click', (e) => {
-                 e.stopPropagation();
-                 deleteSongFromSetlist(songDocId);
-             });
-             songItem.appendChild(deleteBtn);
 
-// Создаем кнопку/иконку для заметок
-const noteBtn = document.createElement('button');
-noteBtn.innerHTML = '<i class="far fa-sticky-note"></i>'; // Иконка по умолчанию (пустая заметка)
-noteBtn.className = 'edit-setlist-song-note-button icon-button simple'; // Стили как у других иконок
-noteBtn.title = 'Добавить/Редактировать заметку';
-noteBtn.dataset.songdocid = songDocId; // Сохраняем ID документа песни из Firestore
+            // --- Добавляем кнопки в элемент песни В ПРАВИЛЬНОМ ПОРЯДКЕ ---
+            songItem.appendChild(noteBtn);   // Сначала кнопка Заметки
+            songItem.appendChild(deleteBtn); // Затем кнопка Удаления
 
-// Проверяем, есть ли заметка, и меняем иконку, если есть
-if (songData.notes && songData.notes.trim() !== '') {
-    noteBtn.innerHTML = '<i class="fas fa-sticky-note"></i>'; // Закрашенная иконка
-    noteBtn.classList.add('has-note'); // Добавляем класс для возможной доп. стилизации
-    noteBtn.title = 'Посмотреть/Редактировать заметку';
-}
-
-             // Клик по песне в сет-листе
-             songItem.addEventListener('click', async () => {
-                 console.log(`Клик по песне "${songData.name}" в сет-листе.`);
-                 if (!cachedData[songData.sheet]?.[songData.index]) {
-                     console.log(`Загрузка листа "${songData.sheet}"...`);
-                     await fetchSheetData(songData.sheet);
-                     if (!cachedData[songData.sheet]?.[songData.index]) {
-                         alert(`Не удалось загрузить/найти данные песни "${songData.name}".`);
-                         return;
-                     }
+            // Клик по всей строке песни (кроме кнопок)
+            songItem.addEventListener('click', async (e) => {
+                 // Игнорируем клик, если он был по одной из кнопок внутри строки
+                 if (e.target.closest('button')) {
+                     return;
                  }
-                 const originalSongData = cachedData[songData.sheet][songData.index];
-                 const sheetNameValue = Object.keys(SHEETS).find(sKey => SHEETS[sKey] === songData.sheet);
 
-                 if(sheetSelect && sheetNameValue) sheetSelect.value = sheetNameValue;
-                 await loadSheetSongs();
-                 if(songSelect) songSelect.value = songData.index;
-                 displaySongDetails(originalSongData, songData.index, songData.preferredKey);
+                console.log(`Клик по песне "${songData.name}" в сет-листе.`);
+                if (!cachedData[songData.sheet]?.[songData.index]) {
+                    console.log(`Загрузка листа "${songData.sheet}"...`);
+                    await fetchSheetData(songData.sheet);
+                    if (!cachedData[songData.sheet]?.[songData.index]) {
+                        alert(`Не удалось загрузить/найти данные песни "${songData.name}".`);
+                        return;
+                    }
+                }
+                const originalSongData = cachedData[songData.sheet][songData.index];
+                const sheetNameValue = Object.keys(SHEETS).find(sKey => SHEETS[sKey] === songData.sheet);
 
-                 // !!! ЗАКРЫВАЕМ ПАНЕЛИ ПОСЛЕ КЛИКА !!!
-                 closeAllSidePanels();
-             }); // Конец обработчика клика по songItem
+                if(sheetSelect && sheetNameValue) sheetSelect.value = sheetNameValue;
+                await loadSheetSongs();
+                if(songSelect) songSelect.value = songData.index;
+                displaySongDetails(originalSongData, songData.index, songData.preferredKey);
 
-             currentSetlistSongsContainer.appendChild(songItem);
-         }); // Конец forEach songDoc
+                // !!! ЗАКРЫВАЕМ ПАНЕЛИ ПОСЛЕ КЛИКА !!!
+                closeAllSidePanels();
+            }); // Конец обработчика клика по songItem
 
-         // Тут можно инициализировать drag-n-drop
-         // initSortable();
+            currentSetlistSongsContainer.appendChild(songItem); // Добавляем готовую строку песни в контейнер
+        }); // Конец forEach songDoc
 
-     }, (error) => { // Обработка ошибок onSnapshot
-           if (setlistId !== currentSetlistId) { return; }
-         console.error(`Ошибка загрузки песен для ${setlistId}:`, error);
-         currentSetlistSongsContainer.innerHTML = '<div class="empty-message">Ошибка загрузки песен.</div>';
-         currentSetlistSongs = [];
-         if (currentSetlistSongsUnsubscribe) { currentSetlistSongsUnsubscribe(); currentSetlistSongsUnsubscribe = null; } });
- } // Конец loadCurrentSetlistSongs
+        // Тут можно инициализировать drag-n-drop, если он будет
+        // initSortable();
+
+    }, (error) => { // Обработка ошибок onSnapshot
+        if (setlistId !== currentSetlistId) { return; } // Игнорируем ошибку, если сет-лист уже сменился
+        console.error(`Ошибка загрузки песен для ${setlistId}:`, error);
+        currentSetlistSongsContainer.innerHTML = '<div class="empty-message">Ошибка загрузки песен.</div>';
+        currentSetlistSongs = [];
+        // Отписываемся при ошибке слушателя
+        if (currentSetlistSongsUnsubscribe) {
+            currentSetlistSongsUnsubscribe();
+            currentSetlistSongsUnsubscribe = null;
+        }
+    });
+} // Конец функции loadCurrentSetlistSongs
 
 
 /** Добавляет текущую песню в ВЫБРАННЫЙ сет-лист */
