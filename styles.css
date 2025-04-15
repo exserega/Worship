@@ -644,6 +644,40 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 
 
 
+/* --- Стили для заметки в режиме презентации --- */
+.presentation-notes {
+    background-color: rgba(80, 80, 80, 0.2); /* Полупрозрачный фон для выделения */
+    border-left: 3px solid var(--accent-color); /* Цветная линия слева */
+    padding: 8px 12px;
+    margin-top: 5px;  /* Небольшой отступ от заголовка */
+    margin-bottom: 15px; /* Отступ до текста песни */
+    border-radius: 4px;
+    font-size: 0.8em;   /* Меньше основного текста */
+    line-height: 1.4;
+    color: var(--label-color); /* Цвет как у подсказок */
+    white-space: pre-wrap; /* Чтобы переносы строк (<br>) работали */
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Иконка внутри заметки */
+.presentation-notes i.fas {
+    margin-right: 6px;
+    color: var(--accent-color); /* Цвет иконки */
+    opacity: 0.8;
+}
+
+/* Стили для светлой темы */
+body[data-theme="light"] .presentation-notes {
+    background-color: #eef2ff; /* Светло-голубой/лавандовый фон */
+    border-left-color: var(--primary-color);
+    color: #475569; /* Темно-серый текст */
+}
+body[data-theme="light"] .presentation-notes i.fas {
+     color: var(--primary-color);
+}
+
+
+
 /* ============================================ */
 /* АДАПТИВНОСТЬ                                */
 /* ============================================ */
