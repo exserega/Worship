@@ -497,6 +497,11 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
     /* Наследует border-radius и базовый градиент, если не переопределено ниже */
 }
 
+#setlists-panel .current-setlist-controls button i {
+    margin-right: 6px; /* Отступ между иконкой и текстом. Можете поменять на 5px или 8px по вкусу. */
+    /* vertical-align: middle; */ /* Можно добавить для выравнивания иконки по центру текста, если нужно */
+}
+
 /* Стили для кнопки "Презентация" (если нужно ее отличить) */
 #setlists-panel #start-presentation-button {
     /* Можно оставить базовый синий градиент или задать свой фон */
