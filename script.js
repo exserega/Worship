@@ -1245,16 +1245,13 @@ function transposeLyrics(lyrics, transposition) {
     }
 }
 
-/** Обработка строк текста для уменьшения пробелов МЕЖДУ словами/аккордами */
+/** Обработка строк текста для коррекции выравнивания пробелов */
 function processLyrics(lyrics) {
-    if (!lyrics) return '';
-    // Разделяем на строки
-    return lyrics.split('\n').map(line => {
-        // Заменяем 2+ пробела на округленную половину их количества ИЛИ просто один пробел
-        // return line.replace(/ {2,}/g, match => ' '.repeat(Math.max(1, Math.ceil(match.length / 2))));
-        // Или более простой вариант: заменять 2+ пробела на один пробел
-        return line.replace(/ {2,}/g, ' ');
-    }).join('\n'); // Собираем обратно
+    if (!lyrics) return '';
+    return lyrics.split('\n').map(line => {
+        // Заменяем 2+ пробела на округленную половину их количества (минимум 1 пробел)
+        return line.replace(/ {2,}/g, match => ' '.repeat(Math.max(1, Math.ceil(match.length / 2))));
+    }).join('\n');
 }
 
 /** Выделение аккордов тегами span для стилизации */
