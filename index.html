@@ -160,15 +160,28 @@
 
 <aside id="repertoire-panel" class="side-panel repertoire-panel">
     <h3 class="panel-header">Репертуар</h3>
+
     <div class="repertoire-vocalist-selector">
         <label for="vocalist-select">Вокалист:</label>
         <select id="vocalist-select">
             <option value="">-- Выберите вокалиста --</option>
-        </select>
+            </select>
+    </div>
+
+    <div class="repertoire-view-controls">
+        <button id="repertoire-view-key" class="repertoire-view-button active" title="Группировать по тональности">
+            <i class="fas fa-key"></i> <span class="button-text-rp">По тональности</span>
+        </button>
+        <button id="repertoire-view-sheet" class="repertoire-view-button" title="Группировать по листам">
+            <i class="far fa-file-alt"></i> <span class="button-text-rp">По листам</span>
+        </button>
+        <button id="repertoire-view-all" class="repertoire-view-button" title="Показать весь список алфавитном порядке">
+            <i class="fas fa-sort-alpha-down"></i> <span class="button-text-rp">Весь список</span>
+        </button>
     </div>
     <div id="repertoire-panel-list" class="repertoire-list-container list-container">
         <div class="empty-message">Выберите вокалиста для просмотра репертуара.</div>
-    </div>
+        </div>
 </aside>
 
 <div id="presentation-overlay" class="presentation-overlay">
