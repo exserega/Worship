@@ -1709,23 +1709,25 @@ function displaySongDetails(songData, index, keyToSelect) {
     }
 
     // Обновляем YouTube плеер
-    const vId = extractYouTubeVideoId(ytLink);
-    if (vId && playerContainer && playerSection) {
-        playerContainer.innerHTML = `<iframe width="100%" height="315" src="https://www.youtube.com/embed/..." frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`; // Используем стандартный embed URL
-        playerSection.style.display = 'block';
-        if (keyDisplay) {
-            if (videoKey) {
-                keyDisplay.textContent = `Ориг. видео: ${videoKey}`;
-                keyDisplay.style.display = 'block';
-            } else {
-                keyDisplay.style.display = 'none';
-            }
+   const vId = extractYouTubeVideoId(ytLink);
+if (vId && playerContainer && playerSection) {
+    // Используем правильный URL для встраивания
+    const embedUrl = `https://www.youtube.com/embed/${vId}`;
+    playerContainer.innerHTML = `<iframe width="100%" height="315" src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`; // Добавил 'web-share' в allow для современных браузеров
+    playerSection.style.display = 'block';
+         if (keyDisplay) {
+        if (videoKey) {
+            keyDisplay.textContent = `Ориг. видео: ${videoKey}`;
+            keyDisplay.style.display = 'block';
+        } else {
+            keyDisplay.style.display = 'none';
         }
-    } else {
-        playerContainer.innerHTML = '';
-        playerSection.style.display = 'none';
-        if (keyDisplay) keyDisplay.style.display = 'none';
     }
+} else {
+    playerContainer.innerHTML = '';
+    playerSection.style.display = 'none';
+    if (keyDisplay) keyDisplay.style.display = 'none';
+}
 
     // Разблокируем кнопки действий
     if (favoriteButton) favoriteButton.disabled = false;
