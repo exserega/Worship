@@ -1710,33 +1710,26 @@ function displaySongDetails(songData, index, keyToSelect) {
         songContent.classList.toggle('chords-hidden', !areChordsVisible);
     }
 
-   // Обновляем YouTube плеер (с ИСПРАВЛЕННЫМ URL)
-    const vId = extractYouTubeVideoId(ytLink);
-
-    // --- ОТЛАДКА ---
-    console.log("Ссылка из таблицы (ytLink):", ytLink);
-    console.log("Извлеченный ID видео (vId):", vId);
-    // --- КОНЕЦ ОТЛАДКИ ---
-
-    if (vId && playerContainer && playerSection) {
-        // Используем правильный URL для встраивания (ИСПРАВЛЕНО!)
-        const embedUrl = `www.youtube.com{vId}`;
-
-        // --- ОТЛАДКА ---
-        console.log("Сгенерированный URL для iframe (embedUrl):", embedUrl);
-        // --- КОНЕЦ ОТЛАДКИ ---
-
-        playerContainer.innerHTML = `<iframe width="100%" height="315" src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
-        playerSection.style.display = 'block';
-        if (keyDisplay) {
-            // ... код для ключа ...
+   // Обновляем YouTube плеер
+   const vId = extractYouTubeVideoId(ytLink);
+if (vId && playerContainer && playerSection) {
+    // Используем правильный URL для встраивания
+    const embedUrl = `https://www.youtube.com/embed/${vId}`;
+    playerContainer.innerHTML = `<iframe width="100%" height="315" src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`; // Добавил 'web-share' в allow для современных браузеров
+    playerSection.style.display = 'block';
+         if (keyDisplay) {
+        if (videoKey) {
+            keyDisplay.textContent = `Ориг. видео: ${videoKey}`;
+            keyDisplay.style.display = 'block';
+        } else {
+            keyDisplay.style.display = 'none';
         }
-    } else {
-        console.log("Плеер не будет показан (vId пуст или элементы не найдены)."); // Отладка для else
-        playerContainer.innerHTML = '';
-        playerSection.style.display = 'none';
-        if (keyDisplay) keyDisplay.style.display = 'none';
     }
+} else {
+    playerContainer.innerHTML = '';
+    playerSection.style.display = 'none';
+    if (keyDisplay) keyDisplay.style.display = 'none';
+}
 
     // Разблокируем кнопки действий
     if (favoriteButton) favoriteButton.disabled = false;
