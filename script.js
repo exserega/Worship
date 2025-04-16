@@ -1735,7 +1735,7 @@ if (vId && playerContainer && playerSection) {
     playerSection.style.display = 'block';
          if (keyDisplay) {
         if (videoKey) {
-            keyDisplay.textContent = `Ориг. видео: ${videoKey}`;
+            keyDisplay.textContent = `Тональность в видео: ${videoKey}`;
             keyDisplay.style.display = 'block';
         } else {
             keyDisplay.style.display = 'none';
