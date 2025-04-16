@@ -104,14 +104,13 @@ body[data-theme="light"] h1 {
 /* Заголовки секций в панелях (h3) */
 .list-section h3, #repertoire-panel .panel-header {
      text-align: center;
-     font-size: 1.1rem; /* Можно немного уменьшить с 1.15rem, если нужно */
+     font-size: 1.1rem;
      color: var(--primary-color);
-     margin-top: 0; /* Убедимся, что нет верхнего отступа */
-     margin-bottom: 8px;   /* <<< УМЕНЬШЕНО (было 10px или больше) */
-     padding-bottom: 4px;  /* <<< УМЕНЬШЕНО (было 6px) */
-     border-bottom: none;  /* <<< УБРАНО: Убираем линию под заголовком */
-     /* Убедимся, что нет лишнего верхнего паддинга, если он где-то был */
+     margin-top: 0;
+     margin-bottom: 8px;   /* Оставляем уменьшенный нижний отступ */
      padding-top: 0;
+     padding-bottom: 6px;  /* <<< ВЕРНУЛИ/Слегка увеличили паддинг снизу для линии */
+     border-bottom: 1px solid var(--border-color); /* <<< ВЕРНУЛИ ЛИНИЮ */
 }
 #repertoire-panel .panel-header { /* Особый стиль для заголовка Репертуара */
      text-align: center;
@@ -996,10 +995,27 @@ body[data-theme="light"] .repertoire-view-button.active {
     .list-container { max-height: none; } /* Убираем ограничение высоты на мобильных */
     .favorite-item, .setlist-item, .setlist-song-item { font-size: 0.85rem; padding: 8px 10px; }
     #repertoire-panel .panel-header { font-size: 1.1rem; padding-bottom: 8px; }
+#repertoire-panel {
+    padding-top: 8px; /* <<< УМЕНЬШЕНО (было 15px по умолчанию у .side-panel) */
+    /* Оставляем остальные паддинги панели по умолчанию или можно тоже уменьшить */
+    /* padding-left: 15px; padding-right: 15px; padding-bottom: 15px; */
+}
     #repertoire-panel #vocalist-select { padding: 8px 12px; padding-right: 30px; font-size: 0.9rem; margin-bottom: 8px; }
     #repertoire-panel-list { padding: 5px; }
     #repertoire-panel .repertoire-item { font-size: 0.85rem; padding: 7px 8px 7px 15px; }
     /* Форма создания сет-листа */
+ #repertoire-panel {
+        padding-top: 5px; /* <<< Еще меньше верхний паддинг на мобильных */
+        /* Убедимся, что левый/правый паддинги тоже адекватны */
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+     #repertoire-panel .panel-header {
+          font-size: 1rem; /* Уменьшаем заголовок на мобильных */
+          margin-bottom: 5px;
+          padding-bottom: 4px;
+     }
+}
     #setlists-panel .create-setlist-form { margin-bottom: 10px; }
     #new-setlist-name-input { font-size: 0.9rem; padding: 7px 10px; }
     #create-setlist-button { padding: 7px 12px; font-size: 0.8rem; }
