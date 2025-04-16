@@ -428,7 +428,7 @@ function loadRepertoire(vocalistId) {
                         const originalSongData = cachedData[song.sheet][song.index];
                         const sheetNameValue = Object.keys(SHEETS).find(sKey => SHEETS[sKey] === song.sheet);
                         if(sheetSelect && sheetNameValue) sheetSelect.value = sheetNameValue;
-                        await loadSheetSongs();
+                   
                         if(songSelect) songSelect.value = song.index;
                         displaySongDetails(originalSongData, song.index, song.preferredKey);
                         if (repertoirePanel) repertoirePanel.classList.remove('open');
@@ -834,7 +834,7 @@ function loadCurrentSetlistSongs(setlistId) {
                 const sheetNameValue = Object.keys(SHEETS).find(sKey => SHEETS[sKey] === songData.sheet);
 
                 if(sheetSelect && sheetNameValue) sheetSelect.value = sheetNameValue;
-                await loadSheetSongs();
+                
                 if(songSelect) songSelect.value = songData.index;
                 displaySongDetails(originalSongData, songData.index, songData.preferredKey);
 
@@ -1921,7 +1921,7 @@ function loadFavorites(container = favoritesList) {
             }
 
             if(sheetSelect) sheetSelect.value = sheetNameValue;
-            await loadSheetSongs(); // Перезагружаем список песен листа
+            
             if(songSelect) songSelect.value = fav.index; // Выбираем песню
             // Отображаем детали с ключом из избранного
             displaySongDetails(songDataFromCache, fav.index, fav.key);
