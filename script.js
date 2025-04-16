@@ -1710,22 +1710,29 @@ function displaySongDetails(songData, index, keyToSelect) {
         songContent.classList.toggle('chords-hidden', !areChordsVisible);
     }
 
-    // Обновляем YouTube плеер (с ИСПРАВЛЕННЫМ URL)
+   // Обновляем YouTube плеер (с ИСПРАВЛЕННЫМ URL)
     const vId = extractYouTubeVideoId(ytLink);
+
+    // --- ОТЛАДКА ---
+    console.log("Ссылка из таблицы (ytLink):", ytLink);
+    console.log("Извлеченный ID видео (vId):", vId);
+    // --- КОНЕЦ ОТЛАДКИ ---
+
     if (vId && playerContainer && playerSection) {
         // Используем правильный URL для встраивания (ИСПРАВЛЕНО!)
-        const embedUrl = `https://www.youtube.com/embed/ИДЕНТИФИКАТОР_ВИДЕО{vId}`;
+        const embedUrl = `www.youtube.com{vId}`;
+
+        // --- ОТЛАДКА ---
+        console.log("Сгенерированный URL для iframe (embedUrl):", embedUrl);
+        // --- КОНЕЦ ОТЛАДКИ ---
+
         playerContainer.innerHTML = `<iframe width="100%" height="315" src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
         playerSection.style.display = 'block';
         if (keyDisplay) {
-            if (videoKey) {
-                keyDisplay.textContent = `Ориг. видео: ${videoKey}`;
-                keyDisplay.style.display = 'block';
-            } else {
-                keyDisplay.style.display = 'none';
-            }
+            // ... код для ключа ...
         }
     } else {
+        console.log("Плеер не будет показан (vId пуст или элементы не найдены)."); // Отладка для else
         playerContainer.innerHTML = '';
         playerSection.style.display = 'none';
         if (keyDisplay) keyDisplay.style.display = 'none';
@@ -1778,38 +1785,50 @@ function updateTransposedLyrics() {
     }
 
     if (!cachedData[sheetName]?.[indexStr]) {
-         console.error("updateTransposedLyrics: Не найдены данные песни для транспонирования в кэше.", sheetName, indexStr);
-         return;
+        console.error("updateTransposedLyrics: Не найдены данные песни для транспонирования в кэше.", sheetName, indexStr);
+        return;
     }
 
     const songData = cachedData[sheetName][indexStr];
     const originalKey = songData[2]; // Оригинальная тональность из таблицы
-    const lyrics = songData[1] || '';
+    const originalLyrics = songData[1] || ''; // <<< ИСХОДНЫЙ текст из кэша
     const title = songData[0] || 'Без названия';
 
     const preElement = songContent.querySelector('pre');
     const h2Element = songContent.querySelector('h2');
-    // Находим кнопку копирования, если она уже есть
-    const copyBtn = songContent.querySelector('#copy-text-button');
 
     if (!preElement || !h2Element) {
         console.error("updateTransposedLyrics: Элементы H2 или PRE не найдены внутри songContent.");
         return;
     }
 
-    // Вычисляем транспозицию от оригинального ключа (из таблицы) к новому (из select)
-    const transposition = getTransposition(originalKey, newKey);
-    const transposedLyrics = transposeLyrics(lyrics, transposition);
-    const highlightedTransposedLyrics = highlightChords(transposedLyrics);
+    // --- НАЧАЛО ИСПРАВЛЕНИЯ ---
+    // 0. Обрабатываем пробелы ПЕРЕД транспонированием
+    const processedLyrics = processLyrics(originalLyrics);
 
-    // Обновляем только текст, сохраняя кнопку копирования, если она была
-    preElement.innerHTML = highlightedTransposedLyrics;
+    // 1. Вычисляем транспозицию
+    const transposition = getTransposition(originalKey, newKey);
+
+    // 2. Транспонируем обработанный текст (processedLyrics)
+    const transposedLyrics = transposeLyrics(processedLyrics, transposition);
+
+    // 3. Выделяем структуру
+    const structureHighlightedLyrics = highlightStructure(transposedLyrics);
+
+     // 4. Выделяем аккорды
+    const finalHighlightedLyrics = highlightChords(structureHighlightedLyrics);
+    // --- КОНЕЦ ИСПРАВЛЕНИЯ ---
+
+
+    // Обновляем текст в <pre>
+    preElement.innerHTML = finalHighlightedLyrics; // Используем finalHighlightedLyrics
+    // Обновляем заголовок
     h2Element.textContent = `${title} — ${newKey}`;
 
     // Применяем текущий размер шрифта к обновленному <pre>
     updateFontSize();
 
-    // <<< НОВОЕ: Применяем класс скрытия аккордов, если нужно
+    // Применяем класс скрытия аккордов, если нужно
     if (songContent) {
         songContent.classList.toggle('chords-hidden', !areChordsVisible);
     }
