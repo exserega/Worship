@@ -1248,15 +1248,20 @@ function transposeLyrics(lyrics, transposition) {
 /** Обработка строк текста для уменьшения пробелов МЕЖДУ словами/аккордами */
 function processLyrics(lyrics) {
     if (!lyrics) return '';
+
     // Разделяем на строки
     return lyrics.split('\n').map(line => {
-        // Заменяем 2+ пробела на округленную половину их количества ИЛИ просто один пробел
-        // return line.replace(/ {2,}/g, match => ' '.repeat(Math.max(1, Math.ceil(match.length / 2))));
-        // Или более простой вариант: заменять 2+ пробела на один пробел
-        return line.replace(/ {2,}/g, ' ');
+        // Проверяем, есть ли в строке 2 или больше пробелов подряд
+        if (/ {2,}/.test(line)) {
+             // Да, есть. Применяем логику "половины пробелов"
+             // Заменяем последовательность из 2+ пробелов на пробелы в количестве = округленная вверх половина длины найденной последовательности
+            return line.replace(/ {2,}/g, match => ' '.repeat(Math.max(1, Math.ceil(match.length / 2))));
+        } else {
+            // Если в строке нет 2+ пробелов подряд, возвращаем ее без изменений
+            return line;
+        }
     }).join('\n'); // Собираем обратно
 }
-
 /** Выделение аккордов тегами span для стилизации */
 function highlightChords(lyrics) {
     if (!lyrics) return '';
@@ -1416,28 +1421,19 @@ async function showPresentationView(songsToShow) {
 }
 
 /** Отображает ТЕКУЩУЮ песню в режиме презентации */
-/** Отображает ТЕКУЩУЮ песню в режиме презентации */
 async function displayCurrentPresentationSong() {
     if (!presentationContent || presentationSongs.length === 0) return;
 
-    // Коррекция индекса, если он вышел за пределы
     currentPresentationIndex = Math.max(0, Math.min(currentPresentationIndex, presentationSongs.length - 1));
-
     const song = presentationSongs[currentPresentationIndex];
-    console.log(`Презентация: Показываем песню ${currentPresentationIndex + 1}/${presentationSongs.length}: ${song.name}`);
-
+    console.log(`Презентация: Показываем песню <span class="math-inline">\{currentPresentationIndex \+ 1\}/</span>{presentationSongs.length}: ${song.name}`);
     presentationContent.innerHTML = `<div class="presentation-loading">Загрузка "${song.name}"...</div>`;
 
     try {
-        // Получение данных
-        if (!cachedData[song.sheet]?.[song.index]) {
-            console.log(`Presentation: Загрузка данных для ${song.name} (${song.sheet})`);
-            await fetchSheetData(song.sheet);
-        }
+        // Получение данных ...
+        if (!cachedData[song.sheet]?.[song.index]) { await fetchSheetData(song.sheet); }
         const originalSongData = cachedData[song.sheet]?.[song.index];
-        if (!originalSongData) {
-            throw new Error(`Не найдены данные для песни "${song.name}" (${song.sheet}, индекс ${song.index})`);
-        }
+        if (!originalSongData) { throw new Error(`Не найдены данные для песни "${song.name}"`); }
 
         // Подготовка текста
         const songTitle = originalSongData[0];
@@ -1446,51 +1442,39 @@ async function displayCurrentPresentationSong() {
         const targetKey = song.preferredKey || originalKey;
         const songNote = song.notes || '';
 
-        // --- ИСПРАВЛЕНИЕ: Добавлен вызов highlightStructure ---
+        // --- ОБРАБОТКА ТЕКСТА ПЕСНИ (Обновленный порядок) ---
+        // 1. Транспонируем
         const transposition = getTransposition(originalKey, targetKey);
         const transposedLyrics = transposeLyrics(originalLyrics, transposition);
-        // 1. Выделяем структуру
-        const structureHighlightedLyrics = highlightStructure(transposedLyrics);
-        // 2. Выделяем аккорды
+        // 2. <<< НОВОЕ: Обрабатываем пробелы >>>
+        const processedLyrics = processLyrics(transposedLyrics);
+        // 3. Выделяем структуру
+        const structureHighlightedLyrics = highlightStructure(processedLyrics); // <<< Используем processedLyrics
+        // 4. Выделяем аккорды
         const finalHighlightedLyrics = highlightChords(structureHighlightedLyrics);
-        // --- КОНЕЦ ИСПРАВЛЕНИЯ ---
+        // --- КОНЕЦ ОБРАБОТКИ ТЕКСТА ---
 
         // Формирование HTML
         const songHtml = `
             <div class="presentation-song">
                 <h2>${songTitle} — ${targetKey}</h2>
                 ${songNote ? `<div class="presentation-notes"><i class="fas fa-info-circle"></i> ${songNote.replace(/\n/g, '<br>')}</div>` : ''}
-                <pre>${finalHighlightedLyrics}</pre> 
+                <pre>${finalHighlightedLyrics}</pre>
             </div>
         `;
         presentationContent.innerHTML = songHtml;
 
         presentationContent.classList.toggle('split-columns', isPresentationSplit);
-
         const songElement = presentationContent.querySelector('.presentation-song pre');
         if (songElement) songElement.scrollTop = 0;
 
-    } catch (error) {
-        console.error("Ошибка при отображении песни в презентации:", error);
-        presentationContent.innerHTML = `<div class="presentation-song error"><h2>Ошибка загрузки песни</h2><p>${error.message || 'Неизвестная ошибка'}</p></div>`;
-    }
+    } catch (error) { console.error("Ошибка при отображении песни в презентации:", error); /*...*/ }
 
-    // Обновление счетчика и кнопок навигации
-    if (presCounter) {
-        presCounter.textContent = `${currentPresentationIndex + 1} / ${presentationSongs.length}`;
-    }
+    // Обновление счетчика и кнопок ...
+    if (presCounter) { /* ... */ }
     if (presPrevBtn) presPrevBtn.disabled = (currentPresentationIndex === 0);
     if (presNextBtn) presNextBtn.disabled = (currentPresentationIndex >= presentationSongs.length - 1);
 } // Конец функции displayCurrentPresentationSong
-
-/** Переключает на СЛЕДУЮЩУЮ песню в презентации */
-function nextPresentationSong() {
-    if (currentPresentationIndex < presentationSongs.length - 1) {
-        currentPresentationIndex++;
-        displayCurrentPresentationSong();
-        showPresentationControls(); // Показать контролы при смене песни
-    }
-}
 
 /** Переключает на ПРЕДЫДУЩУЮ песню в презентации */
 function prevPresentationSong() {
@@ -1684,23 +1668,26 @@ function displaySongDetails(songData, index, keyToSelect) {
         }
     }
 
-    // --- ОБРАБОТКА ТЕКСТА ПЕСНИ ---
+    // --- ОБРАБОТКА ТЕКСТА ПЕСНИ (Обновленный порядок) ---
     // 1. Транспонируем
     const transposition = getTransposition(originalKeyFromSheet, currentSelectedKey);
     const transposedLyrics = transposeLyrics(lyrics, transposition);
-    // 2. Выделяем структуру (Куплет, Припев и т.д.)
-    const structureHighlightedLyrics = highlightStructure(transposedLyrics);
-    // 3. Выделяем аккорды
+    // 2. Обрабатываем пробелы
+    const processedLyrics = processLyrics(transposedLyrics);
+    // 3. Выделяем структуру (Куплет, Припев и т.д.)
+    const structureHighlightedLyrics = highlightStructure(processedLyrics);
+    // 4. Выделяем аккорды
     const finalHighlightedLyrics = highlightChords(structureHighlightedLyrics);
     // --- КОНЕЦ ОБРАБОТКИ ТЕКСТА ---
 
-    // Вставляем итоговый HTML
+    // Вставляем итоговый HTML (включая кнопку копирования)
     songContent.innerHTML = `
         <button id="copy-text-button" class="icon-button simple" title="Копировать текст песни">
             <i class="far fa-copy"></i>
         </button>
         <h2>${title} — ${currentSelectedKey}</h2>
-        <pre>${finalHighlightedLyrics}</pre> `;
+        <pre>${finalHighlightedLyrics}</pre>
+    `;
     updateFontSize(); // Применяем текущий размер шрифта
 
     // Применяем класс скрытия аккордов, если он был включен
@@ -1711,7 +1698,8 @@ function displaySongDetails(songData, index, keyToSelect) {
     // Обновляем YouTube плеер
     const vId = extractYouTubeVideoId(ytLink);
     if (vId && playerContainer && playerSection) {
-        playerContainer.innerHTML = `<iframe width="100%" height="315" src="https://www.youtube.com/embed/..." frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`; // Используем стандартный embed URL
+        // Используем стандартный embed URL
+        playerContainer.innerHTML = `<iframe width="100%" height="315" src="https://www.youtube.com/embed/${vId}?modestbranding=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
         playerSection.style.display = 'block';
         if (keyDisplay) {
             if (videoKey) {
@@ -1742,8 +1730,9 @@ function displaySongDetails(songData, index, keyToSelect) {
     // Находим кнопку копирования ВНУТРИ обновленного songContent и делаем видимой
      const currentCopyButton = songContent.querySelector('#copy-text-button');
      if (currentCopyButton) {
-         currentCopyButton.style.display = 'block'; // Показываем кнопку Копировать
+         currentCopyButton.style.display = 'inline-flex'; // Используем inline-flex для кнопки-иконки
          // Переназначаем слушатель, используя функцию из window
+         // (Старый слушатель удалять не нужно, т.к. элемент был пересоздан при innerHTML)
          currentCopyButton.addEventListener('click', window.handleCopyClick);
      } else {
          // Этого не должно происходить, если HTML вставлен правильно
