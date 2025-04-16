@@ -832,96 +832,77 @@ body[data-theme="light"] .presentation-song .song-structure {
 
 /* --- Стили для переключателя вида репертуара --- */
 .repertoire-view-controls {
-    display: flex;
-    justify-content: stretch; /* Растягиваем кнопки на всю ширину контейнера */
-    gap: 0; /* Убираем промежутки, чтобы кнопки слились в группу */
-    margin-bottom: 15px; /* Отступ снизу до списка песен */
-    border-radius: var(--radius); /* Скругляем углы всего контейнера */
-    overflow: hidden; /* Обрезаем углы кнопок, которые могут вылезти */
-    border: 1px solid var(--border-color); /* Рамка вокруг всей группы */
-    transition: border-color 0.3s ease;
+    /* Можно убрать общую рамку контейнера, если кнопки будут иметь свои */
+    border: none; /* Убираем общую рамку */
+    /* border-bottom: 1px solid var(--border-color); */ /* Или добавить нижнюю линию */
+    /* margin-bottom: 14px; */ /* Слегка скорректировать отступ */
+    gap: 4px; /* Небольшой зазор между кнопками */
+    border-radius: 0; /* Без скругления у контейнера */
+    overflow: visible; /* Убираем обрезку */
 }
 
 .repertoire-view-button {
-    flex-grow: 1; /* Каждая кнопка занимает равное доступное пространство */
-    padding: 8px 5px; /* Внутренние отступы (вертикальные и небольшие горизонтальные) */
-    font-size: 0.8rem; /* Уменьшаем шрифт текста */
-    text-align: center;
-    background-color: transparent; /* Фон прозрачный по умолчанию */
-    color: var(--label-color); /* Цвет текста и иконки - как у меток */
-    border: none; /* Убираем стандартную рамку кнопки */
-    border-right: 1px solid var(--border-color); /* Вертикальный разделитель между кнопками */
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, border-color 0.3s ease;
-    border-radius: 0; /* Убираем скругление у самих кнопок */
-    box-shadow: none !important; /* Убираем стандартные тени */
-    display: inline-flex; /* Для выравнивания иконки и текста */
-    align-items: center;
-    justify-content: center;
-    gap: 5px; /* Отступ между иконкой и текстом */
-    line-height: 1.2; /* Выравниваем высоту */
+    background-color: transparent;
+    color: var(--label-color);
+    border: 1px solid transparent; /* Прозрачная рамка для сохранения размера */
+    border-bottom: 2px solid transparent; /* Место для активного индикатора */
+    padding: 8px 5px; /* Можно оставить или чуть изменить */
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    border-radius: var(--radius) var(--radius) 0 0; /* Скругление только сверху */
+    box-shadow: none !important;
+    flex-grow: 0; /* НЕ растягивать, ширина по контенту */
+    padding-left: 10px; padding-right: 10px; /* Увеличить гориз. паддинг */
+    font-weight: 500; /* Можно сделать текст чуть жирнее */
 }
 
-/* Убираем разделитель у последней кнопки */
-.repertoire-view-button:last-child {
-    border-right: none;
-}
-
-/* Эффект при наведении */
 .repertoire-view-button:hover {
     background-color: var(--hover-color);
-    color: var(--text-color); /* Текст становится основным при наведении */
+    color: var(--text-color);
+    border-bottom-color: var(--border-color); /* Слегка выделяем низ при наведении */
 }
 
-/* Стиль АКТИВНОЙ кнопки (выбранный режим) */
+/* Стиль АКТИВНОЙ кнопки */
 .repertoire-view-button.active {
-    background-color: var(--primary-color);
-    color: var(--button-text-color) !important; /* Цвет текста кнопки */
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Небольшая внутренняя тень */
-    border-color: var(--primary-color); /* Цвет разделителя совпадает с фоном */
-    /* pointer-events: none; */ /* Можно раскомментировать, чтобы нельзя было нажать активную кнопку */
-}
-/* Убираем разделитель слева от активной кнопки, если он есть */
-.repertoire-view-button.active + .repertoire-view-button {
-    border-left: 1px solid var(--primary-color); /* Граница слева у СЛЕДУЮЩЕЙ кнопки */
-}
-.repertoire-view-button:first-child.active {
-     /* Нет кнопки слева */
+    color: var(--primary-color) !important; /* Цвет текста активной кнопки */
+    background-color: transparent; /* Убираем фон */
+    border-bottom-color: var(--primary-color) !important; /* Яркое подчеркивание */
+    box-shadow: none;
+    font-weight: 600; /* Делаем текст активной жирнее */
 }
 
-
-/* Адаптация для светлой темы (если нужно переопределить) */
+/* Стили для светлой темы */
 body[data-theme="light"] .repertoire-view-button {
-    color: var(--label-color);
-    border-right-color: var(--border-color);
-}
-body[data-theme="light"] .repertoire-view-button:last-child {
-     border-right-color: transparent; /* Или var(--border-color), если нужна внешняя рамка */
+     color: var(--label-color);
+     border-bottom-color: transparent;
 }
 body[data-theme="light"] .repertoire-view-button:hover {
-    background-color: var(--hover-color);
-    color: var(--text-color);
+     background-color: var(--hover-color);
+     color: var(--text-color);
+     border-bottom-color: var(--border-color);
 }
 body[data-theme="light"] .repertoire-view-button.active {
-    background-color: var(--primary-color);
-    color: var(--button-text-color) !important;
-     border-color: var(--primary-color);
-}
-body[data-theme="light"] .repertoire-view-button.active + .repertoire-view-button {
-     border-left: 1px solid var(--primary-color);
+     color: var(--primary-color) !important;
+     background-color: transparent;
+     border-bottom-color: var(--primary-color) !important;
 }
 
+/* Убираем разделители, если они были */
+.repertoire-view-button:not(:last-child) {
+    border-right: none;
+}
+.repertoire-view-button.active + .repertoire-view-button {
+     border-left: none;
+}
 
-/* Прячем текст кнопок на очень маленьких экранах (опционально) */
+/* Остальные стили (иконки, текст, адаптивность) можно оставить или скорректировать */
 @media (max-width: 380px) {
     .repertoire-view-button .button-text-rp {
-        display: none; /* Скрываем текст */
+         /* Можно оставить или скрыть display: none; */
     }
-    .repertoire-view-button {
-        gap: 0; /* Убираем отступ, так как нет текста */
-        font-size: 1rem; /* Можно увеличить размер иконки */
-        padding: 8px 8px; /* Увеличить отступы для иконки */
-    }
+     .repertoire-view-button {
+          /* Можно настроить размеры/отступы для мобильных */
+           padding-left: 8px; padding-right: 8px;
+     }
 }
 
 
