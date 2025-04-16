@@ -830,33 +830,33 @@ body[data-theme="light"] .presentation-song .song-structure {
 
 
 
-/* === ПРИМЕР ИЗМЕНЕНИЙ ДЛЯ ВАРИАНТА 2 (Сегментированный контроль) === */
+/* === ВАРИАНТ 4: Минималистичный (Ghost Buttons) === */
 /* Добавить/Изменить в styles.css */
 
 .repertoire-view-controls {
     display: flex;
-    justify-content: stretch;
-    gap: 0;
+    justify-content: flex-start; /* Кнопки не растягиваются */
+    gap: 8px; /* Зазор между кнопками */
     margin-bottom: 15px;
-    border-radius: var(--radius);
-    overflow: hidden;
-    /* border: 1px solid var(--border-color); */ /* Оставляем рамку */
-    background-color: var(--background-color); /* Фон как у подложки списка */
-    padding: 2px; /* Небольшой внутренний отступ для эффекта */
-    transition: border-color 0.3s ease, background-color 0.3s ease;
+    /* Убираем стили контейнера группы */
+    border: none;
+    border-radius: 0;
+    overflow: visible;
+    padding: 0;
+    background-color: transparent;
 }
 
 .repertoire-view-button {
-    flex-grow: 1;
-    padding: 6px 5px; /* Уменьшаем вертикальный паддинг */
+    flex-grow: 0; /* Не растягивать */
+    padding: 6px 12px; /* Побольше горизонтальные отступы */
     font-size: 0.8rem;
     text-align: center;
-    background-color: transparent; /* Прозрачный по умолчанию */
+    background-color: transparent;
     color: var(--label-color);
-    border: none; /* Без рамок */
+    border: 1px solid var(--border-color); /* Рамка у неактивных */
     cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
-    border-radius: calc(var(--radius) - 2px); /* Чуть меньше радиуса контейнера */
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    border-radius: var(--radius); /* Обычное скругление */
     box-shadow: none !important;
     display: inline-flex;
     align-items: center;
@@ -865,48 +865,50 @@ body[data-theme="light"] .presentation-song .song-structure {
     line-height: 1.2;
 }
 
-.repertoire-view-button:hover:not(.active) { /* Наведение только на НЕактивные */
-    background-color: var(--hover-color);
+.repertoire-view-button:hover:not(.active) {
+    border-color: var(--text-color); /* Рамка темнее при наведении */
     color: var(--text-color);
 }
 
 /* Стиль АКТИВНОЙ кнопки */
 .repertoire-view-button.active {
-    background-color: var(--container-background-color); /* Фон как у самой панели */
-    color: var(--text-color) !important; /* Основной цвет текста */
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1), 0 1px 1px rgba(0, 0, 0, 0.05); /* Легкая тень для выделения */
+    background-color: var(--primary-color);
+    color: var(--button-text-color) !important;
+    border-color: var(--primary-color); /* Рамка в цвет фона */
     font-weight: 500;
 }
 
 /* Стили для светлой темы */
-body[data-theme="light"] .repertoire-view-controls {
-     background-color: var(--hover-color); /* Светлый фон для контейнера */
-}
 body[data-theme="light"] .repertoire-view-button {
      color: var(--label-color);
+     border-color: var(--border-color);
 }
 body[data-theme="light"] .repertoire-view-button:hover:not(.active) {
-     background-color: #e9ecef; /* Чуть темнее фон при наведении */
+     border-color: var(--text-color);
      color: var(--text-color);
 }
 body[data-theme="light"] .repertoire-view-button.active {
-     background-color: var(--container-background-color); /* Белый фон активной */
-     color: var(--text-color) !important;
-     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 1px rgba(0, 0, 0, 0.05);
+     background-color: var(--primary-color);
+     color: var(--button-text-color) !important;
+     border-color: var(--primary-color);
 }
 
-/* Адаптивность текста/иконок */
+
+/* Адаптивность */
 @media (max-width: 380px) {
+     .repertoire-view-controls {
+          /* Можно сделать кнопки во всю ширину, если нужно */
+          /* justify-content: stretch; */
+     }
     .repertoire-view-button .button-text-rp {
-        /* display: none; */ /* Можно скрыть, если нужно */
+        /* display: none; */
     }
     .repertoire-view-button {
-        /* Настройки для мобильных */
+         /* Настройки для мобильных */
+          padding: 6px 8px; /* Уменьшить паддинг */
     }
 }
-
-/* === КОНЕЦ ПРИМЕРА ИЗМЕНЕНИЙ ДЛЯ ВАРИАНТА 2 === */
-
+/* === КОНЕЦ ВАРИАНТА 4 === */
 
 /* ============================================ */
 /* АДАПТИВНОСТЬ                                */
