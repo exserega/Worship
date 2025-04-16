@@ -246,40 +246,52 @@ async function loadVocalists() {
     }
 }
 
-/** Выделение маркеров структуры песни (Куплет, Припев и т.д.) */
-function highlightStructure(lyrics) {
+
+/**
+ * Форматирует текст песни для отображения: обрабатывает пробелы в строках с аккордами,
+ * выделяет маркеры структуры и аккорды за один проход по строкам.
+ */
+function formatLyricsForDisplay(lyrics) {
     if (!lyrics) return '';
 
-    // Список маркеров (можно вынести в глобальные константы, если хотите)
+    // Список маркеров структуры (из highlightStructure)
     const markers = [
         "куплет", "припев", "бридж", "мостик", "проигрыш", "интро",
         "вступление", "аутро", "окончание", "кода", "запев", "соло",
-         "предприпев", "прехорус", "outro" // Добавил outro на всякий случай
+         "предприпев", "прехорус", "outro"
     ];
-
-    // --- ИСПРАВЛЕННОЕ РЕГУЛЯРНОЕ ВЫРАЖЕНИЕ ---
-    // Создаем шаблон: начало строки, необязательные пробелы,
-    // (один из маркеров),
-    // необязательные пробелы, необязательные цифры, необязательные пробелы,
-    // необязательное двоеточие или точка, необязательные пробелы, конец строки.
-    // Флаг 'i' делает поиск нечувствительным к регистру.
-    const markerPattern = `^\\s*(${markers.join('|')})\\s*\\d*\\s*[:.]?\\s*$`;
+    const markerPattern = `^\\s*(<span class="math-inline">\{markers\.join\('\|'\)\}\)\\\\s\*\\\\d\*\\\\s\*\[\:\.\]?\\\\s\*</span>`;
     const markerRegex = new RegExp(markerPattern, 'i');
-    // --- КОНЕЦ ИСПРАВЛЕНИЯ РЕГУЛЯРКИ ---
+
+    // Регулярное выражение для аккордов (из highlightChords)
+    const chordRegex = /([A-H][#b]?(?:maj7|maj9|m7|m9|m11|7sus4|sus4|sus2|add9|dim7|dim|aug7|aug|7|m|6|9|11|13|sus)?(?:\s*\/\s*[A-H][#b]?)?)/g;
 
     return lyrics.split('\n').map(line => {
         const trimmedLine = line.trim();
-        // Проверяем, соответствует ли вся строка (после обрезки пробелов) нашему шаблону маркера
+
+        // 1. Проверка на маркер структуры
         if (markerRegex.test(trimmedLine)) {
-            // Если да, оборачиваем в span с классом
-            // Используем trimmedLine, чтобы сохранить оригинальное написание и регистр
             return `<span class="song-structure">${trimmedLine}</span>`;
-        } else {
-            // Если нет, возвращаем строку как есть (для последующей обработки аккордов)
-            return line;
         }
+
+        // 2. Если не маркер, обрабатываем пробелы (если нужно)
+        let processedLine = line; // Начинаем с оригинальной строки (не trim!)
+        if (/ {2,}/.test(line)) { // Проверяем наличие 2+ пробелов
+             processedLine = line.replace(/ {2,}/g, match => ' '.repeat(Math.max(1, Math.ceil(match.length / 2))));
+        }
+
+        // 3. Выделяем аккорды в обработанной строке
+        // Используем try-catch на всякий случай для highlightChords
+        try {
+             return processedLine.replace(chordRegex, '<span class="chord">$1</span>');
+        } catch (error) {
+             console.error("Ошибка при выделении аккордов в строке:", error, "Строка:", processedLine);
+             return processedLine; // Возвращаем строку без выделения аккордов при ошибке
+        }
+
     }).join('\n'); // Собираем строки обратно
 }
+
 
 /** Загрузка репертуара вокалиста с аккордеоном */
 function loadRepertoire(vocalistId) {
@@ -1245,23 +1257,7 @@ function transposeLyrics(lyrics, transposition) {
     }
 }
 
-/** Обработка строк текста для уменьшения пробелов МЕЖДУ словами/аккордами */
-function processLyrics(lyrics) {
-    if (!lyrics) return '';
 
-    // Разделяем на строки
-    return lyrics.split('\n').map(line => {
-        // Проверяем, есть ли в строке 2 или больше пробелов подряд
-        if (/ {2,}/.test(line)) {
-             // Да, есть. Применяем логику "половины пробелов"
-             // Заменяем последовательность из 2+ пробелов на пробелы в количестве = округленная вверх половина длины найденной последовательности
-            return line.replace(/ {2,}/g, match => ' '.repeat(Math.max(1, Math.ceil(match.length / 2))));
-        } else {
-            // Если в строке нет 2+ пробелов подряд, возвращаем ее без изменений
-            return line;
-        }
-    }).join('\n'); // Собираем обратно
-}
 /** Выделение аккордов тегами span для стилизации */
 function highlightChords(lyrics) {
     if (!lyrics) return '';
@@ -1442,16 +1438,12 @@ async function displayCurrentPresentationSong() {
         const targetKey = song.preferredKey || originalKey;
         const songNote = song.notes || '';
 
-        // --- ОБРАБОТКА ТЕКСТА ПЕСНИ (Обновленный порядок) ---
+        // --- ОБРАБОТКА ТЕКСТА ПЕСНИ (НОВЫЙ СПОСОБ) ---
         // 1. Транспонируем
         const transposition = getTransposition(originalKey, targetKey);
         const transposedLyrics = transposeLyrics(originalLyrics, transposition);
-        // 2. <<< НОВОЕ: Обрабатываем пробелы >>>
-        const processedLyrics = processLyrics(transposedLyrics);
-        // 3. Выделяем структуру
-        const structureHighlightedLyrics = highlightStructure(processedLyrics); // <<< Используем processedLyrics
-        // 4. Выделяем аккорды
-        const finalHighlightedLyrics = highlightChords(structureHighlightedLyrics);
+         // 2. <<< ОДНИМ ВЫЗОВОМ: Обрабатываем пробелы, структуру и аккорды >>>
+         const finalHighlightedLyrics = formatLyricsForDisplay(transposedLyrics);
         // --- КОНЕЦ ОБРАБОТКИ ТЕКСТА ---
 
         // Формирование HTML
@@ -1470,7 +1462,7 @@ async function displayCurrentPresentationSong() {
 
     } catch (error) { console.error("Ошибка при отображении песни в презентации:", error); /*...*/ }
 
-    // Обновление счетчика и кнопок ...
+    // Обновление счетчика и кнопок ... (код без изменений) ...
     if (presCounter) { /* ... */ }
     if (presPrevBtn) presPrevBtn.disabled = (currentPresentationIndex === 0);
     if (presNextBtn) presNextBtn.disabled = (currentPresentationIndex >= presentationSongs.length - 1);
@@ -1596,6 +1588,7 @@ function setupSwipeListeners() {
 // --- UI UPDATE FUNCTIONS (Continued) ---
 
 /** Отображает детали выбранной песни */
+/** Отображает детали выбранной песни */
 function displaySongDetails(songData, index, keyToSelect) {
     // Проверки на наличие элементов
     if (!songContent || !keySelect || !playerContainer || !playerSection) {
@@ -1668,19 +1661,15 @@ function displaySongDetails(songData, index, keyToSelect) {
         }
     }
 
-    // --- ОБРАБОТКА ТЕКСТА ПЕСНИ (Обновленный порядок) ---
+    // --- ОБРАБОТКА ТЕКСТА ПЕСНИ (Оптимизированный способ) ---
     // 1. Транспонируем
     const transposition = getTransposition(originalKeyFromSheet, currentSelectedKey);
     const transposedLyrics = transposeLyrics(lyrics, transposition);
-    // 2. Обрабатываем пробелы
-    const processedLyrics = processLyrics(transposedLyrics);
-    // 3. Выделяем структуру (Куплет, Припев и т.д.)
-    const structureHighlightedLyrics = highlightStructure(processedLyrics);
-    // 4. Выделяем аккорды
-    const finalHighlightedLyrics = highlightChords(structureHighlightedLyrics);
+    // 2. Форматируем для отображения (пробелы, структура, аккорды) ОДНИМ ВЫЗОВОМ
+    const finalHighlightedLyrics = formatLyricsForDisplay(transposedLyrics);
     // --- КОНЕЦ ОБРАБОТКИ ТЕКСТА ---
 
-    // Вставляем итоговый HTML (включая кнопку копирования)
+    // Вставляем итоговый HTML
     songContent.innerHTML = `
         <button id="copy-text-button" class="icon-button simple" title="Копировать текст песни">
             <i class="far fa-copy"></i>
