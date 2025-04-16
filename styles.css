@@ -103,13 +103,15 @@ body[data-theme="light"] h1 {
 }
 /* Заголовки секций в панелях (h3) */
 .list-section h3, #repertoire-panel .panel-header {
-    text-align: left; /* Выравнивание по левому краю */
-    font-size: 1.05rem; font-weight: 600;
-    margin: 0 0 10px 0; /* Убрали верхний отступ */
-    padding-bottom: 6px;
-    color: var(--accent-color);
-    border-bottom: 1px solid var(--border-color);
-    transition: color 0.3s ease, border-color 0.3s ease;
+     text-align: center;
+     font-size: 1.1rem; /* Можно немного уменьшить с 1.15rem, если нужно */
+     color: var(--primary-color);
+     margin-top: 0; /* Убедимся, что нет верхнего отступа */
+     margin-bottom: 8px;   /* <<< УМЕНЬШЕНО (было 10px или больше) */
+     padding-bottom: 4px;  /* <<< УМЕНЬШЕНО (было 6px) */
+     border-bottom: none;  /* <<< УБРАНО: Убираем линию под заголовком */
+     /* Убедимся, что нет лишнего верхнего паддинга, если он где-то был */
+     padding-top: 0;
 }
 #repertoire-panel .panel-header { /* Особый стиль для заголовка Репертуара */
      text-align: center;
