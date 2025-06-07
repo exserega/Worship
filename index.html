@@ -219,19 +219,20 @@
     </button>
 </nav>
 
-<script type="module" src="script.js"></script>
+  <script type="module" src="script.js"></script>
 
- if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js')
-        .then(registration => {
-          console.log('Service Worker зарегистрирован:', registration);
-        })
-        .catch(error => {
-          console.log('Ошибка регистрации Service Worker:', error);
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js')
+            .then(registration => {
+              console.log('Service Worker зарегистрирован:', registration);
+            })
+            .catch(error => {
+              console.log('Ошибка регистрации Service Worker:', error);
+            });
         });
-    });
-  }
-</script>
+      }
+    </script>
 </body>
 </html>
