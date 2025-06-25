@@ -64,6 +64,56 @@ function closeNotesModal() {
     }, 300);
 }
 
+// --- SETLIST HANDLERS ---
+
+async function handleCreateSetlist() {
+    const name = ui.newSetlistNameInput.value.trim();
+    if (!name) {
+        alert("Название сет-листа не может быть пустым.");
+        return;
+    }
+    try {
+        ui.createSetlistButton.disabled = true;
+        await api.createSetlist(name);
+        ui.newSetlistNameInput.value = '';
+        await refreshSetlists();
+    } catch (error) {
+        console.error("Ошибка при создании сет-листа:", error);
+        alert("Не удалось создать сет-лист.");
+    } finally {
+        ui.createSetlistButton.disabled = false;
+    }
+}
+
+function handleSetlistSelect(setlist) {
+    console.log("Выбран сет-лист:", setlist);
+    // TODO: Implement logic to display songs from the selected setlist
+    state.setCurrentSetlistId(setlist.id);
+    //
+}
+
+async function handleSetlistDelete(setlistId, setlistName) {
+    if (confirm(`Вы уверены, что хотите удалить сет-лист "${setlistName}"?`)) {
+        try {
+            await api.deleteSetlist(setlistId);
+            await refreshSetlists();
+        } catch (error) {
+            console.error("Ошибка при удалении сет-листа:", error);
+            alert("Не удалось удалить сет-лист.");
+        }
+    }
+}
+
+async function refreshSetlists() {
+    try {
+        const setlists = await api.loadSetlists();
+        state.setSetlists(setlists);
+        ui.renderSetlists(setlists, handleSetlistSelect, handleSetlistDelete);
+    } catch (error) {
+        console.error("Ошибка при загрузке сет-листов:", error);
+        ui.renderSetlists([], handleSetlistSelect, handleSetlistDelete); // Render empty list on error
+    }
+}
 
 // --- EVENT LISTENER SETUP ---
 function setupEventListeners() {
@@ -194,7 +244,7 @@ function setupEventListeners() {
         ui.closeAllSidePanels();
         if (!isAlreadyOpen) {
             ui.setlistsPanel.classList.add('open');
-            // TODO: Add logic here to load and render setlists if needed
+            refreshSetlists();
         }
     });
 
@@ -269,6 +319,9 @@ function setupEventListeners() {
     ui.closeNoteModalX.addEventListener('click', closeNotesModal);
     ui.notesModal.addEventListener('click', (e) => { if (e.target === ui.notesModal) closeNotesModal(); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && ui.notesModal.classList.contains('visible')) closeNotesModal(); });
+
+    // --- Сет-листы ---
+    ui.createSetlistButton.addEventListener('click', handleCreateSetlist);
 }
 
 

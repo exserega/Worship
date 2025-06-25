@@ -31,6 +31,8 @@ export let currentBeat = 0;
 // --- REPERTOIRE STATE ---
 export let currentRepertoireUnsubscribe = null;
 
+export let setlists = [];
+
 // Functions to update state
 export function setAllSongs(newSongs) { allSongs = newSongs; }
 export function setSongsBySheet(newSongsBySheet) { songsBySheet = newSongsBySheet; }
@@ -38,10 +40,17 @@ export function setFavorites(newFavorites) { favorites = newFavorites; }
 export function setCurrentVocalistId(id) { currentVocalistId = id; }
 export function setCurrentVocalistName(name) { currentVocalistName = name; }
 export function setCurrentFontSize(size) { currentFontSize = size; }
-export function setAreChordsVisible(visible) { areChordsVisible = visible; }
+export function setAreChordsVisible(visible) {
+    areChordsVisible = visible;
+    isPresentationSplit = visible;
+}
 export function setCurrentRepertoireSongsData(data) { currentRepertoireSongsData = data; }
 export function setCurrentRepertoireViewMode(mode) { currentRepertoireViewMode = mode; }
-export function setCurrentSetlistId(id) { currentSetlistId = id; }
+export function setCurrentSetlistId(id) {
+    currentSetlistId = id;
+    const selectedSetlist = setlists.find(s => s.id === id);
+    currentSetlistSongs = selectedSetlist ? selectedSetlist.songs : [];
+}
 export function setCurrentSetlistName(name) { currentSetlistName = name; }
 export function setCurrentSetlistSongs(songs) { currentSetlistSongs = songs; }
 export function setCurrentSetlistSongsUnsubscribe(unsubscribe) { currentSetlistSongsUnsubscribe = unsubscribe; }
@@ -54,4 +63,7 @@ export function setAudioBuffer(buffer) { audioBuffer = buffer; }
 export function setMetronomeInterval(interval) { metronomeInterval = interval; }
 export function setIsMetronomeActive(active) { isMetronomeActive = active; }
 export function setCurrentBeat(beat) { currentBeat = beat; }
-export function setCurrentRepertoireUnsubscribe(unsubscribe) { currentRepertoireUnsubscribe = unsubscribe; } 
+export function setCurrentRepertoireUnsubscribe(unsubscribe) { currentRepertoireUnsubscribe = unsubscribe; }
+export function setSetlists(newSetlists) {
+    setlists = newSetlists;
+} 

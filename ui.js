@@ -517,4 +517,46 @@ export function renderFavorites(onSelect, onRemove) {
         
         favoritesList.appendChild(listItem);
     });
+}
+
+
+// --- SETLIST PANEL ---
+
+/**
+ * Отрисовывает список сетлистов.
+ * @param {Array} setlists - Массив объектов сетлистов.
+ * @param {function} onSelect - Функция обратного вызова при выборе сетлиста.
+ * @param {function} onDelete - Функция обратного вызова при удалении сетлиста.
+ */
+export function renderSetlists(setlists, onSelect, onDelete) {
+    if (!setlistsListContainer) return;
+    setlistsListContainer.innerHTML = '';
+
+    if (!setlists || setlists.length === 0) {
+        setlistsListContainer.innerHTML = '<div class="empty-message">Сет-листов пока нет. Создайте новый!</div>';
+        return;
+    }
+
+    setlists.forEach(setlist => {
+        const item = document.createElement('div');
+        item.className = 'setlist-item';
+        item.dataset.setlistId = setlist.id;
+        item.addEventListener('click', () => onSelect(setlist));
+
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = setlist.name;
+        item.appendChild(nameSpan);
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+        deleteBtn.className = 'remove-button';
+        deleteBtn.title = 'Удалить сет-лист';
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            onDelete(setlist.id, setlist.name);
+        });
+        item.appendChild(deleteBtn);
+
+        setlistsListContainer.appendChild(item);
+    });
 } 

@@ -3,7 +3,7 @@
 import { db } from './firebase-config.js';
 import {
     collection, addDoc, query, onSnapshot, updateDoc, deleteDoc, setDoc, doc,
-    orderBy, getDocs, where, getDoc, runTransaction
+    orderBy, getDocs, where, getDoc, runTransaction, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import * as state from './state.js';
 
@@ -95,30 +95,53 @@ async function addToRepertoire(vocalistId, songId, preferredKey) {
 
 /** Удаление песни из репертуара вокалиста */
 async function removeFromRepertoire(vocalistId, repertoireDocId) {
-    await deleteDoc(doc(db, "vocalists", vocalistId, "repertoire", repertoireDocId));
+    if (!vocalistId || !repertoireDocId) return;
+    const docRef = doc(db, 'vocalists', vocalistId, 'repertoire', repertoireDocId);
+    await deleteDoc(docRef);
 }
 
 // --- SETLISTS ---
 
-/** Загрузка списка сет-листов с callback */
-function loadSetlists(onSetlistsUpdate) {
-    const q = query(setlistsCollection, orderBy("name", "asc"));
-    return onSnapshot(q, (snapshot) => {
-        const setlists = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        onSetlistsUpdate({ data: setlists, error: null });
-    }, (error) => {
-        console.error("Ошибка при загрузке списка сет-листов:", error);
-        onSetlistsUpdate({ data: [], error });
+/**
+ * Загружает все сетлисты из Firestore.
+ * @returns {Promise<Array>} Массив объектов сетлистов.
+ */
+export async function loadSetlists() {
+    const setlistsCol = collection(db, "worship_setlists");
+    const q = query(setlistsCol, orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+    if (snapshot.empty) {
+        console.log("No setlists found.");
+        return [];
+    }
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
+/**
+ * Создает новый сетлист в Firestore.
+ * @param {string} name - Название нового сетлиста.
+ * @returns {Promise<DocumentReference>} Ссылка на созданный документ.
+ */
+export async function createSetlist(name) {
+    if (!name || name.trim() === '') {
+        throw new Error("Setlist name cannot be empty.");
+    }
+    const setlistsCol = collection(db, "worship_setlists");
+    return await addDoc(setlistsCol, {
+        name: name.trim(),
+        createdAt: serverTimestamp(),
+        songs: [] // Инициализируем пустым массивом песен
     });
 }
 
-/** Создание нового сет-листа */
-async function createSetlist(setlistName) {
-    const dataToSave = {
-        name: setlistName,
-        createdAt: new Date()
-    };
-    return await addDoc(setlistsCollection, dataToSave);
+/**
+ * Удаляет сетлист из Firestore.
+ * @param {string} setlistId - ID удаляемого сетлиста.
+ */
+export async function deleteSetlist(setlistId) {
+    if (!setlistId) return;
+    const docRef = doc(db, 'worship_setlists', setlistId);
+    await deleteDoc(docRef);
 }
 
 /** Обновление имени сет-листа */
