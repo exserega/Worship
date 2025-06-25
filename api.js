@@ -227,6 +227,59 @@ async function saveNoteForSongInSetlist(setlistId, songDocId, newNoteText) {
     await updateDoc(songDocRef, { notes: newNoteText });
 }
 
+/**
+ * Добавляет песню в массив `songs` документа сетлиста или предлагает обновить ключ.
+ * @param {string} setlistId
+ * @param {string} songId
+ * @param {string} preferredKey
+ * @returns {Promise<{status: string, existingKey?: string, message?: string}>}
+ */
+export async function addSongToSetlist(setlistId, songId, preferredKey) {
+    const setlistRef = doc(db, "worship_setlists", setlistId);
+    let result = {};
+    await runTransaction(db, async (transaction) => {
+        const setlistDoc = await transaction.get(setlistRef);
+        if (!setlistDoc.exists()) throw new Error("Setlist does not exist!");
+
+        const songs = setlistDoc.data().songs || [];
+        const existingSongIndex = songs.findIndex(s => s.songId === songId);
+
+        if (existingSongIndex > -1) {
+            const existingSong = songs[existingSongIndex];
+            if (existingSong.preferredKey !== preferredKey) {
+                result = { status: 'duplicate_key', existingKey: existingSong.preferredKey };
+            } else {
+                result = { status: 'duplicate_same' };
+            }
+        } else {
+            songs.push({ songId, preferredKey, order: songs.length });
+            transaction.update(setlistRef, { songs });
+            result = { status: 'added' };
+        }
+    });
+    return result;
+}
+
+/**
+ * Обновляет тональность существующей песни в сетлисте.
+ * @param {string} setlistId
+ * @param {string} songId
+ * @param {string} newKey
+ */
+export async function updateSongKeyInSetlist(setlistId, songId, newKey) {
+    const setlistRef = doc(db, "worship_setlists", setlistId);
+     return await runTransaction(db, async (transaction) => {
+        const setlistDoc = await transaction.get(setlistRef);
+        if (!setlistDoc.exists()) throw new Error("Setlist does not exist!");
+        const songs = setlistDoc.data().songs || [];
+        const songIndex = songs.findIndex(s => s.songId === songId);
+        if (songIndex > -1) {
+            songs[songIndex].preferredKey = newKey;
+            transaction.update(setlistRef, { songs });
+        }
+    });
+}
+
 
 // --- FAVORITES (MY LIST) ---
 
@@ -288,6 +341,7 @@ export {
     updateSongKeyInSetlist,
     deleteSongFromSetlist,
     saveNoteForSongInSetlist,
+    addSongToSetlist,
     addToFavorites,
     removeFromFavorites
 }; 

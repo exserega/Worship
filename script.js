@@ -86,21 +86,69 @@ async function handleCreateSetlist() {
 }
 
 function handleSetlistSelect(setlist) {
-    console.log("Выбран сет-лист:", setlist);
-    // TODO: Implement logic to display songs from the selected setlist
     state.setCurrentSetlistId(setlist.id);
-    //
+    ui.displaySelectedSetlist(setlist);
 }
 
 async function handleSetlistDelete(setlistId, setlistName) {
     if (confirm(`Вы уверены, что хотите удалить сет-лист "${setlistName}"?`)) {
         try {
+            const wasSelected = state.currentSetlistId === setlistId;
+
             await api.deleteSetlist(setlistId);
-            await refreshSetlists();
+            await refreshSetlists(); // This re-renders the list
+
+            if (wasSelected) {
+                state.setCurrentSetlistId(null);
+                ui.clearSetlistSelection();
+            }
         } catch (error) {
             console.error("Ошибка при удалении сет-листа:", error);
             alert("Не удалось удалить сет-лист.");
         }
+    }
+}
+
+async function handleAddSongToSetlist() {
+    const songId = ui.songSelect.value;
+    const key = ui.keySelect.value;
+    const setlistId = state.currentSetlistId;
+
+    if (!songId) {
+        alert("Сначала выберите песню.");
+        return;
+    }
+    if (!setlistId) {
+        alert("Сначала выберите сет-лист.");
+        return;
+    }
+
+    try {
+        const result = await api.addSongToSetlist(setlistId, songId, key);
+
+        if (result.status === 'duplicate_key') {
+            if (confirm(`Эта песня уже есть в сет-листе в тональности ${result.existingKey}. Заменить на ${key}?`)) {
+                await api.updateSongKeyInSetlist(setlistId, songId, key);
+                alert("Тональность песни обновлена.");
+            }
+        } else if (result.status === 'duplicate_same') {
+            alert("Эта песня уже есть в сет-листе с такой же тональностью.");
+        } else if (result.status === 'added') {
+            alert("Песня добавлена в сет-лист.");
+        }
+
+        // Refresh view
+        const updatedSetlists = await api.loadSetlists();
+        state.setSetlists(updatedSetlists);
+        const updatedCurrentSetlist = updatedSetlists.find(s => s.id === setlistId);
+        if (updatedCurrentSetlist) {
+            state.setCurrentSetlistId(updatedCurrentSetlist.id); // Re-set state
+            ui.displaySelectedSetlist(updatedCurrentSetlist);
+        }
+
+    } catch (error) {
+        console.error("Ошибка при добавлении песни:", error);
+        alert("Не удалось добавить песню в сет-лист.");
     }
 }
 
@@ -219,6 +267,7 @@ function setupEventListeners() {
         }
     });
 
+    ui.addToSetlistButton.addEventListener('click', handleAddSongToSetlist);
 
     // --- Метроном ---
     ui.metronomeButton.addEventListener('click', async () => {

@@ -522,6 +522,64 @@ export function renderFavorites(onSelect, onRemove) {
 
 // --- SETLIST PANEL ---
 
+function renderCurrentSetlistSongs(songs) {
+    if (!currentSetlistSongsContainer) return;
+    currentSetlistSongsContainer.innerHTML = '';
+
+    if (!songs || songs.length === 0) {
+        currentSetlistSongsContainer.innerHTML = '<div class="empty-message">В этом сет-листе пока нет песен.</div>';
+        return;
+    }
+
+    const fullSongsData = songs
+        .map(setlistSong => {
+            const songDetails = state.allSongs.find(s => s.id === setlistSong.songId) || {};
+            return { ...songDetails, ...setlistSong };
+        })
+        .filter(s => s.id)
+        .sort((a,b) => a.order - b.order);
+
+
+    fullSongsData.forEach(song => {
+        const songItem = document.createElement('div');
+        songItem.className = 'setlist-song-item';
+        songItem.innerHTML = `<span>${song.name} (${song.preferredKey})</span>`;
+        // TODO: Add handlers for click, delete, reorder
+        currentSetlistSongsContainer.appendChild(songItem);
+    });
+}
+
+export function clearSetlistSelection() {
+    if (currentSetlistTitle) currentSetlistTitle.textContent = 'Выберите сет-лист';
+    if (currentSetlistSongsContainer) currentSetlistSongsContainer.innerHTML = '<div class="empty-message">Сначала выберите или создайте сет-лист.</div>';
+    if (currentSetlistControls) currentSetlistControls.style.display = 'none';
+    if (setlistsListContainer) {
+        const items = setlistsListContainer.querySelectorAll('.setlist-item');
+        items.forEach(item => item.classList.remove('selected'));
+    }
+}
+
+
+export function displaySelectedSetlist(setlist) {
+    if (!setlist || !setlist.id) {
+        clearSetlistSelection();
+        return;
+    }
+
+    if (currentSetlistTitle) currentSetlistTitle.textContent = setlist.name;
+    if (currentSetlistControls) currentSetlistControls.style.display = 'flex';
+
+    if (setlistsListContainer) {
+        const items = setlistsListContainer.querySelectorAll('.setlist-item');
+        items.forEach(item => {
+            item.classList.toggle('selected', item.dataset.setlistId === setlist.id);
+        });
+    }
+
+    renderCurrentSetlistSongs(setlist.songs || []);
+}
+
+
 /**
  * Отрисовывает список сетлистов.
  * @param {Array} setlists - Массив объектов сетлистов.
