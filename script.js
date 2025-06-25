@@ -444,6 +444,13 @@ function setupEventListeners() {
 
     // --- Сет-листы ---
     ui.createSetlistButton.addEventListener('click', handleCreateSetlist);
+
+    // --- Кнопки закрытия боковых панелей ---
+    document.querySelectorAll('.side-panel-close-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            ui.closeAllSidePanels();
+        });
+    });
 }
 
 

@@ -432,6 +432,39 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
 }
 #repertoire-panel.open { transform: translateX(0); }
 
+/* --- Кнопки закрытия панелей --- */
+.side-panel-close-btn {
+    position: absolute; top: 10px; z-index: 10;
+    width: 32px; height: 32px; font-size: 1rem;
+    padding: 0 !important; margin: 0 !important;
+    background: var(--container-background-color) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-color) !important;
+    border-radius: 50% !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.2s ease !important;
+}
+.side-panel-close-btn:hover {
+    background: var(--hover-color) !important;
+    border-color: var(--primary-color) !important;
+    color: var(--primary-color) !important;
+    transform: scale(1.1) !important;
+}
+.side-panel-close-btn:active {
+    background: var(--primary-color) !important;
+    color: var(--button-text-color) !important;
+    transform: scale(0.95) !important;
+}
+/* Позиционирование для левых панелей */
+#setlists-panel .side-panel-close-btn,
+#my-list-panel .side-panel-close-btn {
+    left: 10px;
+}
+/* Позиционирование для правой панели */
+#repertoire-panel .side-panel-close-btn {
+    right: 10px;
+}
+
 /* --- Содержимое панелей --- */
 /* Общие стили для контейнеров списков */
 .list-container {
