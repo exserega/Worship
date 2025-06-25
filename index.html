@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agape Worship</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="manifest" href="manifest.json">  </head>
+<body>
+
+<div id="notes-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <h3 class="modal-title">Заметка к песне</h3>
+        <textarea id="note-edit-textarea" rows="6" placeholder="Введите текст заметки..."></textarea>
+        <div class="modal-actions">
+            <button id="save-note-button" class="modal-button primary">Сохранить</button>
+            <button id="cancel-note-button" class="modal-button secondary">Отмена</button>
+        </div>
+        <button id="close-note-modal-x" class="modal-close-x">&times;</button>
+    </div>
+</div>
+
+<header>
+    <h1>Agape Worship</h1>
+    <button id="theme-toggle-button" class="icon-button simple theme-toggle" title="Переключить тему">
+        <i class="fas fa-sun"></i> </button>
+</header>
+
+<main class="container">
+    <section class="controls">
+        <div class="control-group">
+            <label for="search-input">Поиск песни:</label>
+            <input type="text" id="search-input" placeholder="Введите название песни...">
+            <div id="search-results"></div>
+        </div>
+        <div class="control-group">
+            <label for="sheet-select">Выберите категорию:</label>
+            <select id="sheet-select">
+                <option value="">-- Выберите категорию --</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label for="song-select">Выберите песню:</label>
+            <select id="song-select" disabled>
+                <option value="">-- Сначала выберите категорию --</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label for="key-select">Тональность:</label>
+            <select id="key-select">
+                <option value="C">C</option>
+                <option value="C#">C#</option>
+                <option value="D">D</option>
+                <option value="D#">D#</option>
+                <option value="E">E</option>
+                <option value="F">F</option>
+                <option value="F#">F#</option>
+                <option value="G">G</option>
+                <option value="G#">G#</option>
+                <option value="A">A</option>
+                <option value="A#">A#</option>
+                <option value="H">H</option>
+            </select>
+            <button id="toggle-chords-button" class="control-group-button icon-button simple" title="Скрыть аккорды">
+                <i class="fas fa-guitar"></i>
+                <span class="button-text">Аккорды</span>
+            </button>
+            <button id="split-text-button" aria-label="Разделить текст" class="control-group-button icon-button simple">
+                <i class="fas fa-columns"></i>
+                <span class="button-text">Разделить</span> </button>
+            <div class="font-size-controls">
+                <button id="zoom-out" class="icon-button simple" title="Уменьшить шрифт"><i class="fas fa-search-minus"></i></button>
+                <button id="zoom-in" class="icon-button simple" title="Увеличить шрифт"><i class="fas fa-search-plus"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <section id="song-content">
+        <button id="copy-text-button" class="icon-button simple" title="Копировать текст песни">
+            <i class="far fa-copy"></i>
+        </button>
+        <h2 id="song-title">Выберите песню</h2>
+        <pre></pre>
+    </section>
+
+    <div class="control-buttons">
+        <button id="favorite-button" aria-label="Добавить в Мой список">❤️ Мой список</button>
+        <button id="add-to-setlist-button" aria-label="Добавить в сет-лист">➕ В сет-лист</button>
+    </div>
+
+     <section id="youtube-player-section" style="margin-top: 20px; display: none;">
+         <h3>Видео / Аудио</h3>
+         <p id="youtube-video-key-display" style="text-align: center; margin-bottom: 10px; display: none; font-size: 0.9rem; color: var(--label-color);"></p>
+         <div id="youtube-player-container" style="max-width: 100%; margin: auto;">
+             </div>
+     </section>
+
+    <div class="controls-footer">
+        <div class="bpm-controls">
+            <span>Размер: </span>
+            <select id="time-signature">
+                <option value="4">4/4</option>
+                <option value="3">3/4</option>
+                <option value="6">6/8</option>
+                <option value="2">2/4</option>
+            </select>
+            <span>BPM: </span>
+            <span id="bpm-display" contenteditable="true">N/A</span>
+            <button id="metronome-button" aria-label="Включить метроном">
+                <i class="fas fa-play"></i>
+                <span class="button-text">Метроном</span>
+            </button>
+        </div>
+        <a id="holychords-button" href="#" target="_blank">Holychords</a>
+        <button id="add-to-repertoire-button" aria-label="Добавить в мой репертуар">🎤 В репертуар</button>
+    </div>
+</main>
+
+<aside id="setlists-panel" class="side-panel setlists-panel">
+    <div class="list-section setlist-section">
+        <h3>Сет-листы</h3>
+        <div class="create-setlist-form">
+            <input type="text" id="new-setlist-name-input" placeholder="Название нового сет-листа...">
+            <button id="create-setlist-button" title="Создать сет-лист">Создать</button>
+        </div>
+        <div id="setlists-list-container" class="list-container setlists-list">
+            <div class="empty-message">Загрузка сет-листов...</div>
+        </div>
+    </div>
+
+    <div class="list-section current-setlist-section">
+        <h3 id="current-setlist-title">Выберите сет-лист</h3>
+        <div class="current-setlist-controls" style="display: none;">
+            <button id="start-presentation-button" title="Начать презентацию для этого сет-листа">
+                <i class="fas fa-play"></i> Презентация
+            </button>
+            <button id="delete-setlist-button" title="Удалить этот сет-лист">
+                <i class="fas fa-trash-alt"></i> Удалить
+            </button>
+        </div>
+        <div id="current-setlist-songs-container" class="list-container current-setlist-songs">
+            <div class="empty-message">Сначала выберите сет-лист</div>
+        </div>
+    </div>
+</aside>
+
+<aside id="my-list-panel" class="side-panel my-list-panel">
+    <div id="my-list" class="list-section">
+        <h3>Мой список</h3>
+        <div id="favorites-list" class="list-container">
+            <div class="empty-message">Загрузка...</div>
+        </div>
+    </div>
+</aside>
+
+<aside id="repertoire-panel" class="side-panel repertoire-panel">
+    <h3 class="panel-header">Репертуар</h3>
+
+    <div class="repertoire-vocalist-selector">
+        <label for="vocalist-select">Вокалист:</label>
+        <select id="vocalist-select">
+            <option value="">-- Выберите вокалиста --</option>
+            </select>
+    </div>
+
+    <div class="repertoire-view-controls">
+        <button id="repertoire-view-key" class="repertoire-view-button active" title="Группировать по тональности">
+            <i class="fas fa-key"></i> <span class="button-text-rp">По тональности</span>
+        </button>
+        <button id="repertoire-view-sheet" class="repertoire-view-button" title="Группировать по листам">
+            <i class="far fa-file-alt"></i> <span class="button-text-rp">По листам</span>
+        </button>
+        <button id="repertoire-view-all" class="repertoire-view-button" title="Показать весь список алфавитном порядке">
+            <i class="fas fa-sort-alpha-down"></i> <span class="button-text-rp">Весь список</span>
+        </button>
+    </div>
+    <div id="repertoire-panel-list" class="repertoire-list-container list-container">
+        <div class="empty-message">Выберите вокалиста для просмотра репертуара.</div>
+        </div>
+</aside>
+
+<div id="presentation-overlay" class="presentation-overlay">
+    <button id="presentation-close-btn" class="presentation-close-btn" title="Закрыть режим презентации">&times;</button>
+    <button id="pres-split-text-btn" class="presentation-control-btn" title="Разделить текст">
+        <i class="fas fa-columns"></i>
+    </button>
+    <div class="presentation-controls">
+        <button id="pres-prev-btn" class="presentation-nav-btn" title="Предыдущая песня">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <span id="pres-counter" class="presentation-counter">0 / 0</span>
+        <button id="pres-next-btn" class="presentation-nav-btn" title="Следующая песня">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+    <div id="presentation-content" class="presentation-content">
+        </div>
+</div>
+
+<div id="loading-indicator">Загрузка...</div>
+
+<nav class="mobile-bottom-nav">
+    <button id="toggle-favorites" class="mobile-nav-button">
+        <i class="fas fa-list-alt"></i>
+        <span>Сет-листы</span>
+    </button>
+    <button id="toggle-my-list" class="mobile-nav-button">
+        <i class="fas fa-heart"></i>
+        <span>Мой список</span>
+    </button>
+    <button id="toggle-repertoire" class="mobile-nav-button">
+        <i class="fas fa-users"></i>
+        <span>Репертуар</span>
+    </button>
+</nav>
+
+  <script type="module" src="script.js"></script>
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js')
+            .then(registration => {
+              console.log('Service Worker зарегистрирован:', registration);
+            })
+            .catch(error => {
+              console.log('Ошибка регистрации Service Worker:', error);
+            });
+        });
+      }
+    </script>
+</body>
+</html>
