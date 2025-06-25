@@ -144,77 +144,6 @@ async function deleteSetlist(setlistId) {
     await deleteDoc(docRef);
 }
 
-/** Обновление имени сет-листа */
-async function updateSetlistName(setlistId, newName) {
-    const setlistDocRef = doc(db, "setlists", setlistId);
-    await updateDoc(setlistDocRef, { name: newName });
-}
-
-/** Удаление ВСЕГО сет-листа */
-async function deleteCurrentSetlist(setlistId) {
-    if (state.currentSetlistSongsUnsubscribe) {
-        state.currentSetlistSongsUnsubscribe();
-        state.setCurrentSetlistSongsUnsubscribe(null);
-    }
-    const setlistDocRef = doc(db, "setlists", setlistId);
-    await deleteDoc(setlistDocRef);
-}
-
-
-// --- SONGS IN SETLIST ---
-
-/** Загрузка песен для ТЕКУЩЕГО сет-листа с callback */
-function loadCurrentSetlistSongs(setlistId, onSongsUpdate) {
-    if (state.currentSetlistSongsUnsubscribe) {
-        state.currentSetlistSongsUnsubscribe();
-    }
-    if (!setlistId) {
-        onSongsUpdate({ data: [], error: null });
-        return;
-    }
-    const songsCollectionRef = collection(db, "setlists", setlistId, "songs");
-    const q = query(songsCollectionRef, orderBy("order", "asc"));
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-        if (setlistId !== state.currentSetlistId) return;
-        const newSongs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        onSongsUpdate({ data: newSongs, error: null });
-    }, (error) => {
-        console.error(`Ошибка загрузки песен для ${setlistId}:`, error);
-        onSongsUpdate({ data: [], error });
-    });
-    state.setCurrentSetlistSongsUnsubscribe(unsubscribe);
-}
-
-/** Добавляет песню в ВЫБРАННЫЙ сет-лист */
-async function addToCurrentSetlist(setlistId, songId, preferredKey, order) {
-    const songsCollectionRef = collection(db, "setlists", setlistId, "songs");
-    
-    // Проверка на дубликат
-    const q = query(songsCollectionRef, where("songId", "==", songId));
-    const duplicateSnapshot = await getDocs(q);
-
-    if (!duplicateSnapshot.empty) {
-        const existingDoc = duplicateSnapshot.docs[0];
-        // Возвращаем информацию о дубликате
-        return { duplicate: true, docId: existingDoc.id, data: existingDoc.data() };
-    }
-
-    const songEntryData = {
-        songId: songId,
-        preferredKey: preferredKey,
-        order: order
-    };
-    const docRef = await addDoc(songsCollectionRef, songEntryData);
-    return { duplicate: false, docId: docRef.id };
-}
-
-/** Сохранение заметки для песни в сет-листе */
-async function saveNoteForSongInSetlist(setlistId, songDocId, newNoteText) {
-    const songDocRef = doc(db, "setlists", setlistId, "songs", songDocId);
-    await updateDoc(songDocRef, { notes: newNoteText });
-}
-
 /**
  * Добавляет песню в массив `songs` документа сетлиста или предлагает обновить ключ.
  * @param {string} setlistId
@@ -273,7 +202,7 @@ async function updateSongKeyInSetlist(setlistId, songId, newKey) {
  * @param {string} setlistId
  * @param {string} songIdToRemove
  */
-export async function removeSongFromSetlist(setlistId, songIdToRemove) {
+async function removeSongFromSetlist(setlistId, songIdToRemove) {
     const setlistRef = doc(db, "worship_setlists", setlistId);
     return await runTransaction(db, async (transaction) => {
         const setlistDoc = await transaction.get(setlistRef);
@@ -343,11 +272,6 @@ export {
     loadSetlists,
     createSetlist,
     deleteSetlist,
-    updateSetlistName,
-    deleteCurrentSetlist,
-    loadCurrentSetlistSongs,
-    addToCurrentSetlist,
-    saveNoteForSongInSetlist,
     addSongToSetlist,
     updateSongKeyInSetlist,
     removeSongFromSetlist,
