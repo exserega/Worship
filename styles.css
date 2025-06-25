@@ -1,5 +1,6 @@
 /* ======================================== */
-/* Styles for Agape Worship             */
+/* Styles for Agape Worship - v2.1      */
+/* ПРИНУДИТЕЛЬНО ГОРИЗОНТАЛЬНЫЕ ПОЛЯ НА МОБИЛЬНЫХ */
 /* Версия включает:                     */
 /* - Рефакторинг панелей                */
 /* - Режим Презентации v2               */
@@ -1012,13 +1013,35 @@ body[data-theme="light"] .repertoire-view-button.active {
          /* Настройки для мобильных */
           padding: 6px 8px; /* Уменьшить паддинг */
     }
+    
+    /* Принудительно горизонтальное расположение на очень маленьких экранах */
+    .select-filters-container { 
+        flex-direction: row !important; 
+        flex-wrap: nowrap !important;
+        gap: 4px !important; 
+    }
+    .select-filters-container fieldset { 
+        flex: 1 !important; 
+        min-width: 0 !important;
+        padding: 4px !important;
+    }
 }
 /* === КОНЕЦ ВАРИАНТА 4 === */
 
 /* ============================================ */
 /* АДАПТИВНОСТЬ                                */
 /* ============================================ */
-@media (max-width: 768px) { /* Можно добавить стили для планшетов */ }
+@media (max-width: 768px) { 
+    /* Принудительно горизонтальное расположение на планшетах и смартфонах */
+    .select-filters-container { 
+        flex-direction: row !important; 
+        gap: 8px !important; 
+    }
+    .select-filters-container fieldset { 
+        flex: 1 !important; 
+        min-width: 0 !important;
+    }
+}
 
 @media (max-width: 480px) {
     body { padding: 5px; font-size: 14px; padding-bottom: 70px; }
@@ -1037,9 +1060,9 @@ body[data-theme="light"] .repertoire-view-button.active {
     button { font-size: 14px; }
     
     /* Адаптивность для select-filters-container */
-    .select-filters-container { flex-direction: row; gap: 6px; }
-    .select-filters-container fieldset { min-width: auto; padding: 6px; flex: 1; }
-    .select-filters-container legend { font-size: 0.7rem; }
+    .select-filters-container { flex-direction: row !important; gap: 6px !important; }
+    .select-filters-container fieldset { min-width: auto !important; padding: 6px !important; flex: 1 !important; }
+    .select-filters-container legend { font-size: 0.7rem !important; }
     #theme-toggle-button { right: 10px; }
 
     /* Ряд Тональность/Разделить/Масштаб */
