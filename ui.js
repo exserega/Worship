@@ -1,6 +1,6 @@
 // Agape Worship App - ui.js
 
-import { SONG_CATEGORIES_ORDER, MIN_FONT_SIZE, SHEETS } from './constants.js';
+import { SONG_CATEGORIES_ORDER, MIN_FONT_SIZE } from './constants.js';
 import * as state from './state.js';
 import { getRenderedSongText, extractYouTubeVideoId, isMobileView } from './core.js';
 import * as api from './api.js';
@@ -308,7 +308,7 @@ function createRepertoireSongElement(song, vocalistId, onClick) {
     const listItem = document.createElement('div');
     listItem.className = 'repertoire-item';
     const songName = song.name || song.id; 
-    const shortSheetName = Object.keys(SHEETS).find(sKey => SHEETS[sKey] === song.sheet) || song.sheet || '';
+    const shortSheetName = song.sheet || '';
     
     const songInfo = document.createElement('span');
     songInfo.className = 'song-name';
