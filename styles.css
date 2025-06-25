@@ -1022,22 +1022,24 @@ body[data-theme="light"] .repertoire-view-button.active {
 
 @media (max-width: 480px) {
     body { padding: 5px; font-size: 14px; padding-bottom: 70px; }
-    .container { padding: 12px; margin: 10px auto; }
-    header { padding: 5px 15px; }
-    h1 { font-size: 1.4rem; }
+    .container { padding: 10px; margin: 8px auto; }
+    header { padding: 5px 15px; margin-bottom: 10px; }
+    h1 { font-size: 1.2rem; }
+    .controls { gap: 8px; margin-bottom: 10px; }
     #song-content h2 {
         font-size: 1.1rem; /* Уменьшили для мобильных */
         padding-right: 35px; /* Отступ под кнопку копирования */
         margin-bottom: 15px; /* Слегка уменьшили */
     }
 
-    select, input { font-size: 14px; padding: 7px 10px; }
+    select, input { font-size: 14px; padding: 6px 8px; }
+    select { padding-right: 26px; background-position: right 6px center; background-size: 12px; }
     button { font-size: 14px; }
     
     /* Адаптивность для select-filters-container */
-    .select-filters-container { flex-direction: column; gap: 8px; }
-    .select-filters-container fieldset { min-width: auto; padding: 8px; }
-    .select-filters-container legend { font-size: 0.75rem; }
+    .select-filters-container { flex-direction: row; gap: 6px; }
+    .select-filters-container fieldset { min-width: auto; padding: 6px; flex: 1; }
+    .select-filters-container legend { font-size: 0.7rem; }
     #theme-toggle-button { right: 10px; }
 
     /* Ряд Тональность/Разделить/Масштаб */
@@ -1091,7 +1093,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     #add-to-repertoire-button { padding: 10px 15px; height: 40px; }
 
     /* Другие мобильные стили */
-    #song-content { padding: 15px; }
+    #song-content { padding: 15px; margin-top: 10px; }
     #song-content pre {
         font-size: var(--lyrics-font-size); /* ИСПОЛЬЗУЕМ ПЕРЕМЕННУЮ */
         line-height: 1.6;
