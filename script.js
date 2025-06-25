@@ -199,9 +199,16 @@ function createRepertoireSongElement(song, vocalistId) {
 
     const songInfo = document.createElement('span');
     songInfo.className = 'song-name';
+
+    // *** НАЧАЛО ИЗМЕНЕНИЯ: Универсальное получение имени песни ***
+    // Старый формат: song.name
+    // Новый формат (когда в репертуаре будет ссылка на песню): song.id 
+    const songName = song.name || song.id; 
+    // *** КОНЕЦ ИЗМЕНЕНИЯ ***
+
     // Показываем имя, тональность и короткое имя листа
     const shortSheetName = Object.keys(SHEETS).find(sKey => SHEETS[sKey] === song.sheet) || song.sheet || '';
-    songInfo.textContent = `${song.name} (${song.preferredKey || 'N/A'}${shortSheetName ? ', ' + shortSheetName : ''})`;
+    songInfo.textContent = `${songName} (${song.preferredKey || 'N/A'}${shortSheetName ? ', ' + shortSheetName : ''})`;
     listItem.appendChild(songInfo);
 
     const removeBtn = document.createElement('button');
@@ -218,14 +225,23 @@ function createRepertoireSongElement(song, vocalistId) {
     // Клик по элементу для перехода к песне
     listItem.addEventListener('click', async () => {
         // Эта логика перехода к песне уже была в старой loadRepertoire, переносим сюда
-        console.log(`Клик по песне "${song.name}" в репертуаре.`);
+        console.log(`Клик по песне "${songName}" в репертуаре.`);
         
-        // Новая логика: ищем песню в `allSongs` по ID
-        const songId = song.songId; // Ожидаем, что в репертуаре хранится songId
-        const songData = state.allSongs.find(s => s.id === songId);
+        // *** НАЧАЛО ИЗМЕНЕНИЯ: Универсальное получение ID песни ***
+        // Старый формат: song.id (если мы его там хранили) или ищем по имени.
+        // Новый формат: song.id (ID документа из коллекции songs)
+        // Мы будем искать в allSongs по имени, если ID не найден.
+        const songId = song.id || song.songId; // Предпочитаем прямой ID
+        let songData = state.allSongs.find(s => s.id === songId);
+
+        // Если по ID не нашли (старый формат), ищем по имени
+        if (!songData && songName) {
+            songData = state.allSongs.find(s => s.id.toLowerCase() === songName.toLowerCase());
+        }
+        // *** КОНЕЦ ИЗМЕНЕНИЯ ***
 
         if (!songData) {
-            alert(`Не удалось найти данные песни "${song.name}". Возможно, она была удалена из общей базы.`);
+            alert(`Не удалось найти данные песни "${songName}". Возможно, она была удалена из общей базы.`);
             return;
         }
 
