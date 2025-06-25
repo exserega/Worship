@@ -65,11 +65,52 @@ export const repertoireViewAllBtn = document.getElementById('repertoire-view-all
 
 // --- UI GENERAL ---
 
-/** Закрывает все боковые панели */
+/** Закрывает все боковые панели и деактивирует кнопки в футере */
 export function closeAllSidePanels() {
     if (setlistsPanel) setlistsPanel.classList.remove('open');
     if (myListPanel) myListPanel.classList.remove('open');
     if (repertoirePanel) repertoirePanel.classList.remove('open');
+
+    // Также убираем класс active у всех кнопок мобильной навигации
+    if (toggleFavoritesButton) toggleFavoritesButton.classList.remove('active');
+    if (toggleMyListButton) toggleMyListButton.classList.remove('active');
+    if (toggleRepertoireButton) toggleRepertoireButton.classList.remove('active');
+}
+
+/**
+ * Переключает видимость боковой панели.
+ * @param {HTMLElement} panel - Элемент панели для переключения.
+ * @param {Function} [onOpenCallback] - Функция, которая будет вызвана, если панель открывается.
+ */
+export function togglePanel(panel, onOpenCallback) {
+    if (!panel) return;
+
+    const isAlreadyOpen = panel.classList.contains('open');
+
+    // Сначала всегда закрываем все панели
+    closeAllSidePanels();
+
+    // Если панель не была открыта, открываем ее и выполняем колбэк
+    if (!isAlreadyOpen) {
+        panel.classList.add('open');
+        
+        // Активируем соответствующую кнопку в мобильной навигации
+        let mobileButton;
+        if (panel.id === 'setlists-panel') {
+            mobileButton = toggleFavoritesButton;
+        } else if (panel.id === 'my-list-panel') {
+            mobileButton = toggleMyListButton;
+        } else if (panel.id === 'repertoire-panel') {
+            mobileButton = toggleRepertoireButton;
+        }
+        if (mobileButton) {
+            mobileButton.classList.add('active');
+        }
+
+        if (onOpenCallback && typeof onOpenCallback === 'function') {
+            onOpenCallback();
+        }
+    }
 }
 
 /** Применяет указанную тему (light/dark) */
@@ -78,13 +119,13 @@ export function applyTheme(themeName) {
     document.body.dataset.theme = newTheme;
 
     if (themeToggleButton) {
-        const icon = themeToggleButton.querySelector('i');
-        if (icon) {
+        const sliderIcon = themeToggleButton.querySelector('.theme-toggle-slider i');
+        if (sliderIcon) {
             if (newTheme === 'light') {
-                icon.className = 'fas fa-moon';
+                sliderIcon.className = 'fas fa-sun';
                 themeToggleButton.title = "Переключить на темную тему";
             } else {
-                icon.className = 'fas fa-sun';
+                sliderIcon.className = 'fas fa-moon';
                 themeToggleButton.title = "Переключить на светлую тему";
             }
         }
