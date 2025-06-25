@@ -209,18 +209,6 @@ async function addToCurrentSetlist(setlistId, songId, preferredKey, order) {
     return { duplicate: false, docId: docRef.id };
 }
 
-/** Обновление тональности песни в сет-листе */
-async function updateSongKeyInSetlist(setlistId, docId, newKey) {
-    const docRef = doc(db, "setlists", setlistId, "songs", docId);
-    await setDoc(docRef, { preferredKey: newKey }, { merge: true });
-}
-
-/** Удаление ОДНОЙ песни из сет-листа */
-async function deleteSongFromSetlist(setlistId, songDocId) {
-    const songDocRef = doc(db, "setlists", setlistId, "songs", songDocId);
-    await deleteDoc(songDocRef);
-}
-
 /** Сохранение заметки для песни в сет-листе */
 async function saveNoteForSongInSetlist(setlistId, songDocId, newNoteText) {
     const songDocRef = doc(db, "setlists", setlistId, "songs", songDocId);
@@ -266,7 +254,7 @@ export async function addSongToSetlist(setlistId, songId, preferredKey) {
  * @param {string} songId
  * @param {string} newKey
  */
-export async function updateSongKeyInSetlist(setlistId, songId, newKey) {
+async function updateSongKeyInSetlist(setlistId, songId, newKey) {
     const setlistRef = doc(db, "worship_setlists", setlistId);
      return await runTransaction(db, async (transaction) => {
         const setlistDoc = await transaction.get(setlistRef);
@@ -338,10 +326,9 @@ export {
     deleteCurrentSetlist,
     loadCurrentSetlistSongs,
     addToCurrentSetlist,
-    updateSongKeyInSetlist,
-    deleteSongFromSetlist,
     saveNoteForSongInSetlist,
     addSongToSetlist,
+    updateSongKeyInSetlist,
     addToFavorites,
     removeFromFavorites
 }; 
