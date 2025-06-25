@@ -335,6 +335,13 @@ function setupEventListeners() {
 
     ui.addToRepertoireButton.addEventListener('click', handleAddToRepertoire);
 
+    // --- Переключение темы ---
+    ui.themeToggleButton.addEventListener('click', () => {
+        const currentTheme = document.body.dataset.theme;
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        ui.applyTheme(newTheme);
+    });
+
     // --- Метроном ---
     ui.metronomeButton.addEventListener('click', async () => {
         const bpmText = ui.bpmDisplay?.textContent;
