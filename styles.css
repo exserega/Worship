@@ -1112,6 +1112,16 @@ body[data-theme="light"] .repertoire-view-button.active {
 }
 
 @media (max-width: 480px) {
+    /* СТРОГИЕ ОГРАНИЧЕНИЯ для предотвращения выхода за пределы экрана */
+    html, body { 
+        max-width: 100vw !important; 
+        overflow-x: hidden !important; 
+    }
+    * { 
+        max-width: 100% !important; 
+        box-sizing: border-box !important; 
+    }
+    
     body { padding: 5px; font-size: 14px; padding-bottom: 70px; }
     .container { padding: 10px; margin: 8px auto; }
     header { padding: 5px 15px; margin-bottom: 10px; }
@@ -1204,6 +1214,29 @@ body[data-theme="light"] .repertoire-view-button.active {
         width: 95%; max-width: 95%; padding: 15px; gap: 12px; 
         height: 100vh; /* Полная высота экрана */
         overflow: hidden; /* Строго запрещаем выход за пределы */
+        /* СТРОГОЕ ПОЗИЦИОНИРОВАНИЕ для мобильных */
+        left: 0 !important; /* Принудительно слева для всех панелей */
+        right: auto !important; /* Отключаем правое позиционирование */
+    }
+    
+    /* Специальные стили для правой панели на мобильных - она тоже слева, но с другой анимацией */
+    #repertoire-panel {
+        border-left: none !important;
+        border-right: 2px solid var(--primary-color) !important;
+    }
+    
+    /* Переопределяем трансформации для мобильных */
+    #setlists-panel, #my-list-panel, #repertoire-panel {
+        transform: translateX(-100%) !important;
+    }
+    #setlists-panel.open, #my-list-panel.open, #repertoire-panel.open {
+        transform: translateX(0) !important;
+    }
+    
+    /* Кнопки закрытия на мобильных - все справа */
+    .side-panel-close-btn {
+        right: 8px !important;
+        left: auto !important;
     }
     .list-container { 
         max-height: none; /* Убираем ограничение высоты на мобильных */
