@@ -398,7 +398,7 @@ export function renderRepertoire(onSongSelect) {
     
     const songsData = state.currentRepertoireSongsData;
     const fullSongsData = songsData.map(repertoireSong => {
-        const songDetails = state.allSongs.find(s => s.id === repertoireSong.songId) || {};
+        const songDetails = state.allSongs.find(s => s.name === repertoireSong.name) || {};
         return { ...songDetails, ...repertoireSong };
     }).filter(s => s.id); // Убираем песни, которых нет в allSongs
 
