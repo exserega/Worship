@@ -98,6 +98,13 @@ const repertoireViewKeyBtn = document.getElementById('repertoire-view-key');
 const repertoireViewSheetBtn = document.getElementById('repertoire-view-sheet');
 const repertoireViewAllBtn = document.getElementById('repertoire-view-all');
 
+// --- METRONOME STATE ---
+let audioContext;
+let audioBuffer;
+let metronomeInterval = null;
+let isMetronomeActive = false;
+let currentBeat = 0;
+
 // --- API FUNCTIONS (Firestore) ---
 
 /** Загрузка данных со ВСЕХ песен из Firestore */
