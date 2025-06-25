@@ -1,6 +1,6 @@
 // Agape Worship App - ui.js
 
-import { SONG_CATEGORIES_ORDER, MIN_FONT_SIZE } from './constants.js';
+import { SONG_CATEGORIES_ORDER, MIN_FONT_SIZE, chords } from './constants.js';
 import * as state from './state.js';
 import { getRenderedSongText, extractYouTubeVideoId, isMobileView } from './core.js';
 import * as api from './api.js';
