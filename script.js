@@ -3,7 +3,7 @@
 // =====================================================================
 
 import * as state from './state.js';
-import { MIN_FONT_SIZE } from './constants.js';
+import { MIN_FONT_SIZE, SWIPE_THRESHOLD, SWIPE_VERTICAL_LIMIT } from './constants.js';
 import * as api from './api.js';
 import * as core from './core.js';
 import * as ui from './ui.js';
@@ -227,6 +227,38 @@ async function refreshSetlists() {
     }
 }
 
+// --- SWIPE TO CLOSE SETUP ---
+function setupSwipeToClose() {
+    const panels = document.querySelectorAll('.side-panel');
+    let touchStartX = 0;
+    let touchStartY = 0;
+    
+    panels.forEach(panel => {
+        panel.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+        
+        panel.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            const diffX = touchEndX - touchStartX;
+            const diffY = touchEndY - touchStartY;
+            
+            if (Math.abs(diffY) > SWIPE_VERTICAL_LIMIT) return;
+            
+            const isLeftPanel = panel.id === 'setlists-panel' || panel.id === 'my-list-panel';
+            const isRightPanel = panel.id === 'repertoire-panel';
+            const swipedLeft = diffX < -SWIPE_THRESHOLD;
+            const swipedRight = diffX > SWIPE_THRESHOLD;
+            
+            if ((isLeftPanel && swipedLeft) || (isRightPanel && swipedRight)) {
+                ui.closeAllSidePanels();
+            }
+        }, { passive: true });
+    });
+}
+
 // --- EVENT LISTENER SETUP ---
 function setupEventListeners() {
     // --- Основные элементы управления ---
@@ -302,17 +334,7 @@ function setupEventListeners() {
         ui.updateToggleChordsButton();
     });
 
-    ui.songContent.addEventListener('click', (event) => {
-         const copyBtn = event.target.closest('#copy-text-button');
-         if (copyBtn) {
-            const preElement = ui.songContent.querySelector('pre');
-            if (!preElement) return;
-            navigator.clipboard.writeText(preElement.innerText).then(() => {
-                copyBtn.innerHTML = '<i class="fas fa-check"></i>';
-                setTimeout(() => { copyBtn.innerHTML = '<i class="far fa-copy"></i>'; }, 1500);
-            });
-         }
-     });
+
 
     ui.favoriteButton.addEventListener('click', async () => {
         const songId = ui.songSelect.value;
@@ -445,11 +467,45 @@ function setupEventListeners() {
     // --- Сет-листы ---
     ui.createSetlistButton.addEventListener('click', handleCreateSetlist);
 
-    // --- Кнопки закрытия боковых панелей ---
-    document.querySelectorAll('.side-panel-close-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
+    // --- Централизованная обработка кликов ---
+    document.addEventListener('click', (e) => {
+        // Очистка результатов поиска при клике вне поля поиска
+        if (e.target.id !== 'search-input') {
+            if(ui.searchResults) ui.searchResults.innerHTML = '';
+        }
+        
+        // Клик по аккорду в тексте песни для быстрой смены тональности
+        if (e.target.closest('#song-content pre')) {
+            const chordEl = e.target.closest('.chord');
+            if (chordEl) {
+                ui.keySelect.value = chordEl.textContent;
+                ui.keySelect.dispatchEvent(new Event('change'));
+            }
+        }
+        
+        // Кнопка копирования текста
+        if(e.target.closest('#copy-text-button')) {
+            const preElement = ui.songContent.querySelector('pre');
+            if (preElement) {
+                navigator.clipboard.writeText(preElement.innerText).then(() => {
+                    e.target.closest('#copy-text-button').innerHTML = '<i class="fas fa-check"></i>';
+                    setTimeout(() => e.target.closest('#copy-text-button').innerHTML = '<i class="far fa-copy"></i>', 1500);
+                });
+            }
+        }
+        
+        // Закрытие панелей по кнопке-стрелке
+        const closeButton = e.target.closest('.side-panel-close-btn');
+        if (closeButton) {
             ui.closeAllSidePanels();
-        });
+            return;
+        }
+        
+        // Закрытие панели при клике вне ее области
+        const openPanel = document.querySelector('.side-panel.open');
+        if (openPanel && !openPanel.contains(e.target) && !e.target.closest('.mobile-nav-button')) {
+            ui.closeAllSidePanels();
+        }
     });
 }
 
@@ -467,6 +523,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     ui.applyTheme(initialTheme);
     
     setupEventListeners();
+    setupSwipeToClose();
     ui.updateFontSize();
 
     try {
