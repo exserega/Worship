@@ -984,9 +984,12 @@ body[data-theme="light"] .repertoire-view-button.active {
     /* Другие мобильные стили */
     #song-content { padding: 15px; }
     #song-content pre {
-        font-size: 0.9rem;
-        line-height: 1.5;
-        padding-top: 5px; /* Уменьшаем отступ сверху под кнопку */
+        font-size: var(--lyrics-font-size); /* ИСПОЛЬЗУЕМ ПЕРЕМЕННУЮ */
+        line-height: 1.6;
+        padding: 10px 0;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-x: auto;
     }
 
 
