@@ -87,7 +87,7 @@ async function handleCreateSetlist() {
 
 function handleSetlistSelect(setlist) {
     state.setCurrentSetlistId(setlist.id);
-    ui.displaySelectedSetlist(setlist, handleFavoriteOrRepertoireSelect);
+    ui.displaySelectedSetlist(setlist, handleFavoriteOrRepertoireSelect, handleRemoveSongFromSetlist);
 }
 
 async function handleSetlistDelete(setlistId, setlistName) {
@@ -143,12 +143,39 @@ async function handleAddSongToSetlist() {
         const updatedCurrentSetlist = updatedSetlists.find(s => s.id === setlistId);
         if (updatedCurrentSetlist) {
             state.setCurrentSetlistId(updatedCurrentSetlist.id); // Re-set state
-            ui.displaySelectedSetlist(updatedCurrentSetlist, handleFavoriteOrRepertoireSelect);
+            ui.displaySelectedSetlist(updatedCurrentSetlist, handleFavoriteOrRepertoireSelect, handleRemoveSongFromSetlist);
         }
 
     } catch (error) {
         console.error("Ошибка при добавлении песни:", error);
         alert("Не удалось добавить песню в сет-лист.");
+    }
+}
+
+async function handleRemoveSongFromSetlist(songId, songName) {
+    const setlistId = state.currentSetlistId;
+    if (!setlistId) return;
+
+    if (confirm(`Удалить песню "${songName}" из текущего сет-листа?`)) {
+        try {
+            await api.removeSongFromSetlist(setlistId, songId);
+
+            // Refresh view
+            const updatedSetlists = await api.loadSetlists();
+            state.setSetlists(updatedSetlists);
+            const updatedCurrentSetlist = updatedSetlists.find(s => s.id === setlistId);
+            if (updatedCurrentSetlist) {
+                 state.setCurrentSetlistId(updatedCurrentSetlist.id); // Re-set state
+                 ui.displaySelectedSetlist(updatedCurrentSetlist, handleFavoriteOrRepertoireSelect, handleRemoveSongFromSetlist);
+            } else {
+                // This case handles if the setlist was somehow deleted in the process
+                state.setCurrentSetlistId(null);
+                ui.clearSetlistSelection();
+            }
+        } catch (error) {
+            console.error("Ошибка при удалении песни из сет-листа:", error);
+            alert("Не удалось удалить песню.");
+        }
     }
 }
 

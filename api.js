@@ -268,6 +268,27 @@ async function updateSongKeyInSetlist(setlistId, songId, newKey) {
     });
 }
 
+/**
+ * Удаляет песню из массива `songs` в документе сетлиста.
+ * @param {string} setlistId
+ * @param {string} songIdToRemove
+ */
+export async function removeSongFromSetlist(setlistId, songIdToRemove) {
+    const setlistRef = doc(db, "worship_setlists", setlistId);
+    return await runTransaction(db, async (transaction) => {
+        const setlistDoc = await transaction.get(setlistRef);
+        if (!setlistDoc.exists()) throw new Error("Setlist does not exist!");
+
+        const songs = setlistDoc.data().songs || [];
+        const updatedSongs = songs.filter(song => song.songId !== songIdToRemove);
+
+        // Пересчитываем `order` для оставшихся песен
+        const reorderedSongs = updatedSongs.map((song, index) => ({ ...song, order: index }));
+
+        transaction.update(setlistRef, { songs: reorderedSongs });
+    });
+}
+
 
 // --- FAVORITES (MY LIST) ---
 
@@ -329,6 +350,7 @@ export {
     saveNoteForSongInSetlist,
     addSongToSetlist,
     updateSongKeyInSetlist,
+    removeSongFromSetlist,
     addToFavorites,
     removeFromFavorites
 }; 

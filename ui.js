@@ -522,7 +522,7 @@ export function renderFavorites(onSelect, onRemove) {
 
 // --- SETLIST PANEL ---
 
-function renderCurrentSetlistSongs(songs, onSongSelect) {
+function renderCurrentSetlistSongs(songs, onSongSelect, onSongRemove) {
     if (!currentSetlistSongsContainer) return;
     currentSetlistSongsContainer.innerHTML = '';
 
@@ -543,8 +543,22 @@ function renderCurrentSetlistSongs(songs, onSongSelect) {
     fullSongsData.forEach(song => {
         const songItem = document.createElement('div');
         songItem.className = 'setlist-song-item';
-        songItem.innerHTML = `<span>${song.name} (${song.preferredKey})</span>`;
-        songItem.addEventListener('click', () => onSongSelect(song));
+        
+        const songNameSpan = document.createElement('span');
+        songNameSpan.textContent = `${song.name} (${song.preferredKey})`;
+        songNameSpan.addEventListener('click', () => onSongSelect(song));
+        songItem.appendChild(songNameSpan);
+
+        const removeBtn = document.createElement('button');
+        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        removeBtn.className = 'remove-button';
+        removeBtn.title = 'Удалить из сет-листа';
+        removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            onSongRemove(song.id, song.name);
+        });
+        songItem.appendChild(removeBtn);
+
         currentSetlistSongsContainer.appendChild(songItem);
     });
 }
@@ -560,7 +574,7 @@ export function clearSetlistSelection() {
 }
 
 
-export function displaySelectedSetlist(setlist, onSongSelect) {
+export function displaySelectedSetlist(setlist, onSongSelect, onSongRemove) {
     if (!setlist || !setlist.id) {
         clearSetlistSelection();
         return;
@@ -576,7 +590,7 @@ export function displaySelectedSetlist(setlist, onSongSelect) {
         });
     }
 
-    renderCurrentSetlistSongs(setlist.songs || [], onSongSelect);
+    renderCurrentSetlistSongs(setlist.songs || [], onSongSelect, onSongRemove);
 }
 
 
