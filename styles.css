@@ -1018,7 +1018,7 @@ body[data-theme="light"] .repertoire-view-button.active {
           margin-bottom: 5px;
           padding-bottom: 4px;
      }
-}
+
     #setlists-panel .create-setlist-form { margin-bottom: 10px; }
     #new-setlist-name-input { font-size: 0.9rem; padding: 7px 10px; }
     #create-setlist-button { padding: 7px 12px; font-size: 0.8rem; }
@@ -1073,7 +1073,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     /* Модальное окно на мобильных */
     .modal-content { padding: 20px; width: 90%; }
     .modal-title { font-size: 1.1rem; }
-} /* <<< ЭТО ЗАКРЫВАЮЩАЯ СКОБКА ДЛЯ @media (max-width: 480px) */
+}
 
 /* ============================================ */
 /* === КОНЕЦ ФАЙЛА CSS === */
