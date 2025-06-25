@@ -132,6 +132,11 @@ body[data-theme="light"] h1 {
 .control-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .control-group label { font-size: 0.8rem; color: var(--label-color); margin-bottom: 4px; flex-basis: 100%; text-transform: uppercase; letter-spacing: 0.5px; transition: color 0.3s ease;}
 
+/* Контейнер для фильтров с fieldset */
+.select-filters-container { display: flex; gap: 15px; flex-wrap: wrap; }
+.select-filters-container fieldset { border: 1px solid var(--border-color); border-radius: var(--radius); padding: 12px; margin: 0; flex: 1; min-width: 200px; background: var(--container-background-color); transition: border-color 0.3s ease, background-color 0.3s ease; }
+.select-filters-container legend { font-size: 0.8rem; color: var(--label-color); padding: 0 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; transition: color 0.3s ease; }
+
 select, input[type="text"] {
     padding: 10px 14px; font-size: 0.95rem;
     border: 1px solid var(--border-color);
@@ -917,6 +922,11 @@ body[data-theme="light"] .repertoire-view-button.active {
 
     select, input { font-size: 14px; padding: 9px 12px; }
     button { font-size: 14px; }
+    
+    /* Адаптивность для select-filters-container */
+    .select-filters-container { flex-direction: column; gap: 10px; }
+    .select-filters-container fieldset { min-width: auto; padding: 10px; }
+    .select-filters-container legend { font-size: 0.75rem; }
     #theme-toggle-button { right: 10px; }
 
     /* Ряд Тональность/Разделить/Масштаб */

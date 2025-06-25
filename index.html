@@ -34,17 +34,19 @@
             <input type="text" id="search-input" placeholder="Введите название песни...">
             <div id="search-results"></div>
         </div>
-        <div class="control-group">
-            <label for="sheet-select">Выберите категорию:</label>
-            <select id="sheet-select">
-                <option value="">-- Выберите категорию --</option>
-            </select>
-        </div>
-        <div class="control-group">
-            <label for="song-select">Выберите песню:</label>
-            <select id="song-select" disabled>
-                <option value="">-- Сначала выберите категорию --</option>
-            </select>
+        <div class="select-filters-container">
+            <fieldset class="control-group">
+                <legend>Выберите категорию</legend>
+                <select id="sheet-select">
+                    <option value="">-- Выберите категорию --</option>
+                </select>
+            </fieldset>
+            <fieldset class="control-group">
+                <legend>Выберите песню</legend>
+                <select id="song-select" disabled>
+                    <option value="">-- Сначала выберите категорию --</option>
+                </select>
+            </fieldset>
         </div>
         <div class="control-group">
             <label for="key-select">Тональность:</label>
