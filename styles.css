@@ -79,7 +79,7 @@ header {
 }
 h1 {
     text-align: center; color: var(--text-color); margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 600;
     text-transform: uppercase; letter-spacing: 1.5px;
     animation: glow 3s infinite alternate;
