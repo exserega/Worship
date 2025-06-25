@@ -106,7 +106,7 @@ async function removeFromRepertoire(vocalistId, repertoireDocId) {
  * Загружает все сетлисты из Firestore.
  * @returns {Promise<Array>} Массив объектов сетлистов.
  */
-export async function loadSetlists() {
+async function loadSetlists() {
     const setlistsCol = collection(db, "worship_setlists");
     const q = query(setlistsCol, orderBy("createdAt", "desc"));
     const snapshot = await getDocs(q);
@@ -122,7 +122,7 @@ export async function loadSetlists() {
  * @param {string} name - Название нового сетлиста.
  * @returns {Promise<DocumentReference>} Ссылка на созданный документ.
  */
-export async function createSetlist(name) {
+async function createSetlist(name) {
     if (!name || name.trim() === '') {
         throw new Error("Setlist name cannot be empty.");
     }
@@ -138,7 +138,7 @@ export async function createSetlist(name) {
  * Удаляет сетлист из Firestore.
  * @param {string} setlistId - ID удаляемого сетлиста.
  */
-export async function deleteSetlist(setlistId) {
+async function deleteSetlist(setlistId) {
     if (!setlistId) return;
     const docRef = doc(db, 'worship_setlists', setlistId);
     await deleteDoc(docRef);
@@ -280,6 +280,7 @@ export {
     removeFromRepertoire,
     loadSetlists,
     createSetlist,
+    deleteSetlist,
     updateSetlistName,
     deleteCurrentSetlist,
     loadCurrentSetlistSongs,
