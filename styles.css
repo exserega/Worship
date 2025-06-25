@@ -504,12 +504,13 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
 /* СТИЛИ ДЛЯ БОКОВЫХ ПАНЕЛЕЙ                   */
 /* ============================================ */
 .side-panel {
-    position: fixed; top: 0; width: 90%; max-width: 360px; height: 100%;
+    position: fixed; top: 0; width: 90%; max-width: 380px; height: 100vh;
     background-color: var(--container-background-color);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease-in-out, background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     z-index: 1000; padding: 15px; display: flex; flex-direction: column;
     gap: 10px; box-sizing: border-box;
+    overflow: hidden; /* СТРОГО запрещаем выход за пределы */
 }
 
 /* --- Стили для ОБЕИХ левых панелей --- */
@@ -568,10 +569,12 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
 /* --- Содержимое панелей --- */
 /* Общие стили для контейнеров списков */
 .list-container {
-    overflow-y: auto; margin-bottom: 10px; padding: 5px;
+    overflow-y: auto; overflow-x: hidden; margin-bottom: 10px; padding: 5px;
     border: 1px solid var(--border-color); border-radius: var(--radius);
     background: var(--background-color); /* Фон как у body для контраста */
     transition: background-color 0.3s ease, border-color 0.3s ease;
+    word-wrap: break-word; /* Переносим длинные слова */
+    word-break: break-word; /* Принудительно разбиваем слова если нужно */
 }
 .list-container::-webkit-scrollbar { width: 6px; }
 .list-container::-webkit-scrollbar-track { background: var(--border-color); border-radius: 3px;}
@@ -669,6 +672,9 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
     padding: 8px 10px; border-bottom: 1px solid var(--border-color);
     font-size: 0.9rem; cursor: pointer;
     transition: background-color 0.2s ease, border-color 0.3s ease;
+    overflow: hidden; /* Строго запрещаем выход за пределы */
+    word-wrap: break-word; /* Переносим длинные слова */
+    word-break: break-word; /* Принудительно разбиваем слова */
 }
 .favorite-item:last-child, .setlist-item:last-child,
 .repertoire-item:last-child, .setlist-song-item:last-child { border-bottom: none; }
@@ -1194,9 +1200,23 @@ body[data-theme="light"] .repertoire-view-button.active {
 
 
     /* Панели */
-    .side-panel { width: 95%; padding: 10px; gap: 10px; }
-    .list-container { max-height: none; } /* Убираем ограничение высоты на мобильных */
-    .favorite-item, .setlist-item, .setlist-song-item { font-size: 0.85rem; padding: 8px 10px; }
+    .side-panel { 
+        width: 95%; max-width: 95%; padding: 15px; gap: 12px; 
+        height: 100vh; /* Полная высота экрана */
+        overflow: hidden; /* Строго запрещаем выход за пределы */
+    }
+    .list-container { 
+        max-height: none; /* Убираем ограничение высоты на мобильных */
+        overflow-x: hidden; /* Запрещаем горизонтальную прокрутку */
+        word-wrap: break-word; /* Переносим слова */
+        word-break: break-word; /* Принудительно разбиваем слова */
+    }
+    .favorite-item, .setlist-item, .setlist-song-item { 
+        font-size: 0.85rem; padding: 8px 10px; 
+        overflow: hidden; /* Строго запрещаем выход за пределы */
+        word-wrap: break-word; /* Переносим слова */
+        word-break: break-word; /* Принудительно разбиваем слова */
+    }
     #repertoire-panel .panel-header { font-size: 1.1rem; padding-bottom: 8px; }
 #repertoire-panel {
     padding-top: 8px; /* <<< УМЕНЬШЕНО (было 15px по умолчанию у .side-panel) */
