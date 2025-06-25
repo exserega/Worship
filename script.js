@@ -87,7 +87,7 @@ async function handleCreateSetlist() {
 
 function handleSetlistSelect(setlist) {
     state.setCurrentSetlistId(setlist.id);
-    ui.displaySelectedSetlist(setlist);
+    ui.displaySelectedSetlist(setlist, handleFavoriteOrRepertoireSelect);
 }
 
 async function handleSetlistDelete(setlistId, setlistName) {
@@ -143,7 +143,7 @@ async function handleAddSongToSetlist() {
         const updatedCurrentSetlist = updatedSetlists.find(s => s.id === setlistId);
         if (updatedCurrentSetlist) {
             state.setCurrentSetlistId(updatedCurrentSetlist.id); // Re-set state
-            ui.displaySelectedSetlist(updatedCurrentSetlist);
+            ui.displaySelectedSetlist(updatedCurrentSetlist, handleFavoriteOrRepertoireSelect);
         }
 
     } catch (error) {

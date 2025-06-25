@@ -522,7 +522,7 @@ export function renderFavorites(onSelect, onRemove) {
 
 // --- SETLIST PANEL ---
 
-function renderCurrentSetlistSongs(songs) {
+function renderCurrentSetlistSongs(songs, onSongSelect) {
     if (!currentSetlistSongsContainer) return;
     currentSetlistSongsContainer.innerHTML = '';
 
@@ -544,7 +544,7 @@ function renderCurrentSetlistSongs(songs) {
         const songItem = document.createElement('div');
         songItem.className = 'setlist-song-item';
         songItem.innerHTML = `<span>${song.name} (${song.preferredKey})</span>`;
-        // TODO: Add handlers for click, delete, reorder
+        songItem.addEventListener('click', () => onSongSelect(song));
         currentSetlistSongsContainer.appendChild(songItem);
     });
 }
@@ -560,7 +560,7 @@ export function clearSetlistSelection() {
 }
 
 
-export function displaySelectedSetlist(setlist) {
+export function displaySelectedSetlist(setlist, onSongSelect) {
     if (!setlist || !setlist.id) {
         clearSetlistSelection();
         return;
@@ -576,7 +576,7 @@ export function displaySelectedSetlist(setlist) {
         });
     }
 
-    renderCurrentSetlistSongs(setlist.songs || []);
+    renderCurrentSetlistSongs(setlist.songs || [], onSongSelect);
 }
 
 
