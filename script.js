@@ -3,7 +3,7 @@
 // =====================================================================
 
 import * as state from './state.js';
-import { SONG_CATEGORIES_ORDER, DEFAULT_FONT_SIZE, MIN_FONT_SIZE } from './constants.js';
+import { MIN_FONT_SIZE } from './constants.js';
 import * as api from './api.js';
 import * as core from './core.js';
 import * as ui from './ui.js';
@@ -12,6 +12,7 @@ import * as ui from './ui.js';
 
 /** Обработчик выбора песни из репертуара или "Моего списка" */
 function handleFavoriteOrRepertoireSelect(song) {
+    if (!song || !song.id) return;
     ui.sheetSelect.value = song.sheet;
     ui.populateSongSelect();
     ui.songSelect.value = song.id;
@@ -47,8 +48,10 @@ async function handleSaveNote() {
     } catch (error) {
         alert("Не удалось сохранить заметку. Попробуйте еще раз.");
     } finally {
-        ui.saveNoteButton.disabled = false;
-        ui.saveNoteButton.textContent = 'Сохранить';
+        if(ui.saveNoteButton) { // Check if element still exists
+            ui.saveNoteButton.disabled = false;
+            ui.saveNoteButton.textContent = 'Сохранить';
+        }
     }
 }
 
@@ -56,8 +59,8 @@ function closeNotesModal() {
     ui.notesModal.classList.remove('visible');
     setTimeout(() => {
         ui.notesModal.style.display = 'none';
-        ui.noteEditTextarea.value = '';
-        delete ui.notesModal.dataset.songdocid;
+        if (ui.noteEditTextarea) ui.noteEditTextarea.value = '';
+        if (ui.notesModal) delete ui.notesModal.dataset.songdocid;
     }, 300);
 }
 
@@ -67,7 +70,7 @@ function setupEventListeners() {
     // --- Основные элементы управления ---
     ui.sheetSelect.addEventListener('change', () => {
         ui.searchInput.value = '';
-        ui.searchResults.innerHTML = '';
+        if(ui.searchResults) ui.searchResults.innerHTML = '';
         ui.populateSongSelect();
     });
 
@@ -85,28 +88,30 @@ function setupEventListeners() {
             const originalKey = songData['Оригинальная тональность'];
             const title = songData.name;
             const finalHtml = core.getRenderedSongText(songData['Текст и аккорды'], originalKey, newKey);
-            ui.songContent.querySelector('pre').innerHTML = finalHtml;
-            ui.songContent.querySelector('h2').textContent = `${title} — ${newKey}`;
+            const preElement = ui.songContent.querySelector('pre');
+            const h2Element = ui.songContent.querySelector('h2');
+            if (preElement) preElement.innerHTML = finalHtml;
+            if (h2Element) h2Element.textContent = `${title} — ${newKey}`;
         }
     });
 
     ui.searchInput.addEventListener('input', () => {
         const query = ui.searchInput.value.trim().toLowerCase();
         if(!query) {
-            ui.searchResults.innerHTML = '';
+            if(ui.searchResults) ui.searchResults.innerHTML = '';
             return;
         }
-        const matchingSongs = state.allSongs.filter(song => 
+        const matchingSongs = state.allSongs.filter(song =>
             song.name && song.name.toLowerCase().includes(query)
         );
         ui.displaySearchResults(matchingSongs, (songMatch) => {
             ui.searchInput.value = songMatch.name;
-            ui.searchResults.innerHTML = '';
+            if(ui.searchResults) ui.searchResults.innerHTML = '';
             handleFavoriteOrRepertoireSelect(songMatch);
         });
     });
     
-    ui.searchInput.addEventListener('blur', () => setTimeout(() => { ui.searchResults.innerHTML = '' }, 200));
+    ui.searchInput.addEventListener('blur', () => setTimeout(() => { if(ui.searchResults) ui.searchResults.innerHTML = '' }, 200));
 
     // --- Кнопки действий над песней ---
     ui.zoomInButton.addEventListener('click', () => {
@@ -136,10 +141,10 @@ function setupEventListeners() {
     });
 
     ui.songContent.addEventListener('click', (event) => {
-         if (event.target.closest('#copy-text-button')) {
+         const copyBtn = event.target.closest('#copy-text-button');
+         if (copyBtn) {
             const preElement = ui.songContent.querySelector('pre');
-            const copyBtn = event.target.closest('#copy-text-button');
-            if (!preElement || !copyBtn) return;
+            if (!preElement) return;
             navigator.clipboard.writeText(preElement.innerText).then(() => {
                 copyBtn.innerHTML = '<i class="fas fa-check"></i>';
                 setTimeout(() => { copyBtn.innerHTML = '<i class="far fa-copy"></i>'; }, 1500);
@@ -185,20 +190,41 @@ function setupEventListeners() {
 
     // --- Боковые панели ---
     ui.toggleFavoritesButton.addEventListener('click', () => {
-        // ... (This now toggles Setlists panel)
-    });
-    ui.toggleMyListButton.addEventListener('click', () => {
-        const isOpen = ui.myListPanel.classList.toggle('open');
-        if (isOpen) {
-            ui.closeAllSidePanels();
-            ui.myListPanel.classList.add('open');
-            // Logic to load and render favorites
+        const isAlreadyOpen = ui.setlistsPanel.classList.contains('open');
+        ui.closeAllSidePanels();
+        if (!isAlreadyOpen) {
+            ui.setlistsPanel.classList.add('open');
+            // TODO: Add logic here to load and render setlists if needed
         }
     });
+
+    ui.toggleMyListButton.addEventListener('click', () => {
+        const isAlreadyOpen = ui.myListPanel.classList.contains('open');
+        ui.closeAllSidePanels();
+        if (!isAlreadyOpen) {
+            ui.myListPanel.classList.add('open');
+            // Logic to load and render favorites
+            const favoriteSongs = state.allSongs.filter(song => 
+                state.favorites.some(fav => fav.songId === song.id)
+            ).map(song => {
+                const fav = state.favorites.find(f => f.songId === song.id);
+                return { ...song, preferredKey: fav.preferredKey };
+            });
+            ui.renderFavorites(favoriteSongs, handleFavoriteOrRepertoireSelect, async (songId) => {
+                if(confirm("Удалить песню из 'Моего списка'?")) {
+                    await api.removeFromFavorites(songId);
+                    // Manually refresh list after deletion
+                    ui.toggleMyListButton.click(); 
+                    ui.toggleMyListButton.click();
+                }
+            });
+        }
+    });
+
     ui.toggleRepertoireButton.addEventListener('click', () => {
-        const isOpen = ui.repertoirePanel.classList.toggle('open');
-        if (isOpen) {
-            ui.closeAllSidePanels();
+        const isAlreadyOpen = ui.repertoirePanel.classList.contains('open');
+        ui.closeAllSidePanels();
+        if (!isAlreadyOpen) {
             ui.repertoirePanel.classList.add('open');
             api.loadRepertoire(state.currentVocalistId, handleRepertoireUpdate);
         }
@@ -215,7 +241,6 @@ function setupEventListeners() {
         button.addEventListener('click', () => {
             const newMode = button.id.includes('key') ? 'byKey' : button.id.includes('sheet') ? 'bySheet' : 'allAlphabetical';
             state.setCurrentRepertoireViewMode(newMode);
-            // Re-render
             ui.renderRepertoire(handleFavoriteOrRepertoireSelect);
         });
     });
@@ -243,14 +268,14 @@ function setupEventListeners() {
     ui.cancelNoteButton.addEventListener('click', closeNotesModal);
     ui.closeNoteModalX.addEventListener('click', closeNotesModal);
     ui.notesModal.addEventListener('click', (e) => { if (e.target === ui.notesModal) closeNotesModal(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeNotesModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && ui.notesModal.classList.contains('visible')) closeNotesModal(); });
 }
 
 
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("DOM loaded.");
-    ui.loadingIndicator.style.display = 'block';
+    if(ui.loadingIndicator) ui.loadingIndicator.style.display = 'block';
 
     let initialTheme = 'dark';
     try {
@@ -275,10 +300,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error("Критическая ошибка во время инициализации:", error);
         document.body.innerHTML = `<div style="color: red; padding: 20px;">Критическая ошибка инициализации.</div>`;
     } finally {
-        ui.loadingIndicator.style.display = 'none';
+        if(ui.loadingIndicator) ui.loadingIndicator.style.display = 'none';
     }
 
     console.log("Инициализация приложения завершена.");
 });
-
-   
