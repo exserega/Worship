@@ -90,7 +90,7 @@ function loadRepertoire(vocalistId, onRepertoireUpdate) {
  * @param {string} preferredKey - Выбранная тональность.
  * @returns {Promise<{status: string, key: string}>}
  */
-export async function addToRepertoire(vocalistId, song, preferredKey) {
+async function addToRepertoire(vocalistId, song, preferredKey) {
     const repertoireCol = collection(db, 'vocalists', vocalistId, 'repertoire');
     const q = query(repertoireCol, where("name", "==", song.name));
 
