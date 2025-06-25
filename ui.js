@@ -286,16 +286,15 @@ export function populateSheetSelect() {
     });
 }
 
-/** Загрузка песен в select#song-select для выбранной категории */
+/** Загрузка песен в select#song-select для выбранной категории или всех песен */
 export function populateSongSelect() {
     const sheetName = sheetSelect.value;
-    songSelect.innerHTML = '<option value="">-- Сначала выберите категорию --</option>';
-    songSelect.disabled = true;
+    songSelect.innerHTML = '<option value="">-- Песня --</option>';
 
     if (sheetName) {
+        // Показываем песни выбранной категории
         const songs = state.songsBySheet[sheetName];
         if (songs && songs.length > 0) {
-            songSelect.innerHTML = '<option value="">-- Выберите песню --</option>';
             songs.forEach(song => {
                 const option = document.createElement('option');
                 option.value = song.id;
@@ -305,6 +304,25 @@ export function populateSongSelect() {
             songSelect.disabled = false;
         } else {
             songSelect.innerHTML = '<option value="">-- Нет песен в категории --</option>';
+            songSelect.disabled = true;
+        }
+    } else {
+        // Показываем все песни в алфавитном порядке
+        const allSongs = state.allSongs || [];
+        if (allSongs.length > 0) {
+            // Сортируем все песни по алфавиту
+            const sortedSongs = [...allSongs].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+            sortedSongs.forEach(song => {
+                const option = document.createElement('option');
+                option.value = song.id;
+                // Показываем название песни и категорию для удобства
+                option.textContent = `${song.name}${song.sheet ? ` (${song.sheet})` : ''}`;
+                songSelect.appendChild(option);
+            });
+            songSelect.disabled = false;
+        } else {
+            songSelect.innerHTML = '<option value="">-- Песни не загружены --</option>';
+            songSelect.disabled = true;
         }
     }
     displaySongDetails(null);

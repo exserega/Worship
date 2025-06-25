@@ -1,16 +1,26 @@
 /* ======================================== */
-/* Styles for Agape Worship - v2.2      */
+/* Styles for Agape Worship - v2.3      */
 /* ПРИНУДИТЕЛЬНО ГОРИЗОНТАЛЬНЫЕ ПОЛЯ НА МОБИЛЬНЫХ */
 
 /* КРИТИЧЕСКИЙ ФИКС ДЛЯ SAMSUNG S23 ULTRA И ДРУГИХ БОЛЬШИХ СМАРТФОНОВ */
 .select-filters-container { 
     flex-direction: row !important; 
-    gap: 8px !important; 
+    gap: 4px !important; 
     flex-wrap: nowrap !important;
 }
 .select-filters-container fieldset { 
     flex: 1 !important; 
     min-width: 0 !important;
+    padding: 4px !important;
+}
+.select-filters-container legend { 
+    font-size: 0.65rem !important;
+    padding: 0 4px !important;
+}
+.select-filters-container select {
+    font-size: 0.8rem !important;
+    padding: 4px 6px !important;
+    padding-right: 20px !important;
 }
 /* Версия включает:                     */
 /* - Рефакторинг панелей                */
@@ -1029,13 +1039,25 @@ body[data-theme="light"] .repertoire-view-button.active {
     .select-filters-container { 
         flex-direction: row !important; 
         flex-wrap: nowrap !important;
-        gap: 4px !important; 
+        gap: 2px !important; 
     }
     .select-filters-container fieldset { 
         flex: 1 !important; 
         min-width: 0 !important;
-        padding: 4px !important;
+        padding: 2px !important;
     }
+    .select-filters-container legend { 
+        font-size: 0.55rem !important;
+        padding: 0 2px !important;
+    }
+    .select-filters-container select { 
+        font-size: 0.7rem !important; 
+        padding: 2px 4px !important; 
+        padding-right: 16px !important; 
+    }
+    
+    /* Скрываем legend на очень маленьких экранах */
+    .select-filters-container legend { display: none !important; }
 }
 /* === КОНЕЦ ВАРИАНТА 4 === */
 
@@ -1049,13 +1071,26 @@ body[data-theme="light"] .repertoire-view-button.active {
        (orientation: portrait) {
     .select-filters-container { 
         flex-direction: row !important; 
-        gap: 8px !important; 
+        gap: 4px !important; 
         flex-wrap: nowrap !important;
     }
     .select-filters-container fieldset { 
         flex: 1 !important; 
         min-width: 0 !important;
+        padding: 4px !important;
     }
+    .select-filters-container legend { 
+        font-size: 0.65rem !important;
+        padding: 0 4px !important;
+    }
+    .select-filters-container select { 
+        font-size: 0.8rem !important; 
+        padding: 4px 6px !important; 
+        padding-right: 20px !important; 
+    }
+    
+    /* Скрываем legend на мобильных устройствах */
+    .select-filters-container legend { display: none !important; }
 }
 @media (max-width: 1024px) { 
     /* Принудительно горизонтальное расположение на планшетах и смартфонах (включая большие экраны) */
@@ -1087,9 +1122,13 @@ body[data-theme="light"] .repertoire-view-button.active {
     button { font-size: 14px; }
     
     /* Адаптивность для select-filters-container */
-    .select-filters-container { flex-direction: row !important; gap: 6px !important; }
-    .select-filters-container fieldset { min-width: auto !important; padding: 6px !important; flex: 1 !important; }
-    .select-filters-container legend { font-size: 0.7rem !important; }
+    .select-filters-container { flex-direction: row !important; gap: 3px !important; }
+    .select-filters-container fieldset { min-width: auto !important; padding: 3px !important; flex: 1 !important; }
+    .select-filters-container legend { font-size: 0.6rem !important; padding: 0 3px !important; }
+    .select-filters-container select { font-size: 0.75rem !important; padding: 3px 5px !important; padding-right: 18px !important; }
+    
+    /* Скрываем legend на мобильных для экономии места */
+    .select-filters-container legend { display: none !important; }
     #theme-toggle-button { right: 10px; }
 
     /* Ряд Тональность/Разделить/Масштаб */
