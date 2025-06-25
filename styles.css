@@ -1,6 +1,17 @@
 /* ======================================== */
-/* Styles for Agape Worship - v2.1      */
+/* Styles for Agape Worship - v2.2      */
 /* ПРИНУДИТЕЛЬНО ГОРИЗОНТАЛЬНЫЕ ПОЛЯ НА МОБИЛЬНЫХ */
+
+/* КРИТИЧЕСКИЙ ФИКС ДЛЯ SAMSUNG S23 ULTRA И ДРУГИХ БОЛЬШИХ СМАРТФОНОВ */
+.select-filters-container { 
+    flex-direction: row !important; 
+    gap: 8px !important; 
+    flex-wrap: nowrap !important;
+}
+.select-filters-container fieldset { 
+    flex: 1 !important; 
+    min-width: 0 !important;
+}
 /* Версия включает:                     */
 /* - Рефакторинг панелей                */
 /* - Режим Презентации v2               */
@@ -214,8 +225,8 @@ body[data-theme="light"] .theme-icon.moon {
 .control-group label { font-size: 0.8rem; color: var(--label-color); margin-bottom: 4px; flex-basis: 100%; text-transform: uppercase; letter-spacing: 0.5px; transition: color 0.3s ease;}
 
 /* Контейнер для фильтров с fieldset */
-.select-filters-container { display: flex; gap: 12px; flex-wrap: wrap; }
-.select-filters-container fieldset { border: 1px solid var(--border-color); border-radius: var(--radius); padding: 8px; margin: 0; flex: 1; min-width: 200px; background: var(--container-background-color); transition: border-color 0.3s ease, background-color 0.3s ease; }
+.select-filters-container { display: flex; gap: 12px; flex-wrap: nowrap !important; flex-direction: row !important; }
+.select-filters-container fieldset { border: 1px solid var(--border-color); border-radius: var(--radius); padding: 8px; margin: 0; flex: 1; min-width: 0 !important; background: var(--container-background-color); transition: border-color 0.3s ease, background-color 0.3s ease; }
 .select-filters-container legend { font-size: 0.75rem; color: var(--label-color); padding: 0 8px; text-transform: none; letter-spacing: 0.2px; font-weight: 400; font-style: italic; transition: color 0.3s ease; }
 
 select, input[type="text"] {
@@ -1031,11 +1042,27 @@ body[data-theme="light"] .repertoire-view-button.active {
 /* ============================================ */
 /* АДАПТИВНОСТЬ                                */
 /* ============================================ */
-@media (max-width: 768px) { 
-    /* Принудительно горизонтальное расположение на планшетах и смартфонах */
+
+/* Универсальное правило для всех мобильных устройств */
+@media only screen and (max-device-width: 1024px), 
+       only screen and (max-width: 1024px),
+       (orientation: portrait) {
     .select-filters-container { 
         flex-direction: row !important; 
         gap: 8px !important; 
+        flex-wrap: nowrap !important;
+    }
+    .select-filters-container fieldset { 
+        flex: 1 !important; 
+        min-width: 0 !important;
+    }
+}
+@media (max-width: 1024px) { 
+    /* Принудительно горизонтальное расположение на планшетах и смартфонах (включая большие экраны) */
+    .select-filters-container { 
+        flex-direction: row !important; 
+        gap: 8px !important; 
+        flex-wrap: nowrap !important;
     }
     .select-filters-container fieldset { 
         flex: 1 !important; 
