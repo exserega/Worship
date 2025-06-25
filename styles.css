@@ -227,7 +227,7 @@ body[data-theme="light"] button.icon-button.simple:active:not(:disabled) { backg
 #split-text-button { /* Кнопка Разделить текст в ОСНОВНОМ окне */ /* Она НЕ simple */ padding: 0 12px; height: 38px; font-size: 0.85rem; flex-shrink: 0; }
 #split-text-button i { margin-right: 6px; font-size: 0.9em; }
 .font-size-controls { margin-left: auto; display: flex; align-items: center; gap: 5px; }
-#zoom-in, #zoom-out { /* Наследует .icon-button и .icon-button.simple */ }
+/* #zoom-in, #zoom-out наследуют стили .icon-button и .icon-button.simple */
 
 /* Кнопки под песней */
 .control-buttons { display: flex; justify-content: center; gap: 12px; margin-top: 20px; flex-wrap: wrap; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); transition: border-color 0.3s ease;}
@@ -503,12 +503,7 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
     /* vertical-align: middle; */ /* Можно добавить для выравнивания иконки по центру текста, если нужно */
 }
 
-/* Стили для кнопки "Презентация" (если нужно ее отличить) */
-#setlists-panel #start-presentation-button {
-    /* Можно оставить базовый синий градиент или задать свой фон */
-    /* background: linear-gradient(145deg, var(--primary-color), var(--secondary-color)) !important; */
-    /* color: var(--button-text-color) !important; */
-}
+/* Стили для кнопки "Презентация" - использует базовые стили */
 
 /* Стили для кнопки "Удалить", чтобы выделить ее */
 #setlists-panel #delete-setlist-button {
@@ -725,8 +720,7 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
 
-.modal-button { /* Используем базовые стили кнопки, если подходят */ }
-.modal-button.primary { /* Уже должно быть стилизовано */ }
+/* .modal-button и .modal-button.primary используют базовые стили кнопок */
 .modal-button.secondary {
     background: var(--hover-color) !important; color: var(--text-color) !important;
     box-shadow: none !important;
@@ -897,13 +891,7 @@ body[data-theme="light"] .repertoire-view-button.active {
 
 /* Адаптивность */
 @media (max-width: 380px) {
-     .repertoire-view-controls {
-          /* Можно сделать кнопки во всю ширину, если нужно */
-          /* justify-content: stretch; */
-     }
-    .repertoire-view-button .button-text-rp {
-        /* display: none; */
-    }
+    /* .repertoire-view-controls и .repertoire-view-button .button-text-rp используют базовые стили */
     .repertoire-view-button {
          /* Настройки для мобильных */
           padding: 6px 8px; /* Уменьшить паддинг */
@@ -934,10 +922,10 @@ body[data-theme="light"] .repertoire-view-button.active {
     /* Ряд Тональность/Разделить/Масштаб */
     .control-group:has(#key-select) { min-height: 36px; gap: 5px; }
     #key-select { min-width: 55px; height: 36px; padding-right: 25px; padding-left: 5px; margin-right: 5px; background-position: right 5px center; background-size: 14px; text-align: left; box-sizing: border-box; }
-    #split-text-button.control-group-button { /* Основная кнопка на десктопе */ }
+    /* #split-text-button.control-group-button использует базовые стили на десктопе */
     /* Кнопка Разделить на мобильных (становится simple) */
     #split-text-button { width: 36px; height: 36px; padding: 0; margin-left: 5px; margin-right: 5px; display: inline-flex; align-items: center; justify-content: center; }
-    #split-text-button.icon-button.simple { /* Применяем стиль simple */ }
+    /* #split-text-button.icon-button.simple применяет стиль simple */
     #split-text-button > i { font-size: 0.9rem; margin: 0; }
     #split-text-button .button-text { display: none; }
 
