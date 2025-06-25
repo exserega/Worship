@@ -453,6 +453,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     ui.applyTheme(initialTheme);
     
     setupEventListeners();
+    ui.updateFontSize();
 
     try {
         await api.loadAllSongsFromFirestore();

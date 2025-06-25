@@ -17,7 +17,7 @@ export const structureMarkers = [
 
 // Музыкальные константы
 export const chords = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "H"];
-export const DEFAULT_FONT_SIZE = 10;
+export const DEFAULT_FONT_SIZE = 8;
 export const MIN_FONT_SIZE = 8;
 export const MAX_SHARED_SONGS = 8;
 
