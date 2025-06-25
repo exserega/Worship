@@ -179,6 +179,43 @@ async function handleRemoveSongFromSetlist(songId, songName) {
     }
 }
 
+async function handleAddToRepertoire() {
+    const vocalistId = state.currentVocalistId;
+    const songId = ui.songSelect.value;
+    const key = ui.keySelect.value;
+
+    if (!vocalistId) {
+        alert("Пожалуйста, сначала выберите вокалиста.");
+        return;
+    }
+    if (!songId) {
+        alert("Пожалуйста, сначала выберите песню.");
+        return;
+    }
+
+    const song = state.allSongs.find(s => s.id === songId);
+    if (!song) {
+        alert("Произошла ошибка: не удалось найти данные песни.");
+        return;
+    }
+
+    try {
+        const vocalistName = state.currentVocalistName || 'выбранного вокалиста';
+        const result = await api.addToRepertoire(vocalistId, song, key);
+
+        if (result.status === 'added') {
+            alert(`Песня "${song.name}" добавлена в репертуар для "${vocalistName}".`);
+        } else if (result.status === 'updated') {
+            alert(`Тональность песни "${song.name}" в репертуаре для "${vocalistName}" обновлена на ${key}.`);
+        } else if (result.status === 'exists') {
+            alert(`Песня "${song.name}" уже есть в репертуаре для "${vocalistName}" с той же тональностью.`);
+        }
+    } catch (error) {
+        console.error("Ошибка при добавлении в репертуар:", error);
+        alert("Не удалось добавить песню в репертуар.");
+    }
+}
+
 async function refreshSetlists() {
     try {
         const setlists = await api.loadSetlists();
@@ -295,6 +332,8 @@ function setupEventListeners() {
     });
 
     ui.addToSetlistButton.addEventListener('click', handleAddSongToSetlist);
+
+    ui.addToRepertoireButton.addEventListener('click', handleAddToRepertoire);
 
     // --- Метроном ---
     ui.metronomeButton.addEventListener('click', async () => {

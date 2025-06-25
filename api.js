@@ -82,15 +82,42 @@ function loadRepertoire(vocalistId, onRepertoireUpdate) {
     state.setCurrentRepertoireUnsubscribe(unsubscribe);
 }
 
-/** Добавление/Обновление песни в репертуаре вокалиста */
-async function addToRepertoire(vocalistId, songId, preferredKey) {
-    const repertoireDocId = songId; 
-    const dataToSave = {
-        preferredKey: preferredKey,
-        addedAt: new Date()
-    };
-    const docRef = doc(db, "vocalists", vocalistId, "repertoire", repertoireDocId);
-    await setDoc(docRef, dataToSave);
+/**
+ * Добавляет или обновляет песню в репертуаре вокалиста.
+ * Проверяет наличие по имени песни, чтобы избежать дубликатов.
+ * @param {string} vocalistId
+ * @param {object} song - Объект песни.
+ * @param {string} preferredKey - Выбранная тональность.
+ * @returns {Promise<{status: string, key: string}>}
+ */
+export async function addToRepertoire(vocalistId, song, preferredKey) {
+    const repertoireCol = collection(db, 'vocalists', vocalistId, 'repertoire');
+    const q = query(repertoireCol, where("name", "==", song.name));
+
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+        // Песня найдена, проверяем тональность
+        const repertoireDoc = querySnapshot.docs[0];
+        if (repertoireDoc.data().preferredKey !== preferredKey) {
+            // Обновляем тональность
+            await updateDoc(repertoireDoc.ref, { preferredKey: preferredKey });
+            return { status: 'updated', key: preferredKey };
+        } else {
+            return { status: 'exists', key: preferredKey };
+        }
+    } else {
+        // Песня не найдена, добавляем новую
+        // ID документа = ID песни для консистентности
+        const docRef = doc(db, 'vocalists', vocalistId, 'repertoire', song.id);
+        await setDoc(docRef, {
+            name: song.name,
+            sheet: song.sheet,
+            preferredKey: preferredKey,
+            addedAt: serverTimestamp()
+        });
+        return { status: 'added', key: preferredKey };
+    }
 }
 
 /** Удаление песни из репертуара вокалиста */
