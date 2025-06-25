@@ -75,7 +75,7 @@ body {
 /* --- Header --- */
 header {
     display: flex; justify-content: center; align-items: center;
-    position: relative; padding: 10px 20px; margin-bottom: 25px;
+    position: relative; padding: 8px 20px; margin-bottom: 15px;
 }
 h1 {
     text-align: center; color: var(--text-color); margin: 0;
@@ -208,17 +208,17 @@ body[data-theme="light"] .theme-icon.moon {
 
 
 /* --- Forms --- */
-.controls { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
+.controls { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
 .control-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .control-group label { font-size: 0.8rem; color: var(--label-color); margin-bottom: 4px; flex-basis: 100%; text-transform: uppercase; letter-spacing: 0.5px; transition: color 0.3s ease;}
 
 /* Контейнер для фильтров с fieldset */
-.select-filters-container { display: flex; gap: 15px; flex-wrap: wrap; }
-.select-filters-container fieldset { border: 1px solid var(--border-color); border-radius: var(--radius); padding: 12px; margin: 0; flex: 1; min-width: 200px; background: var(--container-background-color); transition: border-color 0.3s ease, background-color 0.3s ease; }
+.select-filters-container { display: flex; gap: 12px; flex-wrap: wrap; }
+.select-filters-container fieldset { border: 1px solid var(--border-color); border-radius: var(--radius); padding: 8px; margin: 0; flex: 1; min-width: 200px; background: var(--container-background-color); transition: border-color 0.3s ease, background-color 0.3s ease; }
 .select-filters-container legend { font-size: 0.75rem; color: var(--label-color); padding: 0 8px; text-transform: none; letter-spacing: 0.2px; font-weight: 400; font-style: italic; transition: color 0.3s ease; }
 
 select, input[type="text"] {
-    padding: 10px 14px; font-size: 0.95rem;
+    padding: 8px 12px; font-size: 0.95rem;
     border: 1px solid var(--border-color);
     border-radius: var(--radius); transition: all 0.2s ease; outline: none;
     appearance: none; background: var(--input-bg-color); color: var(--text-color);
@@ -227,8 +227,8 @@ select, input[type="text"] {
 select {
     /* Стрелка для темной темы (#e5e7eb = %23e5e7eb) */
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23e5e7eb'%3E%3Cpath fill-rule='evenodd' d='M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z' clip-rule='evenodd' /%3E%3C/svg%3E");
-    background-repeat: no-repeat; background-position: right 10px center;
-    background-size: 16px; padding-right: 35px; cursor: pointer;
+    background-repeat: no-repeat; background-position: right 8px center;
+    background-size: 14px; padding-right: 30px; cursor: pointer;
 }
 /* Стрелка select в светлой теме (#475569 = %23475569) */
 body[data-theme="light"] select {
@@ -329,7 +329,7 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
 
 
 /* --- Отображение Песни --- */
-#song-content { background: var(--container-background-color); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); margin-top: 25px; position: relative; overflow: hidden; border: 1px solid var(--border-color); transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
+#song-content { background: var(--container-background-color); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); margin-top: 15px; position: relative; overflow: hidden; border: 1px solid var(--border-color); transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
 #song-content pre { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; white-space: pre-wrap; word-wrap: break-word; line-height: 1.5; font-size: var(--lyrics-font-size, 1rem); color: var(--text-color); margin: 0; padding-top: 15px; /* Добавим отступ сверху под кнопку копирования */ overflow-x: auto; transition: color 0.3s ease; }
 #song-content .chord {
     font-weight: 700 !important;
@@ -1031,12 +1031,12 @@ body[data-theme="light"] .repertoire-view-button.active {
         margin-bottom: 15px; /* Слегка уменьшили */
     }
 
-    select, input { font-size: 14px; padding: 9px 12px; }
+    select, input { font-size: 14px; padding: 7px 10px; }
     button { font-size: 14px; }
     
     /* Адаптивность для select-filters-container */
-    .select-filters-container { flex-direction: column; gap: 10px; }
-    .select-filters-container fieldset { min-width: auto; padding: 10px; }
+    .select-filters-container { flex-direction: column; gap: 8px; }
+    .select-filters-container fieldset { min-width: auto; padding: 8px; }
     .select-filters-container legend { font-size: 0.75rem; }
     #theme-toggle-button { right: 10px; }
 
