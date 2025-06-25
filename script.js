@@ -11,15 +11,19 @@ import {
 } from './constants.js';
 import * as state from './state.js';
 import {
-    collection, addDoc, query,
+    getFirestore, collection, addDoc, query,
     onSnapshot, updateDoc, deleteDoc, setDoc, doc,
-    orderBy, getDocs, where
+    orderBy, getDocs, where, getDoc, runTransaction
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 // --- DERIVED CONSTANTS ---
 // Добавим варианты с двоеточием в конце
 const structureMarkersWithColon = structureMarkers.map(m => m + ':');
 const allMarkers = [...structureMarkers, ...structureMarkersWithColon];
+
+// --- REGEX CONSTANTS (РЕФАКТОРИНГ) ---
+// Регулярное выражение для аккордов вынесено в константу для избежания дублирования
+const chordRegex = /([A-H][#b]?(?:maj7|maj9|m7|m9|m11|7sus4|sus4|sus2|add9|dim7|dim|aug7|aug|7|m|6|9|11|13|sus)?(?:\s*\/\s*[A-H][#b]?)?)/g;
 
 // --- FIREBASE INITIALIZATION ---
 const setlistsCollection = collection(db, "setlists");
@@ -630,18 +634,21 @@ async function addToRepertoire() {
          alert("Пожалуйста, сначала выберите песню для добавления в репертуар."); return;
     }
 
-    const songName = songData.name;
+    const songName = songData.id; // Используем ID как имя для логов
     const preferredKey = keySelect.value;
     console.log(`Добавляем в репертуар для ${state.currentVocalistName || state.currentVocalistId}: Песня "${songName}", Тональность: ${preferredKey}`);
 
     // Используем ID песни из Firestore как ID документа в подколлекции
     const repertoireDocId = songId; 
+
+    // *** НАЧАЛО ИЗМЕНЕНИЯ: Сохраняем только тональность и ID песни ***
+    // Удаляем дублирование полей name и sheet. 
+    // songId теперь используется как ID документа, так что его тоже не нужно хранить в полях.
     const dataToSave = {
-        songId: songId, // Сохраняем ID для связи
-        sheet: songData.sheet,
-        name: songName,
-        preferredKey: preferredKey
+        preferredKey: preferredKey,
+        addedAt: new Date() // Полезно для сортировки или отладки
     };
+    // *** КОНЕЦ ИЗМЕНЕНИЯ ***
     console.log("Данные для сохранения:", dataToSave);
 
     try {
@@ -995,11 +1002,9 @@ async function addToCurrentSetlist() {
         : 0;
     console.log("Следующий порядок (order):", nextOrder);
 
-    // 4. Данные для сохранения
+    // 4. Данные для сохранения (ОБНОВЛЕНО)
     const songEntryData = {
-        songId: songId, // ID из основной коллекции songs
-        sheet: songData.sheet,
-        name: songName,
+        songId: songId, // ID из основной коллекции songs (оставляем для проверки дубликатов)
         preferredKey: preferredKey,
         order: nextOrder
     };
@@ -1332,12 +1337,7 @@ function transposeChord(chord, transposition) {
 function transposeLyrics(lyrics, transposition) {
     if (transposition === 0 || !lyrics) return lyrics;
 
-    // Улучшенное регулярное выражение:
-    // - Учитывает необязательные пробелы вокруг /
-    // - Обрабатывает b (бемоль) как часть ноты
-    // - Более точно определяет границы аккорда
-    const chordRegex = /([A-H][#b]?(?:maj7|maj9|m7|m9|m11|7sus4|sus4|sus2|add9|dim7|dim|aug7|aug|7|m|6|9|11|13|sus)?(?:\s*\/\s*[A-H][#b]?)?)/g;
-
+    // Используем ГЛОБАЛЬНОЕ регулярное выражение
     try {
         return lyrics.replace(chordRegex, (match) => {
             // Убираем пробелы вокруг слэша перед транспонированием, если они есть
@@ -1362,8 +1362,7 @@ function processLyrics(lyrics) {
 /** Выделение аккордов тегами span для стилизации */
 function highlightChords(lyrics) {
     if (!lyrics) return '';
-    // Используем то же улучшенное регулярное выражение, что и в transposeLyrics
-    const chordRegex = /([A-H][#b]?(?:maj7|maj9|m7|m9|m11|7sus4|sus4|sus2|add9|dim7|dim|aug7|aug|7|m|6|9|11|13|sus)?(?:\s*\/\s*[A-H][#b]?)?)/g;
+    // Используем ГЛОБАЛЬНОЕ регулярное выражение
     try {
         // Заменяем найденные аккорды на <span class="chord">аккорд</span>
         return lyrics.replace(chordRegex, '<span class="chord">$1</span>');
@@ -1371,6 +1370,24 @@ function highlightChords(lyrics) {
         console.error("Ошибка при выделении аккордов:", error, "Текст:", lyrics.substring(0, 100) + "...");
         return lyrics; // Возвращаем оригинальный текст при ошибке
     }
+}
+
+/**
+ * Комплексная обработка текста песни: обработка пробелов, транспонирование и подсветка.
+ * @param {string} originalLyrics - Исходный текст песни с аккордами.
+ * @param {string} originalKey - Исходная тональность.
+ * @param {string} targetKey - Целевая тональность.
+ * @returns {string} - Готовый для рендеринга HTML-текст песни.
+ */
+function getRenderedSongText(originalLyrics, originalKey, targetKey) {
+    if (!originalLyrics) return '';
+
+        // --- ОБРАБОТКА ТЕКСТА ПЕСНИ (РЕФАКТОРИНГ) ---
+    // Вся логика обработки вынесена в отдельную функцию getRenderedSongText
+    const finalHighlightedLyrics = getRenderedSongText(originalLyrics, originalKeyFromSheet, currentSelectedKey);
+    // --- КОНЕЦ ОБРАБОТКИ ТЕКСТА ---
+
+    return finalHighlightedLyrics;
 }
 
 /** Поиск песен */
@@ -1504,14 +1521,9 @@ async function displayCurrentPresentationSong() {
         const targetKey = songRef.preferredKey || originalKey;
         const songNote = songRef.notes || '';
 
-        // --- ИСПРАВЛЕНИЕ: Добавлен вызов highlightStructure ---
-        const transposition = getTransposition(originalKey, targetKey);
-        const transposedLyrics = transposeLyrics(originalLyrics, transposition);
-        // 1. Выделяем структуру
-        const structureHighlightedLyrics = highlightStructure(transposedLyrics);
-        // 2. Выделяем аккорды
-        const finalHighlightedLyrics = highlightChords(structureHighlightedLyrics);
-        // --- КОНЕЦ ИСПРАВЛЕНИЯ ---
+        // --- РЕФАКТОРИНГ: Используем единую функцию для обработки текста ---
+        const finalHighlightedLyrics = getRenderedSongText(originalLyrics, originalKey, targetKey);
+        // --- КОНЕЦ РЕФАКТОРИНГА ---
 
         // Формирование HTML
         const songHtml = `
@@ -1853,22 +1865,10 @@ function updateTransposedLyrics() {
         return;
     }
 
-    // --- НАЧАЛО ИСПРАВЛЕНИЯ ---
-    // 0. Обрабатываем пробелы ПЕРЕД транспонированием
-    const processedLyrics = processLyrics(originalLyrics);
-
-    // 1. Вычисляем транспозицию
-    const transposition = getTransposition(originalKey, newKey);
-
-    // 2. Транспонируем обработанный текст (processedLyrics)
-    const transposedLyrics = transposeLyrics(processedLyrics, transposition);
-
-    // 3. Выделяем структуру
-    const structureHighlightedLyrics = highlightStructure(transposedLyrics);
-
-     // 4. Выделяем аккорды
-    const finalHighlightedLyrics = highlightChords(structureHighlightedLyrics);
-    // --- КОНЕЦ ИСПРАВЛЕНИЯ ---
+    // --- НАЧАЛО РЕФАКТОРИНГА ---
+    // Используем единую функцию для получения готового HTML
+    const finalHighlightedLyrics = getRenderedSongText(originalLyrics, originalKey, newKey);
+    // --- КОНЕЦ РЕФАКТОРИНГА ---
 
 
     // Обновляем текст в <pre>
@@ -1926,12 +1926,10 @@ function loadSheetSongs() {
 
 /** Обновление размера шрифта текста песни */
 function updateFontSize() {
-    const lyricsElement = songContent?.querySelector('pre');
-    if (lyricsElement) {
-        lyricsElement.style.fontSize = `${state.currentFontSize}px`;
-        // Можно сохранить в localStorage, если нужно запоминать размер шрифта
-        // localStorage.setItem('preferredFontSize', state.currentFontSize);
-    }
+    const currentSize = parseInt(document.documentElement.style.getPropertyValue('--lyrics-font-size') || '16', 10);
+    document.documentElement.style.setProperty('--lyrics-font-size', `${currentSize}px`);
+    if(lyricsDisplay) lyricsDisplay.style.fontSize = `${currentSize}px`;
+    if(presentationLyrics) presentationLyrics.style.fontSize = `${currentSize}px`; // Для презентации
 }
 
 /** Сброс размера шрифта к значению по умолчанию */
@@ -1941,131 +1939,116 @@ function updateFontSize() {
 //     // localStorage.removeItem('preferredFontSize'); // Удалить из localStorage
 // }
 
-/** Загрузка избранных песен из localStorage */
-/** Загрузка избранных песен из localStorage */
-function loadFavorites(container = favoritesList) {
-    if (!container) {
-        console.error("Контейнер для избранных песен не найден."); return;
-    }
-    container.innerHTML = ''; // Очищаем
+/** Загрузка избранных песен ("Мой список") из Firestore (РЕФАКТОРИНГ: async/await, исправлена логика) */
+async function loadFavorites(container = favoritesList) {
+    if (!container) return;
+    container.innerHTML = '<div class="empty-message">Загрузка...</div>';
+    
+    const favoritesDocRef = doc(db, "favorites", "main_list");
 
     try {
-        state.favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    } catch (e) {
-        console.error("Ошибка парсинга избранного из localStorage:", e);
-        state.favorites = [];
-        localStorage.removeItem('favorites');
-    }
+        const docSnap = await getDoc(favoritesDocRef);
 
-    if (state.favorites.length === 0) {
-        container.innerHTML = '<div class="empty-message">Нет избранных песен</div>';
-        return;
-    }
+        if (docSnap.exists() && docSnap.data().songs?.length > 0) {
+            const favoriteEntries = docSnap.data().songs;
+            
+            // Находим полные данные о песнях в state.allSongs
+            const favoriteSongs = favoriteEntries.map(fav => {
+                const songData = state.allSongs.find(s => s.id === fav.songId);
+                if (!songData) {
+                    console.warn(`Песня с ID ${fav.songId} из избранного не найдена в общем списке песен.`);
+                    return null;
+                }
+                // Возвращаем объект песни, дополненный выбранной тональностью из избранного
+                return { ...songData, preferredKey: fav.preferredKey };
+            }).filter(Boolean); // Отфильтровываем не найденные песни
 
-    // Сортировка избранного по имени песни
-    state.favorites.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-
-    state.favorites.forEach(fav => {
-        // Проверяем валидность записи в избранном
-        if (!fav || !fav.name || !fav.songId || !fav.key) {
-            console.warn("Пропуск некорректной записи в избранном:", fav);
-            return; // Пропускаем эту запись
-        }
-
-        const favoriteItem = document.createElement('div');
-        favoriteItem.className = 'favorite-item';
-
-        const songInfo = document.createElement('span');
-        songInfo.className = 'song-name';
-        songInfo.textContent = `${fav.name} — ${fav.key}`;
-        favoriteItem.appendChild(songInfo);
-
-        const removeBtn = document.createElement('button');
-        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
-        removeBtn.className = 'remove-button';
-        removeBtn.title = 'Удалить из Моего списка';
-        removeBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            removeFromFavorites(fav);
-        });
-        favoriteItem.appendChild(removeBtn);
-
-        // Клик по элементу избранного
-        favoriteItem.addEventListener('click', async () => {
-            console.log("Клик по избранной песне:", fav);
-
-            const songDataFromCache = state.allSongs.find(s => s.id === fav.songId);
-            if (!songDataFromCache) {
-                alert(`Данные для песни "${fav.name}" не найдены в кэше. Возможно, она была удалена. Удалите ее из избранного.`);
-                return;
+            state.setFavorites(favoriteSongs);
+            
+            container.innerHTML = '';
+            if (favoriteSongs.length === 0) {
+                 container.innerHTML = '<div class="empty-message">В "Моем списке" пока нет песен.</div>';
+                 return;
             }
+            
+            // Сортируем по имени песни
+            favoriteSongs.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
-            if(sheetSelect && songDataFromCache.sheet) sheetSelect.value = songDataFromCache.sheet;
-            loadSheetSongs(); // Перезагружаем список песен листа
-            if(songSelect) songSelect.value = fav.songId; // Выбираем песню
-            // Отображаем детали с ключом из избранного
-            displaySongDetails(songDataFromCache, fav.key);
+            favoriteSongs.forEach(favSong => {
+                const listItem = document.createElement('div');
+                listItem.className = 'favorite-item';
+                
+                const songInfo = document.createElement('span');
+                // Отображаем имя песни, а не ID
+                songInfo.textContent = `${favSong.name} (${favSong.preferredKey})`;
+                listItem.appendChild(songInfo);
 
-            // !!! ЗАКРЫВАЕМ ПАНЕЛИ ПОСЛЕ КЛИКА !!!
-            closeAllSidePanels();
-        }); // Конец обработчика клика по favoriteItem
+                listItem.onclick = () => {
+                     // favSong уже содержит все данные песни
+                     displaySongDetails(favSong, favSong.preferredKey);
+                     closeAllSidePanels();
+                };
 
-        container.appendChild(favoriteItem);
-    }); // Конец forEach
-} // Конец loadFavorites
+                const removeBtn = document.createElement('button');
+                removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                removeBtn.className = 'remove-button';
+                removeBtn.title = 'Удалить из "Моего списка"';
+                removeBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    removeFromFavorites(favSong.id);
+                };
+                listItem.appendChild(removeBtn);
+                
+                container.appendChild(listItem);
+            });
+
+        } else {
+            container.innerHTML = '<div class="empty-message">В "Моем списке" пока нет песен.</div>';
+            state.setFavorites([]);
+        }
+    } catch (error) {
+        console.error("Ошибка загрузки избранного из Firestore:", error);
+        container.innerHTML = '<div class="empty-message">Ошибка загрузки.</div>';
+    }
+}
 
 /** Удаление песни из избранного */
-function removeFromFavorites(favToRemove) {
-    console.log("Попытка удаления из избранного:", favToRemove);
-    let found = false;
-    // Фильтруем массив, оставляя все, КРОМЕ удаляемого элемента
-    state.favorites = state.favorites.filter(item => {
-        const match = item.songId === favToRemove.songId;
-        if (match) found = true;
-        return !match; // Оставляем элемент, если он НЕ совпадает
-    });
+async function removeFromFavorites(songIdToRemove) {
+    if (!confirm(`Удалить песню из 'Моего списка'?`)) return;
 
-    if (found) {
-        try {
-            localStorage.setItem('favorites', JSON.stringify(state.favorites));
-            console.log("Элемент удален, localStorage обновлен.");
-             // Обновляем отображение списка избранного, если панель открыта
-             if (favoritesPanel?.classList.contains('open') && favoritesList) {
-                  loadFavorites(favoritesList);
-             } else {
-                  // Если панель закрыта, просто уменьшаем счетчик или удаляем элемент из DOM,
-                  // но проще перерисовать при следующем открытии.
-             }
-            alert(`Песня "${favToRemove.name}" удалена из 'Моего списка'.`);
-        } catch (e) {
-            console.error("Ошибка сохранения избранного в localStorage после удаления:", e);
-            alert("Ошибка при сохранении изменений в избранном.");
-            // Возможно, стоит перезагрузить 'favorites' из localStorage, чтобы отменить изменения в памяти
-            state.favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-        }
-    } else {
-        console.warn("Не удалось найти песню для удаления в массиве favorites:", favToRemove);
-        alert("Не удалось удалить песню из 'Моего списка'. Возможно, она уже была удалена.");
-        // На всякий случай обновим UI, если вдруг была рассинхронизация
-        if (favoritesPanel?.classList.contains('open') && favoritesList) {
-             loadFavorites(favoritesList);
-        }
+    const favoritesDocRef = doc(db, "favorites", "main_list");
+
+    try {
+        await runTransaction(db, async (transaction) => {
+            const docSnap = await transaction.get(favoritesDocRef);
+            if (!docSnap.exists()) return;
+
+            const existingSongs = docSnap.data().songs || [];
+            const updatedSongs = existingSongs.filter(song => song.songId !== songIdToRemove);
+            
+            transaction.set(favoritesDocRef, { songs: updatedSongs }, { merge: true });
+        });
+        
+        console.log(`Песня ${songIdToRemove} удалена из избранного.`);
+        await loadFavorites(); // Перезагружаем список
+        
+    } catch (error) {
+        console.error("Ошибка при удалении из избранного:", error);
+        alert("Не удалось удалить песню из избранного.");
     }
 }
 
 /** Обновление отображения и логики BPM */
 function updateBPM(newBPM) {
-    if (!bpmDisplay) return;
-    const bpmValue = parseInt(newBPM, 10);
-    const displayValue = (!isNaN(bpmValue) && bpmValue > 0) ? bpmValue : 'N/A';
-    bpmDisplay.textContent = displayValue;
-
+    if (bpmDisplay) {
+        bpmDisplay.textContent = newBPM;
+    }
     if (isMetronomeActive) {
-        if (displayValue !== 'N/A') {
+        if (newBPM !== 'N/A') {
             // Перезапуск метронома с новым BPM
-            console.log("Metronome: Restarting with new BPM:", bpmValue);
+            console.log("Metronome: Restarting with new BPM:", newBPM);
             toggleMetronome(0); // Остановить
-            toggleMetronome(bpmValue); // Запустить с новым BPM
+            toggleMetronome(newBPM); // Запустить с новым BPM
         } else {
              // Останавливаем, если BPM стал некорректным
              console.log("Metronome: Stopping due to invalid BPM.");
@@ -2605,65 +2588,11 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-    // Добавление в избранное
+    // --- ИСПРАВЛЕНО: Добавление в избранное ("Мой список") теперь использует addToFavorites ---
     if(favoriteButton) {
-        favoriteButton.addEventListener('click', () => {
-            if (!songSelect || !keySelect) return;
-            const songId = songSelect.value;
-            const selectedKey = keySelect.value;
-
-            if (!songId) {
-                alert("Пожалуйста, сначала выберите песню."); return;
-            }
-            const songData = state.allSongs.find(s => s.id === songId);
-            if (!songData) {
-                alert("Не найдены данные для выбранной песни."); return;
-            }
-
-            const song = {
-                songId: songId, // Сохраняем ID из Firestore
-                name: songData.name,
-                key: selectedKey
-            };
-
-            // Проверка на существование по songId
-            const existingFavIndex = state.favorites.findIndex(f => f.songId === song.songId);
-
-            if (existingFavIndex === -1) {
-                state.favorites.push(song);
-                try {
-                    localStorage.setItem('favorites', JSON.stringify(state.favorites));
-                    if (myListPanel?.classList.contains('open') && favoritesList) {
-                        loadFavorites(favoritesList);
-                    }
-                    alert(`"${song.name}" (${song.key}) добавлена в 'Мой список'.`);
-                } catch (e) {
-                    console.error("Ошибка сохранения избранного:", e);
-                    alert("Не удалось сохранить песню в избранное.");
-                    state.favorites.pop();
-                }
-            } else {
-                // Песня уже есть
-                if (state.favorites[existingFavIndex].key !== song.key) {
-                    if (confirm(`Песня "${song.name}" уже есть в 'Моем списке' с тональностью ${state.favorites[existingFavIndex].key}. Обновить на ${song.key}?`)) {
-                        state.favorites[existingFavIndex].key = song.key; // Обновляем ключ
-                        try {
-                            localStorage.setItem('favorites', JSON.stringify(state.favorites));
-                            if (myListPanel?.classList.contains('open') && favoritesList) {
-                                loadFavorites(favoritesList);
-                            }
-                            alert(`Тональность песни "${song.name}" в 'Моем списке' обновлена на ${song.key}.`);
-                        } catch (e) {
-                            console.error("Ошибка обновления ключа в избранном:", e);
-                            alert("Не удалось обновить тональность в избранном.");
-                            // Можно вернуть старый ключ при ошибке
-                        }
-                    }
-                } else {
-                    alert(`Песня "${song.name}" уже есть в 'Моем списке'.`);
-                }
-            }
-        });
+        favoriteButton.addEventListener('click', addToFavorites);
+    } else {
+        console.warn("Кнопка #favorite-button не найдена.");
     }
 
     // Добавление в СЕТ-ЛИСТ
@@ -2969,3 +2898,78 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     console.log("Инициализация приложения завершена.");
 }); // <--- Конец DOMContentLoaded listener
+
+/**
+ * Добавляет или обновляет песню в "Моем списке" в Firestore.
+ * (РЕФАКТОРИНГ: улучшены сообщения для пользователя)
+ */
+async function addToFavorites() {
+    const songId = songSelect.value;
+    const preferredKey = keySelect.value;
+
+    if (!songId) {
+        alert("Пожалуйста, выберите песню.");
+        return;
+    }
+    
+    // Получаем полные данные о песне для отображения имени в сообщениях
+    const songData = state.allSongs.find(s => s.id === songId);
+    if (!songData) {
+        alert("Не удалось найти данные для выбранной песни.");
+        return;
+    }
+    const songName = songData.name || songId; // Используем имя, если оно есть
+
+    const favoritesDocRef = doc(db, "favorites", "main_list");
+
+    try {
+        await runTransaction(db, async (transaction) => {
+            const docSnap = await transaction.get(favoritesDocRef);
+            const existingSongs = docSnap.exists() ? (docSnap.data().songs || []) : [];
+            
+            const existingSongIndex = existingSongs.findIndex(s => s.songId === songId);
+
+            if (existingSongIndex > -1) {
+                // Песня уже есть в списке
+                const existingEntry = existingSongs[existingSongIndex];
+                if (existingEntry.preferredKey !== preferredKey) {
+                    //...но с другой тональностью
+                    if (confirm(`Песня "${songName}" уже есть в 'Моем списке' с тональностью ${existingEntry.preferredKey}. Обновить на ${preferredKey}?`)) {
+                        existingSongs[existingSongIndex].preferredKey = preferredKey;
+                    } else {
+                        // Пользователь отменил обновление, прерываем транзакцию
+                        throw new Error("Update cancelled by user."); 
+                    }
+                } else {
+                    //...и с той же тональностью
+                    alert(`Песня "${songName}" уже есть в 'Моем списке' с той же тональностью.`);
+                    throw new Error("Song already exists with the same key.");
+                }
+            } else {
+                // Песни еще нет, добавляем
+                existingSongs.push({ songId, preferredKey });
+                alert(`Песня "${songName}" (${preferredKey}) добавлена в 'Мой список'.`);
+            }
+            
+            // Сохраняем обновленный массив
+            transaction.set(favoritesDocRef, { songs: existingSongs }, { merge: true });
+        });
+        
+        // Перезагружаем список в панели, если она открыта
+        if (myListPanel?.classList.contains('open')) {
+            await loadFavorites();
+        }
+
+    } catch (error) {
+        if (error.message.includes("cancelled by user") || error.message.includes("already exists")) {
+            // Это не ошибка, а ожидаемое поведение, просто логируем
+            console.log(`addToFavorites transaction stopped: ${error.message}`);
+        } else {
+            console.error("Ошибка при добавлении в избранное:", error);
+            alert("Произошла ошибка при добавлении песни в 'Мой список'.");
+        }
+    }
+}
+
+
+   
