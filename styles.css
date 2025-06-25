@@ -148,14 +148,14 @@ body[data-theme="light"] .theme-toggle-slider {
     transition: opacity 0.3s ease;
 }
 
-.theme-icon.sun {
+.theme-icon.moon {
     left: 8px;
-    color: #fbbf24;
+    color: #60a5fa;
 }
 
-.theme-icon.moon {
+.theme-icon.sun {
     right: 8px;
-    color: #60a5fa;
+    color: #fbbf24;
 }
 
 body[data-theme="dark"] .theme-icon.sun {
