@@ -222,7 +222,7 @@ async function saveNoteForSongInSetlist(setlistId, songDocId, newNoteText) {
  * @param {string} preferredKey
  * @returns {Promise<{status: string, existingKey?: string, message?: string}>}
  */
-export async function addSongToSetlist(setlistId, songId, preferredKey) {
+async function addSongToSetlist(setlistId, songId, preferredKey) {
     const setlistRef = doc(db, "worship_setlists", setlistId);
     let result = {};
     await runTransaction(db, async (transaction) => {
