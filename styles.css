@@ -1233,14 +1233,16 @@ body[data-theme="light"] .repertoire-view-button.active {
 
 /* КРИТИЧЕСКИЕ ограничения для ОЧЕНЬ маленьких экранов */
 @media (max-width: 320px) {
-    /* УЛЬТРА-СИЛЬНАЯ защита от фоновых артефактов */
+    /* ПРОСТОЕ решение фона для очень маленьких экранов */
     html, body {
         background: var(--background-color) !important;
-        background-image: none !important;
-        background-attachment: scroll !important;
-        background-repeat: no-repeat !important;
-        background-position: initial !important;
-        background-size: initial !important;
+        background-color: var(--background-color) !important;
+    }
+    
+    html[data-theme="light"], 
+    body[data-theme="light"] {
+        background: var(--background-color) !important;
+        background-color: var(--background-color) !important;
     }
     
     .side-panel { 
@@ -1268,6 +1270,18 @@ body[data-theme="light"] .repertoire-view-button.active {
 
 /* Универсальные стили для планшетов и мобильных */
 @media (max-width: 1024px) { 
+    /* Простое решение фона для планшетов */
+    html, body {
+        background: var(--background-color) !important;
+        background-color: var(--background-color) !important;
+    }
+    
+    html[data-theme="light"], 
+    body[data-theme="light"] {
+        background: var(--background-color) !important;
+        background-color: var(--background-color) !important;
+    }
+    
     .select-filters-container { 
         flex-direction: row !important; 
         gap: 8px !important; 
@@ -1313,11 +1327,22 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
 
     
-    /* УМЕРЕННОЕ устранение фоновых артефактов только для body и html */
-    body, html {
-        background-image: none !important;
-        background-attachment: scroll !important;
-        backdrop-filter: none !important;
+    /* ПРОСТОЕ И НАДЕЖНОЕ решение - переопределяем фон для мобильных */
+    html {
+        background: var(--background-color) !important;
+        background-color: var(--background-color) !important;
+    }
+    
+    body {
+        background: var(--background-color) !important;
+        background-color: var(--background-color) !important;
+    }
+    
+    /* Для светлой темы на мобильных */
+    html[data-theme="light"], 
+    body[data-theme="light"] {
+        background: var(--background-color) !important;
+        background-color: var(--background-color) !important;
     }
     
     /* ПРИНУДИТЕЛЬНОЕ ОГРАНИЧЕНИЕ для всех fixed элементов */
