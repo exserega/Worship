@@ -94,9 +94,10 @@ body {
 }
 .container {
     max-width: 600px; margin: 15px auto; padding: 12px; /* Уменьшили margin с 25px до 15px, padding с 20px до 12px */
-    box-shadow: var(--shadow); border-radius: var(--radius);
+    box-shadow: none; border-radius: var(--radius);
     background: var(--container-background-color); position: relative;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    transition: background-color 0.3s ease;
+    border: 1px solid var(--border-color); /* Добавляем простую границу вместо тени */
 }
 
 /* --- Header --- */
@@ -346,7 +347,7 @@ input:focus, select:focus {
 #search-results:not(:empty) {
     border: 1px solid var(--border-color); 
     border-top: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: none;
 }
 #search-results::-webkit-scrollbar { width: 6px; }
 #search-results::-webkit-scrollbar-track { background: var(--input-bg-color); border-radius: 3px;}
@@ -458,12 +459,12 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
     background: var(--container-background-color); 
     padding: 10px 12px 15px 12px; /* Уменьшили отступы с 15px 20px 20px 20px */
     border-radius: var(--radius); 
-    box-shadow: var(--shadow); 
+    box-shadow: none; 
     margin-top: 8px; /* Уменьшили с 12px */
     position: relative; 
     overflow: hidden; 
     border: 1px solid var(--border-color); 
-    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
     /* Убираем лишние margin у fieldset */
     margin-left: 0;
     margin-right: 0;
@@ -603,7 +604,7 @@ body[data-theme="light"] .presentation-control-btn:hover { background-color: rgb
 body[data-theme="light"] .presentation-close-btn:active,
 body[data-theme="light"] .presentation-control-btn:active { background-color: rgba(30, 30, 30, 0.9); }
 /* Нижняя панель управления */
-.presentation-controls { position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(20, 20, 20, 0.9); backdrop-filter: blur(8px); padding: 8px 15px; box-sizing: border-box; display: flex; justify-content: space-between; align-items: center; z-index: 2002; border-top: 1px solid #444; opacity: 1; transition: opacity 0.5s ease-in-out; pointer-events: auto; }
+.presentation-controls { position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(20, 20, 20, 0.9); backdrop-filter: none; padding: 8px 15px; box-sizing: border-box; display: flex; justify-content: space-between; align-items: center; z-index: 2002; border-top: 1px solid #444; opacity: 1; transition: opacity 0.5s ease-in-out; pointer-events: auto; }
 .presentation-controls.controls-hidden { opacity: 0; pointer-events: none; }
 .presentation-nav-btn { background: none; border: none; color: #f0f0f0; font-size: 1.8rem; padding: 5px 15px; cursor: pointer; transition: color 0.2s ease; line-height: 1; border-radius: 4px; }
 .presentation-nav-btn:hover:not(:disabled) { color: var(--accent-color); }
@@ -634,7 +635,7 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
     
     /* ОФОРМЛЕНИЕ */
     background-color: var(--container-background-color);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    box-shadow: none;
     border: 1px solid var(--border-color);
     
     /* АНИМАЦИЯ */
@@ -918,10 +919,10 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
     position: fixed; bottom: 0; left: 0; width: 100%; height: 60px;
     background-color: var(--container-background-color);
     border-top: 1px solid var(--border-color);
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: none;
     display: flex; justify-content: space-around; align-items: stretch;
     z-index: 1000; padding: 0; box-sizing: border-box;
-    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 .mobile-nav-button {
     background: none; border: none; box-shadow: none; padding: 5px; margin: 0;
@@ -965,12 +966,12 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 
 
 /* --- Loading Indicator --- */
-#loading-indicator { display: none; position: fixed; top: 15px; left: 50%; transform: translateX(-50%); background-color: rgba(40, 40, 40, 0.9); color: white; padding: 8px 18px; border-radius: var(--radius); z-index: 1002; font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+#loading-indicator { display: none; position: fixed; top: 15px; left: 50%; transform: translateX(-50%); background-color: rgba(40, 40, 40, 0.9); color: white; padding: 8px 18px; border-radius: var(--radius); z-index: 1002; font-size: 0.9rem; box-shadow: none; border: 1px solid var(--border-color); }
 
 /* --- Стили для модального окна --- */
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px);
+    background-color: rgba(0, 0, 0, 0.6); backdrop-filter: none;
     display: none; /* Изначально скрыто */
     justify-content: center; align-items: center;
     z-index: 2500; /* Выше чем боковые панели и презентация */
@@ -984,9 +985,10 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 .modal-content {
     background-color: var(--container-background-color); color: var(--text-color);
     padding: 25px; border-radius: var(--radius);
-    box-shadow: var(--shadow); min-width: 300px; max-width: 90%; width: 500px;
+    box-shadow: none; min-width: 300px; max-width: 90%; width: 500px;
     position: relative; transform: scale(0.9);
     transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    border: 2px solid var(--border-color); /* Добавляем границу вместо тени */
 }
 .modal-overlay.visible .modal-content { transform: scale(1); }
 
@@ -1583,11 +1585,11 @@ body[data-theme="light"] .repertoire-view-button.active {
         /* ВСЕ ОСТАЛЬНЫЕ СВОЙСТВА ОБЯЗАТЕЛЬНО НАСЛЕДУЕМ */
         background: var(--container-background-color); 
         border-radius: var(--radius); 
-        box-shadow: var(--shadow); 
+        box-shadow: none; 
         position: relative; 
         overflow: hidden; 
         border: 1px solid var(--border-color); 
-        transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
         margin-left: 0;
         margin-right: 0;
     }
