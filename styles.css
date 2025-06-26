@@ -223,14 +223,14 @@ body[data-theme="light"] .theme-icon.moon {
     min-width: 0; 
     border: 1px solid var(--border-color); 
     border-radius: var(--radius); 
-    padding: 2px 8px 12px 8px; /* Минимальный отступ сверху, больший снизу */
+    padding: 4px 8px 12px 8px; /* Меньший отступ сверху, больший снизу для смещения центра вверх */
     margin: 0; 
     background: transparent; 
     transition: border-color 0.3s ease; 
     height: 46px; /* Высота остается той же */
     box-sizing: border-box;
     display: flex;
-    align-items: flex-start; /* Прижимаем селект к верху, ближе к legend */
+    align-items: center; /* Возвращаем центрирование, но с асимметричным padding */
 }
 .filter-group legend { 
     font-size: 0.7rem; 
@@ -258,7 +258,6 @@ select, input[type="text"] {
     border: none;
     background: var(--input-bg-color);
     font-size: 0.8rem;
-    margin-top: 3px; /* Небольшой отступ от legend для визуального комфорта */
 }
 select {
     /* Стрелка для темной темы (#e5e7eb = %23e5e7eb) */
@@ -1128,9 +1127,9 @@ body[data-theme="light"] .repertoire-view-button.active {
             flex: 1; 
             min-width: 0;
             height: 40px;
-            padding: 2px 4px 10px 4px; /* Минимальный отступ сверху, больший снизу */
+            padding: 3px 4px 9px 4px; /* Меньший отступ сверху, больший снизу для смещения центра вверх */
             display: flex;
-            align-items: flex-start; /* Прижимаем к верху */
+            align-items: center; /* Возвращаем центрирование */
         }
             .select-filters-container .filter-group select {
         height: 17px;
@@ -1189,9 +1188,9 @@ body[data-theme="light"] .repertoire-view-button.active {
         flex: 1; 
         min-width: 0;
         height: 44px;
-        padding: 2px 6px 11px 6px; /* Минимальный отступ сверху, больший снизу */
+        padding: 3px 6px 11px 6px; /* Меньший отступ сверху, больший снизу для смещения центра вверх */
         display: flex;
-        align-items: flex-start; /* Прижимаем к верху */
+        align-items: center; /* Возвращаем центрирование */
     }
     .select-filters-container .filter-group select {
         height: 23px;
@@ -1280,9 +1279,9 @@ body[data-theme="light"] .repertoire-view-button.active {
         min-width: 0; 
         flex: 1; 
         height: 42px;
-        padding: 2px 5px 10px 5px; /* Минимальный отступ сверху, больший снизу */
+        padding: 3px 5px 10px 5px; /* Меньший отступ сверху, больший снизу для смещения центра вверх */
         display: flex;
-        align-items: flex-start; /* Прижимаем к верху */
+        align-items: center; /* Возвращаем центрирование */
     }
     .filter-group legend {
         font-size: 0.65rem;
