@@ -217,12 +217,12 @@ body[data-theme="light"] .theme-icon.moon {
 
 
 /* --- Forms --- */
-.controls { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+.controls { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
 .control-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .control-group label { font-size: 0.8rem; color: var(--label-color); margin-bottom: 4px; flex-basis: 100%; text-transform: uppercase; letter-spacing: 0.5px; transition: color 0.3s ease;}
 
 /* Контейнер для фильтров с компактными fieldset */
-.select-filters-container { display: flex; gap: 12px; flex-wrap: nowrap !important; flex-direction: row !important; }
+.select-filters-container { display: flex; gap: 12px; flex-wrap: nowrap !important; flex-direction: row !important; margin-bottom: 12px; }
 .filter-group { 
     flex: 1; 
     min-width: 0; 
@@ -288,7 +288,7 @@ input:focus, select:focus {
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
     padding: 4px 8px 8px 8px; /* Минимальные отступы */
-    margin: 0 0 15px 0;
+    margin: 0 0 12px 0;
     background: transparent;
     transition: border-color 0.3s ease;
 }
@@ -370,7 +370,7 @@ body[data-theme="light"] button.icon-button.simple:active:not(:disabled) { backg
 
 
 /* Ряд Тональность/Разделить/Масштаб */
-.control-group:has(#key-select) { align-items: center; min-height: 38px; gap: 12px; }
+.control-group:has(#key-select) { align-items: center; min-height: 38px; gap: 12px; margin-bottom: 12px; }
 
 /* Fieldset для тональности */
 .key-group {
@@ -436,7 +436,7 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
     padding: 15px 20px 20px 20px; /* Меньший отступ сверху под legend */
     border-radius: var(--radius); 
     box-shadow: var(--shadow); 
-    margin-top: 15px; 
+    margin-top: 12px; 
     position: relative; 
     overflow: hidden; 
     border: 1px solid var(--border-color); 
@@ -1300,7 +1300,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     .container { padding: 10px; margin: 8px auto; }
     header { padding: 5px 15px; margin-bottom: 6px; }
     h1 { font-size: 1.2rem; }
-    .controls { gap: 6px; margin-bottom: 10px; }
+    .controls { gap: 10px; margin-bottom: 10px; }
     
     /* Мобильные стили для fieldset поиска */
     .search-group {
@@ -1330,6 +1330,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     .select-filters-container { 
         flex-direction: row !important; 
         gap: 3px !important; 
+        margin-bottom: 10px !important;
     }
     .filter-group { 
         min-width: 0; 
@@ -1352,7 +1353,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     #theme-toggle-button { right: 10px; }
 
     /* Ряд Тональность/Разделить/Масштаб */
-    .control-group:has(#key-select) { min-height: 36px; gap: 8px; }
+    .control-group:has(#key-select) { min-height: 36px; gap: 8px; margin-bottom: 10px; }
     
     /* Мобильный fieldset для тональности */
     .key-group {
