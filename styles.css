@@ -1313,6 +1313,47 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     *:not(select):not(button):not(input):not(textarea):not(.chord) {
         background-image: none !important;
+        background: transparent !important;
+    }
+    
+    /* УЛЬТРА-РАДИКАЛЬНОЕ устранение ВСЕХ переходов на мобильных */
+    *, *::before, *::after {
+        background-image: none !important;
+        background-attachment: scroll !important;
+        box-shadow: none !important;
+        filter: none !important;
+        backdrop-filter: none !important;
+    }
+    
+    /* Принудительно устраняем переходы с основных элементов */
+    body, html, .container, header, .controls, .search-group, 
+    .filter-group, .key-group, #song-content {
+        background: var(--background-color) !important;
+        background-image: none !important;
+        background-attachment: scroll !important;
+        background-repeat: no-repeat !important;
+        background-position: 0 0 !important;
+        background-size: auto !important;
+        backdrop-filter: none !important;
+        filter: none !important;
+    }
+    
+    .container {
+        background: var(--container-background-color) !important;
+    }
+    
+    /* ПРИНУДИТЕЛЬНО отключаем ВСЕ переходы и анимации на мобильных */
+    *, *::before, *::after {
+        transition: none !important;
+        animation: none !important;
+        transform: none !important;
+    }
+    
+    /* Исключения для элементов, которым нужны переходы */
+    .side-panel, .side-panel.open,
+    .modal-overlay, .modal-content,
+    .presentation-overlay {
+        transition: transform 0.3s ease !important;
     }
     
     /* ПРИНУДИТЕЛЬНОЕ ОГРАНИЧЕНИЕ для всех fixed элементов */
@@ -1328,6 +1369,11 @@ body[data-theme="light"] .repertoire-view-button.active {
         margin: 0 !important;
         border: none !important;
         transform: translateX(-100%) !important;
+        /* УСТРАНЯЕМ фоновые артефакты с панелей */
+        background: var(--container-background-color) !important;
+        background-image: none !important;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3) !important;
+        backdrop-filter: none !important;
     }
     
     .side-panel.open,
