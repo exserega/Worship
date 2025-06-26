@@ -262,7 +262,7 @@ select, input[type="text"] {
     padding-right: 18px;
     border: none;
     background: transparent; /* Прозрачный фон для чистого вида */
-    font-size: 0.8rem;
+    font-size: 0.925rem; /* Увеличили на 2px (0.8rem + 0.125rem ≈ +2px) */
 }
 select {
     /* Стрелка для темной темы (#e5e7eb = %23e5e7eb) */
@@ -1033,8 +1033,8 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 /* --- Кнопка Копировать текст --- */
 #copy-text-button {
     position: absolute; /* Абсолютное позиционирование */
-    top: 10px;          /* Отступ сверху */
-    right: 10px;         /* Отступ справа */
+    top: 5px;           /* Ближе к верхнему краю */
+    right: 5px;         /* Ближе к правому краю */
     z-index: 5;         /* Чтобы быть поверх текста, но ниже других элементов управления */
     width: 32px;        /* Меньший размер */
     height: 32px;
@@ -1191,7 +1191,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         height: 22px; /* Увеличена высота для очень маленьких экранов */
         padding: 0px 2px;
         padding-right: 12px;
-        font-size: 0.6rem;
+        font-size: 0.725rem; /* Увеличили на 2px для очень маленьких экранов (0.6rem + 0.125rem ≈ +2px) */
     }
     .filter-group legend { 
         font-size: 0.6rem;
@@ -1252,6 +1252,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         height: 28px; /* Увеличена высота для планшетов */
         padding: 1px 4px;
         padding-right: 16px;
+        font-size: 0.925rem; /* Увеличили на 2px для планшетов */
     }
     .filter-group legend { 
         font-size: 0.6rem;
@@ -1345,7 +1346,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         display: block; /* Показываем подписи на мобильных */
     }
     .select-filters-container .filter-group select { 
-        font-size: 0.65rem; 
+        font-size: 0.775rem; /* Увеличили на 2px для мобильных (0.65rem + 0.125rem ≈ +2px) */
         height: 24px; /* Увеличена высота для мобильных */
         padding: 0px 3px;
         padding-right: 14px;
@@ -1399,8 +1400,8 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
          /* Кнопка Копировать на мобильных */
      #copy-text-button {
-         top: 6px;
-         right: 6px;
+         top: 3px;
+         right: 3px;
          width: 30px;
          height: 30px;
          font-size: 0.8rem;
