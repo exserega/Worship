@@ -1288,21 +1288,27 @@ body[data-theme="light"] .repertoire-view-button.active {
 
 /* Универсальные стили для планшетов и мобильных */
 @media (max-width: 1024px) { 
-    /* ХИРУРГИЧЕСКОЕ РЕШЕНИЕ: убираем только источники градиентных переходов */
-    
-    /* Принудительно отключаем градиенты и переходы в левой области */
-    html {
-        background-attachment: fixed !important;
-        background-repeat: no-repeat !important;
-        background-size: 100% 100% !important; /* Растягиваем фон на весь экран */
-        background-position: 0 0 !important; /* Фиксируем позицию */
-    }
-    
-    body {
-        background-attachment: fixed !important;
-        background-repeat: no-repeat !important;
-        background-size: 100% 100% !important;
-        background-position: 0 0 !important;
+    /* ================================================================ */
+    /* === ФИНАЛЬНЫЙ ФИКС: Жесткое ограничение viewport === */
+    /* ================================================================ */
+    html, body {
+        /* 1. Жестко задаем ширину и убираем все отступы */
+        width: 100%;
+        max-width: 100vw; /* Дополнительное ограничение */
+        margin: 0;
+        padding: 0;
+
+        /* 2. ГЛАВНОЕ: Принудительно обрезаем всё, что выходит за рамки */
+        overflow-x: hidden !important;
+
+        /* 3. На всякий случай убираем любые фоновые изображения */
+        background-image: none !important;
+        
+        /* 4. Явно задаем сплошной цвет фона */
+        background-color: var(--background-color) !important;
+        
+        /* 5. Убираем 'fixed', чтобы избежать связанных с ним багов */
+        background-attachment: scroll !important; 
     }
     
     /* Убираем фоновые эффекты только с элементов, которые могут создавать градиенты */
@@ -1313,13 +1319,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         filter: none !important;
     }
     
-    /* Сохраняем двухслойную структуру, но принудительно задаем плоские цвета */
-    html, body {
-        background: var(--background-color) !important;
-        background-image: none !important;
-        background-attachment: fixed !important;
-    }
-    
+    /* Сохраняем двухслойную структуру контейнера */
     .container {
         background: var(--container-background-color) !important;
         background-image: none !important;
@@ -1375,67 +1375,30 @@ body[data-theme="light"] .repertoire-view-button.active {
         box-sizing: border-box !important; 
     }
 
-    /* ЦЕЛЕВОЕ РЕШЕНИЕ: блокируем рендеринг левой области где артефакты */
-    html {
-        /* Стандартные настройки */
-        background-attachment: scroll !important;
-        background-repeat: no-repeat !important;
-        background-position: 0 0 !important;
+    /* ================================================================ */
+    /* === УСИЛЕННЫЙ ФИКС для мобильных: Жесткое ограничение viewport === */
+    /* ================================================================ */
+    html, body {
+        /* 1. Жестко задаем ширину и убираем все отступы */
+        width: 100%;
+        max-width: 100vw; /* Дополнительное ограничение */
+        margin: 0;
+        padding: 0;
+
+        /* 2. ГЛАВНОЕ: Принудительно обрезаем всё, что выходит за рамки */
         overflow-x: hidden !important;
-        width: 100vw !important;
-        min-width: 100vw !important;
-        max-width: 100vw !important;
+
+        /* 3. На всякий случай убираем любые фоновые изображения */
+        background-image: none !important;
+        
+        /* 4. Явно задаем сплошной цвет фона */
+        background-color: var(--background-color) !important;
+        
+        /* 5. Убираем 'fixed', чтобы избежать связанных с ним багов */
+        background-attachment: scroll !important; 
     }
     
-    body {
-        /* Стандартные настройки */
-        background-attachment: scroll !important;
-        background-repeat: no-repeat !important;
-        background-position: 0 0 !important;
-        overflow-x: hidden !important;
-        width: 100vw !important;
-        min-width: 100vw !important;
-        max-width: 100vw !important;
-        margin: 0 !important;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-    }
-    
-    /* УЛУЧШЕННЫЙ ПОДХОД: четкая иерархия слоев с положительными z-index */
-    html::before {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 10px; /* Узкая полоска для маскировки артефактов */
-        height: 100vh;
-        background: var(--background-color) !important;
-        z-index: 1; /* НАД фоном html, но ПОД контентом */
-        pointer-events: none;
-    }
-    
-    /* Поднимаем основной контент НАД маскирующей полосой */
-    .container {
-        position: relative !important;
-        z-index: 2 !important; /* НАД маскирующей полосой */
-    }
-    
-    /* Убеждаемся что важные элементы имеют правильную иерархию */
-    .side-panel {
-        z-index: 1000 !important; /* НАД всем остальным */
-    }
-    
-    .modal-overlay {
-        z-index: 2500 !important; /* НАД панелями */
-    }
-    
-    .presentation-overlay {
-        z-index: 2000 !important; /* НАД основным контентом */
-    }
-    
-    .mobile-bottom-nav {
-        z-index: 1000 !important; /* НАД основным контентом */
-    }
+    /* Убрали маскировку - она не сработала */
     
     /* ДОПОЛНИТЕЛЬНЫЕ ОГРАНИЧЕНИЯ для мобильных - убираем фоновые эффекты */
     *:not(.side-panel):not(.modal-overlay):not(.modal-content):not(.presentation-overlay):not(button):not(.mobile-nav-button) {
@@ -1445,23 +1408,14 @@ body[data-theme="light"] .repertoire-view-button.active {
         filter: none !important;
     }
     
-    /* СОХРАНЯЕМ двухслойную структуру для визуального разделения */
-    html, body {
-        background: var(--background-color) !important;
-        background-image: none !important;
-    }
+    /* Двухслойная структура уже задана выше */
     
     .container {
         background: var(--container-background-color) !important;
         background-image: none !important;
     }
     
-    /* Для светлой темы на мобильных */
-    html[data-theme="light"], 
-    body[data-theme="light"] {
-        background: var(--background-color) !important;
-        background-image: none !important;
-    }
+    /* Светлая тема уже обрабатывается выше */
     
     body[data-theme="light"] .container {
         background: var(--container-background-color) !important;
