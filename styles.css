@@ -1401,30 +1401,40 @@ body[data-theme="light"] .repertoire-view-button.active {
         padding-right: 0 !important;
     }
     
-    /* НОВЫЙ ПОДХОД: Создаем псевдо-элемент который закроет левую область */
-    body::before {
+    /* УЛУЧШЕННЫЙ ПОДХОД: четкая иерархия слоев с положительными z-index */
+    html::before {
         content: "";
         position: fixed;
         top: 0;
         left: 0;
-        width: 50px; /* Ширина левой области где артефакты */
+        width: 10px; /* Узкая полоска для маскировки артефактов */
         height: 100vh;
         background: var(--background-color) !important;
-        z-index: -1; /* За основным контентом */
-        pointer-events: none; /* Не мешаем взаимодействию */
+        z-index: 1; /* НАД фоном html, но ПОД контентом */
+        pointer-events: none;
     }
     
-    /* На всякий случай закроем и правую область симметрично */
-    body::after {
-        content: "";
-        position: fixed;
-        top: 0;
-        right: 0;
-        width: 50px;
-        height: 100vh;
-        background: var(--background-color) !important;
-        z-index: -1;
-        pointer-events: none;
+    /* Поднимаем основной контент НАД маскирующей полосой */
+    .container {
+        position: relative !important;
+        z-index: 2 !important; /* НАД маскирующей полосой */
+    }
+    
+    /* Убеждаемся что важные элементы имеют правильную иерархию */
+    .side-panel {
+        z-index: 1000 !important; /* НАД всем остальным */
+    }
+    
+    .modal-overlay {
+        z-index: 2500 !important; /* НАД панелями */
+    }
+    
+    .presentation-overlay {
+        z-index: 2000 !important; /* НАД основным контентом */
+    }
+    
+    .mobile-bottom-nav {
+        z-index: 1000 !important; /* НАД основным контентом */
     }
     
     /* ДОПОЛНИТЕЛЬНЫЕ ОГРАНИЧЕНИЯ для мобильных - убираем фоновые эффекты */
