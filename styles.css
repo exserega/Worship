@@ -503,33 +503,66 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
 /* ============================================ */
 /* СТИЛИ ДЛЯ БОКОВЫХ ПАНЕЛЕЙ                   */
 /* ============================================ */
+/* НОВАЯ СИСТЕМА БОКОВЫХ ПАНЕЛЕЙ - ПОЛНАЯ ПЕРЕПИСКА */
+/* ============================================ */
+
+/* БАЗОВЫЕ СТИЛИ ПАНЕЛЕЙ */
 .side-panel {
-    position: fixed; top: 0; width: 90%; max-width: 380px; height: 100vh;
+    /* КРИТИЧЕСКИ ВАЖНЫЕ РАЗМЕРЫ И ПОЗИЦИОНИРОВАНИЕ */
+    position: fixed !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: 320px !important;
+    max-width: 85vw !important;
+    height: 100vh !important;
+    
+    /* ОФОРМЛЕНИЕ */
     background-color: var(--container-background-color);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease-in-out, background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-    z-index: 1000; padding: 15px; display: flex; flex-direction: column;
-    gap: 10px; box-sizing: border-box;
-    overflow: hidden; /* СТРОГО запрещаем выход за пределы */
+    border: 1px solid var(--border-color);
+    
+    /* АНИМАЦИЯ */
+    transition: transform 0.3s ease-in-out;
+    
+    /* СОДЕРЖИМОЕ */
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    gap: 10px;
+    box-sizing: border-box;
+    overflow: hidden;
+    
+    /* Z-INDEX */
+    z-index: 1000;
 }
 
-/* --- Стили для ОБЕИХ левых панелей --- */
-#setlists-panel, /* Бывшая #favorites-panel */
-#my-list-panel { /* Новая панель "Мой список" */
-    left: 0; right: auto; transform: translateX(-100%);
+/* ЛЕВЫЕ ПАНЕЛИ */
+#setlists-panel,
+#my-list-panel {
+    left: 0 !important;
+    right: auto !important;
+    transform: translateX(-100%) !important;
     border-right: 2px solid var(--primary-color);
+    border-left: none;
 }
+
 #setlists-panel.open,
 #my-list-panel.open {
-    transform: translateX(0);
+    transform: translateX(0) !important;
 }
 
-/* --- Правая панель (Репертуар) --- */
+/* ПРАВАЯ ПАНЕЛЬ */
 #repertoire-panel {
-    right: 0; left: auto; transform: translateX(100%);
+    right: 0 !important;
+    left: auto !important;
+    transform: translateX(100%) !important;
     border-left: 2px solid var(--primary-color);
+    border-right: none;
 }
-#repertoire-panel.open { transform: translateX(0); }
+
+#repertoire-panel.open {
+    transform: translateX(0) !important;
+}
 
 /* --- Кнопки закрытия панелей --- */
 .side-panel-close-btn {
@@ -1067,22 +1100,20 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     /* ЭКСТРА-СТРОГИЕ ограничения для очень маленьких экранов */
     .side-panel { 
-        width: 85vw !important; 
-        max-width: 85vw !important;
-        min-width: 250px !important;
+        width: 260px !important; 
+        max-width: 80vw !important;
+        min-width: 220px !important;
         padding: 8px !important;
-        margin: 0 !important;
-        border: none !important;
     }
 }
 
 /* КРИТИЧЕСКИЕ ограничения для ОЧЕНЬ маленьких экранов */
 @media (max-width: 320px) {
     .side-panel { 
-        width: 80vw !important; 
-        max-width: 80vw !important;
+        width: 240px !important; 
+        max-width: 75vw !important;
         min-width: 200px !important;
-        padding: 5px !important;
+        padding: 6px !important;
         font-size: 0.8rem !important;
     }
     
@@ -1264,41 +1295,57 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
 
 
-    /* Панели */
+    /* МОБИЛЬНЫЕ ПАНЕЛИ - КРИТИЧЕСКАЯ ПЕРЕПИСКА */
     .side-panel { 
-        width: 90vw !important; /* 90% ширины viewport */
-        max-width: 90vw !important; /* Максимум 90% viewport */
-        min-width: min(280px, 85vw) !important; /* Минимальная ширина, но не больше 85% экрана */
-        padding: 10px !important; gap: 10px !important; 
-        height: 100vh !important; /* Полная высота экрана */
-        overflow: hidden !important; /* Строго запрещаем выход за пределы */
-        /* СТРОГОЕ ПОЗИЦИОНИРОВАНИЕ для мобильных */
-        left: 0 !important; /* Принудительно слева для всех панелей */
-        right: auto !important; /* Отключаем правое позиционирование */
-        top: 0 !important; /* Сверху */
-        bottom: 0 !important; /* До низа */
-        position: fixed !important; /* Фиксированное позиционирование */
-        box-sizing: border-box !important; /* Включаем padding в размер */
+        /* РАЗМЕРЫ - СТРОГО ОГРАНИЧЕННЫЕ */
+        width: 280px !important;
+        max-width: 85vw !important;
+        min-width: 250px !important;
+        
+        /* ПОЗИЦИОНИРОВАНИЕ - АБСОЛЮТНОЕ */
+        position: fixed !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        height: 100vh !important;
+        
+        /* ОТСТУПЫ И ПЕРЕПОЛНЕНИЕ */
+        padding: 12px !important;
+        gap: 8px !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+        
+        /* ОБЩИЕ СТИЛИ */
+        z-index: 1000 !important;
+        background-color: var(--container-background-color) !important;
+        border: 1px solid var(--border-color) !important;
     }
     
-    /* Специальные стили для правой панели на мобильных - она тоже слева, но с другой анимацией */
+    /* ВСЕ ПАНЕЛИ НА МОБИЛЬНЫХ ВЫЕЗЖАЮТ СЛЕВА */
+    #setlists-panel,
+    #my-list-panel,
     #repertoire-panel {
-        border-left: none !important;
+        left: 0 !important;
+        right: auto !important;
+        transform: translateX(-100%) !important;
         border-right: 2px solid var(--primary-color) !important;
+        border-left: none !important;
     }
     
-    /* Переопределяем трансформации для мобильных */
-    #setlists-panel, #my-list-panel, #repertoire-panel {
-        transform: translateX(-100%) !important;
-    }
-    #setlists-panel.open, #my-list-panel.open, #repertoire-panel.open {
+    #setlists-panel.open,
+    #my-list-panel.open,
+    #repertoire-panel.open {
         transform: translateX(0) !important;
     }
     
-    /* Кнопки закрытия на мобильных - все справа */
+    /* КНОПКИ ЗАКРЫТИЯ */
     .side-panel-close-btn {
+        position: absolute !important;
+        top: 8px !important;
         right: 8px !important;
         left: auto !important;
+        width: 28px !important;
+        height: 28px !important;
+        z-index: 10 !important;
     }
     .list-container { 
         max-height: none; /* Убираем ограничение высоты на мобильных */

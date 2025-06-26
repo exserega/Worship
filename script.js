@@ -550,11 +550,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         const observer = new MutationObserver(() => {
             document.querySelectorAll('.side-panel').forEach(panel => {
                 if (panel.classList.contains('open')) {
-                    panel.style.width = '90vw';
-                    panel.style.maxWidth = '90vw';
+                    // ПРИНУДИТЕЛЬНЫЕ РАЗМЕРЫ
+                    const maxWidth = Math.min(280, window.innerWidth * 0.85);
+                    panel.style.width = maxWidth + 'px';
+                    panel.style.maxWidth = maxWidth + 'px';
+                    
+                    // ПРИНУДИТЕЛЬНОЕ ПОЗИЦИОНИРОВАНИЕ
+                    panel.style.position = 'fixed';
                     panel.style.left = '0';
                     panel.style.right = 'auto';
+                    panel.style.top = '0';
+                    panel.style.bottom = '0';
+                    panel.style.height = '100vh';
                     panel.style.transform = 'translateX(0)';
+                    panel.style.zIndex = '1000';
+                    
+                    // ПРИНУДИТЕЛЬНОЕ ПЕРЕПОЛНЕНИЕ
+                    panel.style.overflow = 'hidden';
+                    panel.style.boxSizing = 'border-box';
                 }
             });
         });
