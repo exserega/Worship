@@ -1423,15 +1423,35 @@ body[data-theme="light"] .repertoire-view-button.active {
 
     /* ===== САМАЯ ВАЖНАЯ ЧАСТЬ - ОБЛАСТЬ ТЕКСТА ===== */
     #song-content { 
+        /* МОБИЛЬНЫЕ ОТСТУПЫ */
         padding: 4px 6px 8px 6px; /* КАРДИНАЛЬНО уменьшили с 8px 10px 12px 10px */
         margin-top: 6px; /* Уменьшили с 10px */
-        /* ВАЖНО: Наследуем все остальные свойства из основного блока */
+        
+        /* ВСЕ ОСТАЛЬНЫЕ СВОЙСТВА ОБЯЗАТЕЛЬНО НАСЛЕДУЕМ */
+        background: var(--container-background-color); 
+        border-radius: var(--radius); 
+        box-shadow: var(--shadow); 
+        position: relative; 
+        overflow: hidden; 
+        border: 1px solid var(--border-color); 
+        transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        margin-left: 0;
+        margin-right: 0;
     }
     #song-content pre {
+        /* МОБИЛЬНЫЕ ОТСТУПЫ И РАЗМЕРЫ */
         font-size: var(--lyrics-font-size); /* ИСПОЛЬЗУЕМ ПЕРЕМЕННУЮ */
         line-height: 1.5; /* Оптимальная читаемость */
         padding-top: 2px; /* МИНИМАЛЬНЫЙ отступ с 6px 0 */
-        /* ВАЖНО: Наследуем все остальные свойства из основного блока */
+        
+        /* ВСЕ ОСТАЛЬНЫЕ СВОЙСТВА ОБЯЗАТЕЛЬНО НАСЛЕДУЕМ */
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; 
+        white-space: pre-wrap; 
+        word-wrap: break-word; 
+        color: var(--text-color); 
+        margin: 0; 
+        overflow-x: auto; 
+        transition: color 0.3s ease;
     }
     /* ===== КОНЕЦ САМОЙ ВАЖНОЙ ЧАСТИ ===== */
 
