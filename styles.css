@@ -1233,14 +1233,24 @@ body[data-theme="light"] .repertoire-view-button.active {
 
 /* КРИТИЧЕСКИЕ ограничения для ОЧЕНЬ маленьких экранов */
 @media (max-width: 320px) {
-    /* ПРОСТОЕ решение фона для очень маленьких экранов */
+    /* Решение двухслойного фона для очень маленьких экранов */
     html, body {
+        background: var(--background-color) !important;
+        background-color: var(--background-color) !important;
+    }
+    
+    .container {
         background: var(--background-color) !important;
         background-color: var(--background-color) !important;
     }
     
     html[data-theme="light"], 
     body[data-theme="light"] {
+        background: var(--background-color) !important;
+        background-color: var(--background-color) !important;
+    }
+    
+    body[data-theme="light"] .container {
         background: var(--background-color) !important;
         background-color: var(--background-color) !important;
     }
@@ -1270,14 +1280,24 @@ body[data-theme="light"] .repertoire-view-button.active {
 
 /* Универсальные стили для планшетов и мобильных */
 @media (max-width: 1024px) { 
-    /* Простое решение фона для планшетов */
+    /* Решение двухслойного фона для планшетов */
     html, body {
+        background: var(--background-color) !important;
+        background-color: var(--background-color) !important;
+    }
+    
+    .container {
         background: var(--background-color) !important;
         background-color: var(--background-color) !important;
     }
     
     html[data-theme="light"], 
     body[data-theme="light"] {
+        background: var(--background-color) !important;
+        background-color: var(--background-color) !important;
+    }
+    
+    body[data-theme="light"] .container {
         background: var(--background-color) !important;
         background-color: var(--background-color) !important;
     }
@@ -1327,13 +1347,13 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
 
     
-    /* ПРОСТОЕ И НАДЕЖНОЕ решение - переопределяем фон для мобильных */
-    html {
+    /* РЕШЕНИЕ ПРОБЛЕМЫ ДВУХСЛОЙНОГО ФОНА - делаем контейнер того же цвета что и body */
+    html, body {
         background: var(--background-color) !important;
         background-color: var(--background-color) !important;
     }
     
-    body {
+    .container {
         background: var(--background-color) !important;
         background-color: var(--background-color) !important;
     }
@@ -1341,6 +1361,11 @@ body[data-theme="light"] .repertoire-view-button.active {
     /* Для светлой темы на мобильных */
     html[data-theme="light"], 
     body[data-theme="light"] {
+        background: var(--background-color) !important;
+        background-color: var(--background-color) !important;
+    }
+    
+    body[data-theme="light"] .container {
         background: var(--background-color) !important;
         background-color: var(--background-color) !important;
     }
