@@ -252,7 +252,7 @@ select, input[type="text"] {
 
 /* Селекты внутри fieldset должны быть меньше, чтобы была видна рамка */
 .select-filters-container .filter-group select {
-    height: 21px;
+    height: 26px; /* Увеличена высота для лучшего заполнения fieldset */
     padding: 1px 4px;
     padding-right: 18px;
     border: none;
@@ -1132,7 +1132,7 @@ body[data-theme="light"] .repertoire-view-button.active {
             align-items: center; /* Возвращаем центрирование */
         }
             .select-filters-container .filter-group select {
-        height: 17px;
+        height: 22px; /* Увеличена высота для очень маленьких экранов */
         padding: 0px 2px;
         padding-right: 12px;
         font-size: 0.6rem;
@@ -1193,7 +1193,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         align-items: center; /* Возвращаем центрирование */
     }
     .select-filters-container .filter-group select {
-        height: 23px;
+        height: 28px; /* Увеличена высота для планшетов */
         padding: 1px 4px;
         padding-right: 16px;
     }
@@ -1289,7 +1289,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     .select-filters-container .filter-group select { 
         font-size: 0.65rem; 
-        height: 19px;
+        height: 24px; /* Увеличена высота для мобильных */
         padding: 0px 3px;
         padding-right: 14px;
     }
