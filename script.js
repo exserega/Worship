@@ -534,7 +534,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const vocalists = await api.loadVocalists();
         ui.populateVocalistSelect(vocalists);
         
-        core.loadAudioFile(); // Pre-load
+        // core.loadAudioFile(); // ВРЕМЕННО ОТКЛЮЧЕНО - вызывает CORS ошибки и может ломать layout
 
     } catch (error) {
         console.error("Критическая ошибка во время инициализации:", error);
@@ -544,4 +544,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     console.log("Инициализация приложения завершена.");
+    
+    // КРИТИЧЕСКАЯ ЗАЩИТА: принудительно исправляем размеры панелей на мобильных
+    if (window.innerWidth <= 480) {
+        const observer = new MutationObserver(() => {
+            document.querySelectorAll('.side-panel').forEach(panel => {
+                if (panel.classList.contains('open')) {
+                    panel.style.width = '90vw';
+                    panel.style.maxWidth = '90vw';
+                    panel.style.left = '0';
+                    panel.style.right = 'auto';
+                    panel.style.transform = 'translateX(0)';
+                }
+            });
+        });
+        observer.observe(document.body, { 
+            attributes: true, 
+            subtree: true, 
+            attributeFilter: ['class'] 
+        });
+    }
 });
