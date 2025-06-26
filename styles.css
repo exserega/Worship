@@ -275,12 +275,16 @@ input:focus, select:focus {
     position: absolute; top: 100%; left: 0; right: 0; width: 100%;
     max-height: 210px; overflow-y: auto;
     background-color: var(--container-background-color);
-    border: 1px solid var(--border-color); border-top: none;
     border-bottom-left-radius: var(--radius); border-bottom-right-radius: var(--radius);
-    z-index: 10; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    box-sizing: border-box; margin-top: -1px;
+    z-index: 10; box-sizing: border-box; margin-top: -1px;
     transition: background-color 0.3s ease, border-color 0.3s ease;
-    display: none; /* Скрываем по умолчанию, показываем только при наличии результатов */
+}
+
+/* Рамка показывается только когда есть результаты */
+#search-results:not(:empty) {
+    border: 1px solid var(--border-color); 
+    border-top: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 #search-results::-webkit-scrollbar { width: 6px; }
 #search-results::-webkit-scrollbar-track { background: var(--input-bg-color); border-radius: 3px;}
