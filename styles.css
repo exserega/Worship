@@ -250,12 +250,12 @@ select, input[type="text"] {
 
 /* Селекты внутри fieldset должны быть меньше, чтобы была видна рамка */
 .select-filters-container .filter-group select {
-    height: 28px;
-    padding: 4px 8px;
-    padding-right: 24px;
+    height: 24px;
+    padding: 2px 6px;
+    padding-right: 20px;
     border: none;
     background: var(--input-bg-color);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 select {
     /* Стрелка для темной темы (#e5e7eb = %23e5e7eb) */
@@ -1128,19 +1128,16 @@ body[data-theme="light"] .repertoire-view-button.active {
         padding: 2px 4px;
     }
     .select-filters-container .filter-group select {
-        height: 30px;
-        padding: 2px 4px;
-        padding-right: 16px;
+        height: 20px;
+        padding: 1px 3px;
+        padding-right: 14px;
+        font-size: 0.65rem;
     }
     .filter-group legend { 
-        display: none !important; /* Скрываем подписи на очень маленьких экранах */
+        font-size: 0.6rem;
+        display: block; /* Показываем подписи даже на очень маленьких экранах */
     }
-    .select-filters-container select { 
-        font-size: 0.7rem !important; 
-        padding: 2px 4px !important; 
-        padding-right: 16px !important; 
-        height: 36px !important;
-    }
+
     
     /* ЭКСТРА-СТРОГИЕ ограничения для очень маленьких экранов */
     .side-panel { 
@@ -1190,20 +1187,15 @@ body[data-theme="light"] .repertoire-view-button.active {
         padding: 3px 6px;
     }
     .select-filters-container .filter-group select {
-        height: 30px;
-        padding: 4px 6px;
-        padding-right: 20px;
+        height: 26px;
+        padding: 2px 5px;
+        padding-right: 18px;
     }
     .filter-group legend { 
-        font-size: 0.6rem !important;
-        display: none !important; /* Скрываем на планшетах и мобильных */
+        font-size: 0.6rem;
+        display: block; /* Показываем на планшетах */
     }
-    .select-filters-container select { 
-        font-size: 0.85rem !important; 
-        padding: 6px 8px !important; 
-        padding-right: 22px !important; 
-        height: 38px !important;
-    }
+
 }
 
 @media (max-width: 480px) {
@@ -1284,11 +1276,14 @@ body[data-theme="light"] .repertoire-view-button.active {
         padding: 3px 5px;
     }
     .filter-group legend {
-        display: none !important; /* Скрываем подписи на мобильных */
+        font-size: 0.65rem;
+        display: block; /* Показываем подписи на мобильных */
     }
     .select-filters-container .filter-group select { 
-        font-size: 0.75rem; 
-        height: 28px;
+        font-size: 0.7rem; 
+        height: 22px;
+        padding: 1px 4px;
+        padding-right: 16px;
     }
     #theme-toggle-button { right: 10px; }
 
