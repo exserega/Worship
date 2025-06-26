@@ -252,7 +252,7 @@ select, input[type="text"] {
 
 /* Селекты внутри fieldset должны быть меньше, чтобы была видна рамка */
 .select-filters-container .filter-group select {
-    height: 20px;
+    height: 21px;
     padding: 1px 4px;
     padding-right: 18px;
     border: none;
@@ -1131,8 +1131,8 @@ body[data-theme="light"] .repertoire-view-button.active {
         display: flex;
         align-items: center;
     }
-    .select-filters-container .filter-group select {
-        height: 16px;
+            .select-filters-container .filter-group select {
+        height: 17px;
         padding: 0px 2px;
         padding-right: 12px;
         font-size: 0.6rem;
@@ -1193,7 +1193,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         align-items: center;
     }
     .select-filters-container .filter-group select {
-        height: 22px;
+        height: 23px;
         padding: 1px 4px;
         padding-right: 16px;
     }
@@ -1289,7 +1289,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     .select-filters-container .filter-group select { 
         font-size: 0.65rem; 
-        height: 18px;
+        height: 19px;
         padding: 0px 3px;
         padding-right: 14px;
     }
