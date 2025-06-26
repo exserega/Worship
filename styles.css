@@ -1422,14 +1422,16 @@ body[data-theme="light"] .repertoire-view-button.active {
     #add-to-repertoire-button { padding: 8px 12px; height: 40px; } /* Уменьшили padding с 10px 15px */
 
     /* ===== САМАЯ ВАЖНАЯ ЧАСТЬ - ОБЛАСТЬ ТЕКСТА ===== */
-    #song-content { padding: 4px 6px 8px 6px; margin-top: 6px; } /* КАРДИНАЛЬНО уменьшили с 8px 10px 12px 10px и margin с 10px */
+    #song-content { 
+        padding: 4px 6px 8px 6px; /* КАРДИНАЛЬНО уменьшили с 8px 10px 12px 10px */
+        margin-top: 6px; /* Уменьшили с 10px */
+        /* ВАЖНО: Наследуем все остальные свойства из основного блока */
+    }
     #song-content pre {
         font-size: var(--lyrics-font-size); /* ИСПОЛЬЗУЕМ ПЕРЕМЕННУЮ */
         line-height: 1.5; /* Оптимальная читаемость */
-        padding: 2px 0; /* МИНИМАЛЬНЫЙ отступ с 6px 0 */
-        white-space: pre-wrap;
-        word-wrap: break-word;
-        overflow-x: auto;
+        padding-top: 2px; /* МИНИМАЛЬНЫЙ отступ с 6px 0 */
+        /* ВАЖНО: Наследуем все остальные свойства из основного блока */
     }
     /* ===== КОНЕЦ САМОЙ ВАЖНОЙ ЧАСТИ ===== */
 
