@@ -256,7 +256,7 @@ select, input[type="text"] {
     padding: 1px 4px;
     padding-right: 18px;
     border: none;
-    background: var(--input-bg-color);
+    background: transparent; /* Прозрачный фон для чистого вида */
     font-size: 0.8rem;
 }
 select {
