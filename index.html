@@ -54,28 +54,33 @@
             </fieldset>
         </div>
         <div class="control-group">
-            <label for="key-select">Тональность:</label>
-            <select id="key-select">
-                <option value="C">C</option>
-                <option value="C#">C#</option>
-                <option value="D">D</option>
-                <option value="D#">D#</option>
-                <option value="E">E</option>
-                <option value="F">F</option>
-                <option value="F#">F#</option>
-                <option value="G">G</option>
-                <option value="G#">G#</option>
-                <option value="A">A</option>
-                <option value="A#">A#</option>
-                <option value="H">H</option>
-            </select>
-            <button id="toggle-chords-button" class="control-group-button icon-button simple" title="Скрыть аккорды">
-                <i class="fas fa-guitar"></i>
-                <span class="button-text">Аккорды</span>
-            </button>
-            <button id="split-text-button" aria-label="Разделить текст" class="control-group-button icon-button simple">
-                <i class="fas fa-columns"></i>
-                <span class="button-text">Разделить</span> </button>
+            <fieldset class="key-group">
+                <legend>Тональность</legend>
+                <select id="key-select">
+                    <option value="C">C</option>
+                    <option value="C#">C#</option>
+                    <option value="D">D</option>
+                    <option value="D#">D#</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                    <option value="F#">F#</option>
+                    <option value="G">G</option>
+                    <option value="G#">G#</option>
+                    <option value="A">A</option>
+                    <option value="A#">A#</option>
+                    <option value="H">H</option>
+                </select>
+            </fieldset>
+            <div class="function-buttons-group">
+                <button id="toggle-chords-button" class="control-group-button icon-button simple" title="Скрыть аккорды">
+                    <i class="fas fa-guitar"></i>
+                    <span class="button-text">Аккорды</span>
+                </button>
+                <button id="split-text-button" aria-label="Разделить текст" class="control-group-button icon-button simple">
+                    <i class="fas fa-columns"></i>
+                    <span class="button-text">Разделить</span>
+                </button>
+            </div>
             <div class="font-size-controls">
                 <button id="zoom-out" class="icon-button simple" title="Уменьшить шрифт"><i class="fas fa-search-minus"></i></button>
                 <button id="zoom-in" class="icon-button simple" title="Увеличить шрифт"><i class="fas fa-search-plus"></i></button>
