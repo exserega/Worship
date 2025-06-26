@@ -79,7 +79,7 @@ body {
 /* --- Header --- */
 header {
     display: flex; justify-content: center; align-items: center;
-    position: relative; padding: 8px 20px; margin-bottom: 15px;
+    position: relative; padding: 8px 20px; margin-bottom: 8px;
 }
 h1 {
     text-align: center; color: var(--text-color); margin: 0;
@@ -212,7 +212,7 @@ body[data-theme="light"] .theme-icon.moon {
 
 
 /* --- Forms --- */
-.controls { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+.controls { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
 .control-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .control-group label { font-size: 0.8rem; color: var(--label-color); margin-bottom: 4px; flex-basis: 100%; text-transform: uppercase; letter-spacing: 0.5px; transition: color 0.3s ease;}
 
@@ -246,8 +246,27 @@ input:focus, select:focus {
 }
 
 #sheet-select, #song-select { width: auto; flex-grow: 1; min-width: 140px;}
-.control-group:has(#search-input) {
+/* Компактная поисковая строка */
+.control-group.search-group {
     position: relative;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: nowrap;
+}
+
+.search-label {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    font-weight: 500;
+    flex-shrink: 0;
+    transition: color 0.3s ease;
+}
+
+.control-group.search-group #search-input {
+    flex: 1;
+    max-width: 400px;
+    min-width: 200px;
 }
 
 /* Контейнер для списка результатов */
@@ -1058,6 +1077,16 @@ body[data-theme="light"] .repertoire-view-button.active {
         flex-wrap: nowrap !important;
         gap: 2px !important; 
     }
+    
+    /* Компактный поиск на маленьких экранах */
+    .control-group.search-group {
+        gap: 6px;
+    }
+    
+    .search-label {
+        font-size: 0.8rem;
+        min-width: 45px;
+    }
     .select-filters-container fieldset { 
         flex: 1 !important; 
         min-width: 0 !important;
@@ -1172,9 +1201,24 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     body { padding: 5px; font-size: 14px; padding-bottom: 70px; }
     .container { padding: 10px; margin: 8px auto; }
-    header { padding: 5px 15px; margin-bottom: 10px; }
+    header { padding: 5px 15px; margin-bottom: 6px; }
     h1 { font-size: 1.2rem; }
-    .controls { gap: 8px; margin-bottom: 10px; }
+    .controls { gap: 6px; margin-bottom: 10px; }
+    
+    /* Мобильные стили для компактного поиска */
+    .control-group.search-group {
+        gap: 8px;
+    }
+    
+    .search-label {
+        font-size: 0.85rem;
+        min-width: 50px;
+    }
+    
+    .control-group.search-group #search-input {
+        min-width: 150px;
+        max-width: none;
+    }
     #song-content h2 {
         font-size: 1.1rem; /* Уменьшили для мобильных */
         padding-right: 35px; /* Отступ под кнопку копирования */
