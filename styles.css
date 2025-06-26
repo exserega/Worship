@@ -180,14 +180,14 @@ body[data-theme="light"] .theme-icon.moon {
 
 /* --- Headings --- */
 #song-title { /* Заголовок песни как legend */
-    font-size: 1.2rem; 
+    font-size: 1.0rem; /* Уменьшили размер шрифта */
     font-weight: 600;
     color: var(--text-color);
     letter-spacing: 0.5px;
     padding: 0 12px; /* Padding как у других legend */
     background: var(--container-background-color);
     transition: color 0.3s ease;
-    text-align: left; /* Выравнивание по левому краю как у других legend */
+    text-align: center; /* Выравнивание по центру */
     margin: 0; /* Убираем лишние отступы */
 }
 /* Заголовки секций в панелях (h3) */
@@ -1313,7 +1313,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         max-width: none;
     }
     #song-title {
-        font-size: 1.0rem; /* Уменьшили для мобильных */
+        font-size: 0.9rem; /* Еще меньше для мобильных */
         padding: 0 8px; /* Компактный padding для мобильных */
     }
 

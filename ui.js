@@ -194,7 +194,7 @@ export function displaySongDetails(songData, keyToSelect) {
     const songPre = songContent.querySelector('pre');
     const copyBtn = songContent.querySelector('#copy-text-button');
     
-    if (songTitle) songTitle.textContent = `${title} — ${currentSelectedKey}`;
+    if (songTitle) songTitle.textContent = title; // Убираем тональность из заголовка
     if (songPre) songPre.innerHTML = finalHighlightedLyrics;
     if (copyBtn) copyBtn.style.display = 'block';
     
