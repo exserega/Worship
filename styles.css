@@ -1233,6 +1233,16 @@ body[data-theme="light"] .repertoire-view-button.active {
 
 /* КРИТИЧЕСКИЕ ограничения для ОЧЕНЬ маленьких экранов */
 @media (max-width: 320px) {
+    /* УЛЬТРА-СИЛЬНАЯ защита от фоновых артефактов */
+    html, body {
+        background: var(--background-color) !important;
+        background-image: none !important;
+        background-attachment: scroll !important;
+        background-repeat: no-repeat !important;
+        background-position: initial !important;
+        background-size: initial !important;
+    }
+    
     .side-panel { 
         width: 240px !important; 
         max-width: 75vw !important;
@@ -1290,10 +1300,19 @@ body[data-theme="light"] .repertoire-view-button.active {
         max-width: 100vw !important; 
         overflow-x: hidden !important; 
         position: relative !important;
+        /* ПРИНУДИТЕЛЬНО устраняем фоновые артефакты на мобильных */
+        background: var(--background-color) !important;
+        background-image: none !important;
+        background-attachment: scroll !important;
+        background-repeat: no-repeat !important;
     }
     * { 
         max-width: 100% !important; 
         box-sizing: border-box !important; 
+        /* Убираем фоновые артефакты со ВСЕХ элементов на мобильных */
+    }
+    *:not(select):not(button):not(input):not(textarea):not(.chord) {
+        background-image: none !important;
     }
     
     /* ПРИНУДИТЕЛЬНОЕ ОГРАНИЧЕНИЕ для всех fixed элементов */
@@ -1321,8 +1340,19 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     
     /* МАКСИМАЛЬНАЯ ОПТИМИЗАЦИЯ ОТСТУПОВ ДЛЯ ТЕКСТА */
-    body { padding: 1px; font-size: 14px; padding-bottom: 70px; } /* Уменьшили с 2px до 1px */
-    .container { padding: 3px; margin: 1px auto; } /* Уменьшили с 6px/2px до 3px/1px */
+    body { 
+        padding: 1px; font-size: 14px; padding-bottom: 70px; /* Уменьшили с 2px до 1px */
+        /* ДОПОЛНИТЕЛЬНАЯ защита от фоновых артефактов на мобильных */
+        background: var(--background-color) !important;
+        background-image: none !important;
+        background-attachment: scroll !important;
+    }
+    .container { 
+        padding: 3px; margin: 1px auto; /* Уменьшили с 6px/2px до 3px/1px */
+        /* Убираем любые фоновые эффекты с контейнера */
+        background: var(--container-background-color) !important;
+        background-image: none !important;
+    }
     header { padding: 4px 6px; margin-bottom: 4px; } /* Уменьшили с 5px 8px до 4px 6px */
     h1 { font-size: 1.2rem; }
     .controls { gap: 8px; margin-bottom: 8px; } /* Уменьшили с 10px до 8px */
