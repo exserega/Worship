@@ -216,10 +216,10 @@ body[data-theme="light"] .theme-icon.moon {
 .control-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .control-group label { font-size: 0.8rem; color: var(--label-color); margin-bottom: 4px; flex-basis: 100%; text-transform: uppercase; letter-spacing: 0.5px; transition: color 0.3s ease;}
 
-/* Контейнер для фильтров с fieldset */
+/* Контейнер для фильтров */
 .select-filters-container { display: flex; gap: 12px; flex-wrap: nowrap !important; flex-direction: row !important; }
-.select-filters-container fieldset { border: 1px solid var(--border-color); border-radius: var(--radius); padding: 8px; margin: 0; flex: 1; min-width: 0 !important; background: var(--container-background-color); transition: border-color 0.3s ease, background-color 0.3s ease; }
-.select-filters-container legend { font-size: 0.75rem; color: var(--label-color); padding: 0 8px; text-transform: none; letter-spacing: 0.2px; font-weight: 400; font-style: italic; transition: color 0.3s ease; }
+.filter-group { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.filter-group label { font-size: 0.8rem; color: var(--label-color); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; transition: color 0.3s ease; }
 
 select, input[type="text"] {
     padding: 8px 12px; font-size: 0.95rem;
@@ -280,6 +280,7 @@ input:focus, select:focus {
     z-index: 10; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     box-sizing: border-box; margin-top: -1px;
     transition: background-color 0.3s ease, border-color 0.3s ease;
+    display: none; /* Скрываем по умолчанию, показываем только при наличии результатов */
 }
 #search-results::-webkit-scrollbar { width: 6px; }
 #search-results::-webkit-scrollbar-track { background: var(--input-bg-color); border-radius: 3px;}
@@ -1088,14 +1089,12 @@ body[data-theme="light"] .repertoire-view-button.active {
         font-size: 0.8rem;
         min-width: 45px;
     }
-    .select-filters-container fieldset { 
+    .filter-group { 
         flex: 1 !important; 
         min-width: 0 !important;
-        padding: 2px !important;
     }
-    .select-filters-container legend { 
-        font-size: 0.55rem !important;
-        padding: 0 2px !important;
+    .filter-group label { 
+        display: none !important; /* Скрываем подписи на очень маленьких экранах */
     }
     .select-filters-container select { 
         font-size: 0.7rem !important; 
@@ -1103,9 +1102,6 @@ body[data-theme="light"] .repertoire-view-button.active {
         padding-right: 16px !important; 
         height: 36px !important;
     }
-    
-    /* Скрываем legend на очень маленьких экранах */
-    .select-filters-container legend { display: none !important; }
     
     /* ЭКСТРА-СТРОГИЕ ограничения для очень маленьких экранов */
     .side-panel { 
@@ -1148,15 +1144,13 @@ body[data-theme="light"] .repertoire-view-button.active {
         gap: 8px !important; 
         flex-wrap: nowrap !important;
     }
-    .select-filters-container fieldset { 
+    .filter-group { 
         flex: 1 !important; 
         min-width: 0 !important;
-        padding: 6px !important;
     }
-    .select-filters-container legend { 
+    .filter-group label { 
         font-size: 0.7rem !important;
-        padding: 0 6px !important;
-        display: none !important; /* Скрываем на мобильных */
+        display: none !important; /* Скрываем на планшетах и мобильных */
     }
     .select-filters-container select { 
         font-size: 0.85rem !important; 
@@ -1237,10 +1231,12 @@ body[data-theme="light"] .repertoire-view-button.active {
         flex-direction: row !important; 
         gap: 3px !important; 
     }
-    .select-filters-container fieldset { 
+    .filter-group { 
         min-width: 0 !important; 
-        padding: 3px !important; 
         flex: 1 !important; 
+    }
+    .filter-group label {
+        display: none !important; /* Скрываем подписи на мобильных */
     }
     .select-filters-container select { 
         font-size: 0.75rem !important; 
