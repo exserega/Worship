@@ -3,25 +3,7 @@
 /* ПРИНУДИТЕЛЬНО ГОРИЗОНТАЛЬНЫЕ ПОЛЯ НА МОБИЛЬНЫХ */
 
 /* КРИТИЧЕСКИЙ ФИКС ДЛЯ SAMSUNG S23 ULTRA И ДРУГИХ БОЛЬШИХ СМАРТФОНОВ */
-.select-filters-container { 
-    flex-direction: row !important; 
-    gap: 4px !important; 
-    flex-wrap: nowrap !important;
-}
-.select-filters-container fieldset { 
-    flex: 1 !important; 
-    min-width: 0 !important;
-    padding: 4px !important;
-}
-.select-filters-container legend { 
-    font-size: 0.65rem !important;
-    padding: 0 4px !important;
-}
-.select-filters-container select {
-    font-size: 0.8rem !important;
-    padding: 4px 6px !important;
-    padding-right: 20px !important;
-}
+/* Перенесено в соответствующие медиа-запросы для предотвращения конфликтов */
 /* Версия включает:                     */
 /* - Рефакторинг панелей                */
 /* - Режим Презентации v2               */
@@ -211,8 +193,8 @@ body[data-theme="light"] .theme-icon.moon {
      margin-top: 0;
      margin-bottom: 8px;   /* Оставляем уменьшенный нижний отступ */
      padding-top: 0;
-     padding-bottom: 6px;  /* <<< ВЕРНУЛИ/Слегка увеличили паддинг снизу для линии */
-     border-bottom: 1px solid var(--border-color); /* <<< ВЕРНУЛИ ЛИНИЮ */
+     padding-bottom: 6px;
+     border-bottom: 1px solid var(--border-color);
 }
 #repertoire-panel .panel-header { /* Особый стиль для заголовка Репертуара */
      text-align: center;
@@ -396,13 +378,13 @@ body[data-theme="light"] #song-content .chord {
 /* --- ИЗМЕНЕНИЯ ДЛЯ ПРЕЗЕНТАЦИИ --- */
 /* Заголовок песни в презентации */
 .presentation-song h2 {
-    font-size: 1.0rem; /* <<< Уменьшили */
+    font-size: 1.0rem;
     color: var(--accent-color);
     text-align: center;
     margin-top: 0;
-    margin-bottom: 5px; /* <<< Уменьшили */
+    margin-bottom: 5px;
     font-weight: 500;
-    line-height: 1.25; /* <<< Уменьшили */
+    line-height: 1.25;
     transition: color 0.3s ease;
 }
 /* Заметки в презентации */
@@ -411,13 +393,13 @@ body[data-theme="light"] #song-content .chord {
     border-left: none;
     padding: 0 5px;
     margin-top: 0;
-    margin-bottom: 8px; /* <<< Чуть уменьшили */
+    margin-bottom: 8px;
     border-radius: 0;
-    font-size: 0.8em; /* <<< Можно чуть увеличить обратно, если 0.75 было слишком мелко */
+    font-size: 0.8em;
     line-height: 1.3;
     color: var(--label-color);
     white-space: pre-wrap;
-    text-align: center !important; /* <<< Добавили !important для надежности центрирования текста */
+    text-align: center !important;
     transition: color 0.3s ease;
     display: block; /* Убедимся, что это блок */
     width: 100%; /* Занимает всю ширину для центрирования текста */
@@ -426,7 +408,7 @@ body[data-theme="light"] #song-content .chord {
 .presentation-notes i.fas {
     margin-right: 4px;
     font-size: 0.9em;
-    color: var(--label-color); /* <<< Цвет иконки как у текста */
+    color: var(--label-color);
     opacity: 0.9;
     vertical-align: middle;
 }
@@ -441,9 +423,9 @@ body[data-theme="light"] .presentation-notes i.fas {
 
 /* Текст песни в презентации */
 .presentation-song pre {
-    font-size: clamp(12px, 2.9vw, 17px); /* <<< Слегка увеличил максимальный и базовый размер */
+    font-size: clamp(12px, 2.9vw, 17px);
     font-family: 'Tahoma', Courier, monospace;
-    line-height: 1.45; /* <<< Чуть увеличил для читаемости аккордов */
+    line-height: 1.45;
     white-space: pre-wrap;
     word-wrap: break-word;
     color: var(--text-color);
@@ -778,7 +760,7 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
 /* Панель Репертуара - Селектор вокалиста */
 .repertoire-vocalist-selector { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; margin-bottom: 10px; /* Добавили отступ снизу */ }
 .repertoire-vocalist-selector label { font-size: 0.8rem; color: var(--label-color); text-transform: uppercase; transition: color 0.3s ease;}
-#repertoire-panel #vocalist-select { width: 100%; padding: 10px 14px; padding-right: 35px; font-size: 0.95rem; background-color: var(--input-bg-color); /* margin-bottom: 10px; */ /* Убрали */ }
+#repertoire-panel #vocalist-select { width: 100%; padding: 10px 14px; padding-right: 35px; font-size: 0.95rem; background-color: var(--input-bg-color); }
 #repertoire-panel-list { /* Контейнер для аккордеона */ flex-grow: 1; min-height: 100px; overflow-y: auto; margin-bottom: 0; padding: 5px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--background-color); max-height: none !important; transition: background-color 0.3s ease, border-color 0.3s ease; }
 #repertoire-panel-list::-webkit-scrollbar { width: 6px; }
 #repertoire-panel-list::-webkit-scrollbar-track { background: var(--border-color); border-radius: 3px;}
@@ -840,10 +822,7 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active span { 
 body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:hover { background-color: var(--hover-color); }
 body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { background-color: var(--border-color); }
 
-/* Разделительные линии */
-/* Убираем старую линию */
-/* #toggle-repertoire { border-left: none; } */ /* Или просто не добавлять ее */
-/* Добавляем линии для средней кнопки */
+/* Разделительные линии для средней кнопки */
 #toggle-my-list { /* Новая средняя кнопка */
     border-left: 1px solid var(--border-color);
     border-right: 1px solid var(--border-color);
@@ -922,8 +901,7 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 /* --- Логика скрытия аккордов --- */
 #song-content.chords-hidden .chord {
     display: none; /* Просто скрываем элементы с классом .chord */
-    /* Можно добавить небольшой отрицательный margin-right, если текст слипается */
-    /* margin-right: -4px; */
+
 }
 
 /* --- Кнопка Скрыть/Показать аккорды --- */
@@ -1132,35 +1110,8 @@ body[data-theme="light"] .repertoire-view-button.active {
 /* АДАПТИВНОСТЬ                                */
 /* ============================================ */
 
-/* Универсальное правило для всех мобильных устройств */
-@media only screen and (max-device-width: 1024px), 
-       only screen and (max-width: 1024px),
-       (orientation: portrait) {
-    .select-filters-container { 
-        flex-direction: row !important; 
-        gap: 4px !important; 
-        flex-wrap: nowrap !important;
-    }
-    .select-filters-container fieldset { 
-        flex: 1 !important; 
-        min-width: 0 !important;
-        padding: 4px !important;
-    }
-    .select-filters-container legend { 
-        font-size: 0.65rem !important;
-        padding: 0 4px !important;
-    }
-    .select-filters-container select { 
-        font-size: 0.8rem !important; 
-        padding: 4px 6px !important; 
-        padding-right: 20px !important; 
-    }
-    
-    /* Скрываем legend на мобильных устройствах */
-    .select-filters-container legend { display: none !important; }
-}
+/* Универсальные стили для планшетов и мобильных */
 @media (max-width: 1024px) { 
-    /* Принудительно горизонтальное расположение на планшетах и смартфонах (включая большие экраны) */
     .select-filters-container { 
         flex-direction: row !important; 
         gap: 8px !important; 
@@ -1169,6 +1120,17 @@ body[data-theme="light"] .repertoire-view-button.active {
     .select-filters-container fieldset { 
         flex: 1 !important; 
         min-width: 0 !important;
+        padding: 6px !important;
+    }
+    .select-filters-container legend { 
+        font-size: 0.7rem !important;
+        padding: 0 6px !important;
+        display: none !important; /* Скрываем на мобильных */
+    }
+    .select-filters-container select { 
+        font-size: 0.85rem !important; 
+        padding: 6px 8px !important; 
+        padding-right: 22px !important; 
     }
 }
 
@@ -1223,23 +1185,29 @@ body[data-theme="light"] .repertoire-view-button.active {
     select { padding-right: 26px; background-position: right 6px center; background-size: 12px; }
     button { font-size: 14px; }
     
-    /* Адаптивность для select-filters-container */
-    .select-filters-container { flex-direction: row !important; gap: 3px !important; }
-    .select-filters-container fieldset { min-width: auto !important; padding: 3px !important; flex: 1 !important; }
-    .select-filters-container legend { font-size: 0.6rem !important; padding: 0 3px !important; }
-    .select-filters-container select { font-size: 0.75rem !important; padding: 3px 5px !important; padding-right: 18px !important; }
-    
-    /* Скрываем legend на мобильных для экономии места */
-    .select-filters-container legend { display: none !important; }
+    /* Адаптивность для select-filters-container - уточненные стили для мобильных */
+    .select-filters-container { 
+        flex-direction: row !important; 
+        gap: 3px !important; 
+    }
+    .select-filters-container fieldset { 
+        min-width: 0 !important; 
+        padding: 3px !important; 
+        flex: 1 !important; 
+    }
+    .select-filters-container select { 
+        font-size: 0.75rem !important; 
+        padding: 3px 5px !important; 
+        padding-right: 18px !important; 
+    }
     #theme-toggle-button { right: 10px; }
 
     /* Ряд Тональность/Разделить/Масштаб */
     .control-group:has(#key-select) { min-height: 36px; gap: 5px; }
     #key-select { min-width: 55px; height: 36px; padding-right: 25px; padding-left: 5px; margin-right: 5px; background-position: right 5px center; background-size: 14px; text-align: left; box-sizing: border-box; }
-    /* #split-text-button.control-group-button использует базовые стили на десктопе */
-    /* Кнопка Разделить на мобильных (становится simple) */
+    /* Кнопка Разделить на мобильных */
     #split-text-button { width: 36px; height: 36px; padding: 0; margin-left: 5px; margin-right: 5px; display: inline-flex; align-items: center; justify-content: center; }
-    /* #split-text-button.icon-button.simple применяет стиль simple */
+    
     #split-text-button > i { font-size: 0.9rem; margin: 0; }
     #split-text-button .button-text { display: none; }
 
@@ -1361,17 +1329,14 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     #repertoire-panel .panel-header { font-size: 1.1rem; padding-bottom: 8px; }
 #repertoire-panel {
-    padding-top: 8px; /* <<< УМЕНЬШЕНО (было 15px по умолчанию у .side-panel) */
-    /* Оставляем остальные паддинги панели по умолчанию или можно тоже уменьшить */
-    /* padding-left: 15px; padding-right: 15px; padding-bottom: 15px; */
+    padding-top: 8px;
 }
     #repertoire-panel #vocalist-select { padding: 8px 12px; padding-right: 30px; font-size: 0.9rem; margin-bottom: 8px; }
     #repertoire-panel-list { padding: 5px; }
     #repertoire-panel .repertoire-item { font-size: 0.85rem; padding: 7px 8px 7px 15px; }
     /* Форма создания сет-листа */
  #repertoire-panel {
-        padding-top: 5px; /* <<< Еще меньше верхний паддинг на мобильных */
-        /* Убедимся, что левый/правый паддинги тоже адекватны */
+        padding-top: 5px;
         padding-left: 10px;
         padding-right: 10px;
     }
@@ -1399,27 +1364,27 @@ body[data-theme="light"] .repertoire-view-button.active {
 
     /* --- Презентация на МОБИЛЬНЫХ --- */
     .presentation-content {
-        padding: 15px 10px 65px 10px; /* <<< Еще уменьшил верхний паддинг */
+        padding: 15px 10px 65px 10px;
     }
     .presentation-song h2 {
-         font-size: 0.9rem !important; /* <<< Сильно уменьшаем заголовок */
-         margin-bottom: 4px !important; /* <<< Минимальный отступ */
+         font-size: 0.9rem !important;
+         margin-bottom: 4px !important;
          line-height: 1.2 !important;
          font-weight: 500 !important;
     }
     .presentation-notes {
-        font-size: 0.7em !important; /* <<< Очень маленький шрифт для заметки */
-        margin-bottom: 8px !important; /* <<< Небольшой отступ */
-        padding: 2px 5px !important; /* <<< Минимальные паддинги */
+        font-size: 0.7em !important;
+        margin-bottom: 8px !important;
+        padding: 2px 5px !important;
         line-height: 1.25 !important;
     }
      .presentation-notes i.fas {
-        font-size: 0.9em !important; /* Уменьшаем иконку в заметке */
+        font-size: 0.9em !important;
         margin-right: 3px !important;
     }
     .presentation-song pre {
-         font-size: clamp(11px, 2.8vw, 15px) !important; /* <<< Можно пробовать подбирать */
-         line-height: 1.4 !important; /* <<< Чуть уменьшил */
+         font-size: clamp(11px, 2.8vw, 15px) !important;
+         line-height: 1.4 !important;
          margin-top: 0 !important;
     }
     /* --- Конец стилей презентации на мобильных --- */
