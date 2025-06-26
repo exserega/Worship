@@ -1288,7 +1288,24 @@ body[data-theme="light"] .repertoire-view-button.active {
 
 /* Универсальные стили для планшетов и мобильных */
 @media (max-width: 1024px) { 
-    /* АЛЬТЕРНАТИВНОЕ РЕШЕНИЕ: убираем переходы фонов, но сохраняем двухслойную структуру */
+    /* ХИРУРГИЧЕСКОЕ РЕШЕНИЕ: убираем только источники градиентных переходов */
+    
+    /* Принудительно отключаем градиенты и переходы в левой области */
+    html {
+        background-attachment: fixed !important;
+        background-repeat: no-repeat !important;
+        background-size: 100% 100% !important; /* Растягиваем фон на весь экран */
+        background-position: 0 0 !important; /* Фиксируем позицию */
+    }
+    
+    body {
+        background-attachment: fixed !important;
+        background-repeat: no-repeat !important;
+        background-size: 100% 100% !important;
+        background-position: 0 0 !important;
+    }
+    
+    /* Убираем фоновые эффекты только с элементов, которые могут создавать градиенты */
     *:not(.side-panel):not(.modal-overlay):not(.modal-content):not(.presentation-overlay):not(button):not(.mobile-nav-button) {
         background-attachment: scroll !important;
         background-image: none !important;
@@ -1358,6 +1375,35 @@ body[data-theme="light"] .repertoire-view-button.active {
         box-sizing: border-box !important; 
     }
 
+    /* УСИЛЕННОЕ РЕШЕНИЕ для мобильных - стабилизируем viewport и фон */
+    html {
+        background-attachment: fixed !important;
+        background-repeat: no-repeat !important;
+        background-size: 100% 100% !important;
+        background-position: 0 0 !important;
+        transform: translateZ(0) !important; /* Изолируем слой */
+        overflow-x: hidden !important; /* Убираем горизонтальную прокрутку */
+        width: 100vw !important; /* Фиксируем ширину viewport */
+        min-width: 100vw !important;
+        max-width: 100vw !important;
+    }
+    
+    body {
+        background-attachment: fixed !important;
+        background-repeat: no-repeat !important;
+        background-size: 100% 100% !important;
+        background-position: 0 0 !important;
+        transform: translateZ(0) !important;
+        will-change: auto !important; /* Отключаем оптимизации */
+        overflow-x: hidden !important;
+        width: 100vw !important;
+        min-width: 100vw !important;
+        max-width: 100vw !important;
+        margin: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
     /* ДОПОЛНИТЕЛЬНЫЕ ОГРАНИЧЕНИЯ для мобильных - убираем фоновые эффекты */
     *:not(.side-panel):not(.modal-overlay):not(.modal-content):not(.presentation-overlay):not(button):not(.mobile-nav-button) {
         background-attachment: scroll !important;
