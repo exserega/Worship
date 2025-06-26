@@ -282,27 +282,31 @@ input:focus, select:focus {
 }
 
 #sheet-select, #song-select { width: auto; flex-grow: 1; min-width: 140px;}
-/* Компактная поисковая строка */
-.control-group.search-group {
+/* Поисковая группа как fieldset */
+.search-group {
     position: relative;
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: nowrap;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 12px 16px 16px 16px;
+    margin: 0 0 15px 0;
+    background: transparent;
+    transition: border-color 0.3s ease;
 }
 
-.search-label {
-    font-size: 0.9rem;
-    color: var(--text-color);
+.search-group legend {
+    font-size: 0.7rem;
+    color: var(--label-color);
+    padding: 0 6px;
     font-weight: 500;
-    flex-shrink: 0;
+    background: var(--container-background-color);
     transition: color 0.3s ease;
 }
 
-.control-group.search-group #search-input {
-    flex: 1;
-    max-width: 400px;
-    min-width: 200px;
+.search-group #search-input {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    margin-bottom: 0;
 }
 
 /* Контейнер для списка результатов */
@@ -1166,14 +1170,14 @@ body[data-theme="light"] .repertoire-view-button.active {
         gap: 2px !important; 
     }
     
-    /* Компактный поиск на маленьких экранах */
-    .control-group.search-group {
-        gap: 6px;
+    /* Компактный fieldset поиска на маленьких экранах */
+    .search-group {
+        padding: 6px 10px 10px 10px;
+        margin-bottom: 8px;
     }
     
-    .search-label {
-        font-size: 0.8rem;
-        min-width: 45px;
+    .search-group legend {
+        font-size: 0.6rem;
     }
             .filter-group { 
             flex: 1; 
@@ -1298,19 +1302,20 @@ body[data-theme="light"] .repertoire-view-button.active {
     h1 { font-size: 1.2rem; }
     .controls { gap: 6px; margin-bottom: 10px; }
     
-    /* Мобильные стили для компактного поиска */
-    .control-group.search-group {
-        gap: 8px;
+    /* Мобильные стили для fieldset поиска */
+    .search-group {
+        padding: 8px 12px 12px 12px;
+        margin-bottom: 10px;
     }
     
-    .search-label {
-        font-size: 0.85rem;
-        min-width: 50px;
+    .search-group legend {
+        font-size: 0.65rem;
     }
     
-    .control-group.search-group #search-input {
-        min-width: 150px;
-        max-width: none;
+    .search-group #search-input {
+        font-size: 14px;
+        padding: 6px 8px;
+        height: 36px;
     }
     #song-title {
         font-size: 0.9rem; /* Еще меньше для мобильных */
