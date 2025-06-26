@@ -179,11 +179,16 @@ body[data-theme="light"] .theme-icon.moon {
 }
 
 /* --- Headings --- */
-#song-content h2 { /* Заголовок песни в основном виде */
-    text-align: center; color: var(--text-color); margin-top: 0;
-    margin-bottom: 20px; font-size: 1.5rem; font-weight: 600;
-    letter-spacing: 0.5px; transition: color 0.3s ease;
-    padding-right: 40px; /* Добавим отступ справа, чтобы текст не заезжал под кнопку копирования */
+#song-title { /* Заголовок песни как legend */
+    font-size: 1.2rem; 
+    font-weight: 600;
+    color: var(--text-color);
+    letter-spacing: 0.5px;
+    padding: 0 12px; /* Padding как у других legend */
+    background: var(--container-background-color);
+    transition: color 0.3s ease;
+    text-align: left; /* Выравнивание по левому краю как у других legend */
+    margin: 0; /* Убираем лишние отступы */
 }
 /* Заголовки секций в панелях (h3) */
 .list-section h3, #repertoire-panel .panel-header {
@@ -422,8 +427,21 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
 
 
 /* --- Отображение Песни --- */
-#song-content { background: var(--container-background-color); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); margin-top: 15px; position: relative; overflow: hidden; border: 1px solid var(--border-color); transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
-#song-content pre { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; white-space: pre-wrap; word-wrap: break-word; line-height: 1.5; font-size: var(--lyrics-font-size, 1rem); color: var(--text-color); margin: 0; padding-top: 15px; /* Добавим отступ сверху под кнопку копирования */ overflow-x: auto; transition: color 0.3s ease; }
+#song-content { 
+    background: var(--container-background-color); 
+    padding: 15px 20px 20px 20px; /* Меньший отступ сверху под legend */
+    border-radius: var(--radius); 
+    box-shadow: var(--shadow); 
+    margin-top: 15px; 
+    position: relative; 
+    overflow: hidden; 
+    border: 1px solid var(--border-color); 
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    /* Убираем лишние margin у fieldset */
+    margin-left: 0;
+    margin-right: 0;
+}
+#song-content pre { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; white-space: pre-wrap; word-wrap: break-word; line-height: 1.5; font-size: var(--lyrics-font-size, 1rem); color: var(--text-color); margin: 0; padding-top: 10px; /* Меньший отступ, так как legend уже создает отступ */ overflow-x: auto; transition: color 0.3s ease; }
 #song-content .chord {
     font-weight: 700 !important;
     color: var(--primary-color);
@@ -1294,10 +1312,9 @@ body[data-theme="light"] .repertoire-view-button.active {
         min-width: 150px;
         max-width: none;
     }
-    #song-content h2 {
-        font-size: 1.1rem; /* Уменьшили для мобильных */
-        padding-right: 35px; /* Отступ под кнопку копирования */
-        margin-bottom: 15px; /* Слегка уменьшили */
+    #song-title {
+        font-size: 1.0rem; /* Уменьшили для мобильных */
+        padding: 0 8px; /* Компактный padding для мобильных */
     }
 
     select, input { font-size: 14px; padding: 6px 8px; height: 36px; }
@@ -1397,7 +1414,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     #add-to-repertoire-button { padding: 10px 15px; height: 40px; }
 
     /* Другие мобильные стили */
-    #song-content { padding: 15px; margin-top: 10px; }
+    #song-content { padding: 10px 15px 15px 15px; margin-top: 10px; } /* Меньший отступ сверху под legend */
     #song-content pre {
         font-size: var(--lyrics-font-size); /* ИСПОЛЬЗУЕМ ПЕРЕМЕННУЮ */
         line-height: 1.6;
