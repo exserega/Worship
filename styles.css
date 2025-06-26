@@ -1064,6 +1064,36 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     /* Скрываем legend на очень маленьких экранах */
     .select-filters-container legend { display: none !important; }
+    
+    /* ЭКСТРА-СТРОГИЕ ограничения для очень маленьких экранов */
+    .side-panel { 
+        width: 85vw !important; 
+        max-width: 85vw !important;
+        min-width: 250px !important;
+        padding: 8px !important;
+        margin: 0 !important;
+        border: none !important;
+    }
+}
+
+/* КРИТИЧЕСКИЕ ограничения для ОЧЕНЬ маленьких экранов */
+@media (max-width: 320px) {
+    .side-panel { 
+        width: 80vw !important; 
+        max-width: 80vw !important;
+        min-width: 200px !important;
+        padding: 5px !important;
+        font-size: 0.8rem !important;
+    }
+    
+    .list-container {
+        padding: 3px !important;
+    }
+    
+    .favorite-item, .setlist-item, .setlist-song-item, .repertoire-item { 
+        font-size: 0.75rem !important; 
+        padding: 6px 8px !important; 
+    }
 }
 /* === КОНЕЦ ВАРИАНТА 4 === */
 
@@ -1211,12 +1241,19 @@ body[data-theme="light"] .repertoire-view-button.active {
 
     /* Панели */
     .side-panel { 
-        width: 95%; max-width: 95%; padding: 15px; gap: 12px; 
-        height: 100vh; /* Полная высота экрана */
-        overflow: hidden; /* Строго запрещаем выход за пределы */
+        width: 90vw !important; /* 90% ширины viewport */
+        max-width: 90vw !important; /* Максимум 90% viewport */
+        min-width: min(280px, 85vw) !important; /* Минимальная ширина, но не больше 85% экрана */
+        padding: 10px !important; gap: 10px !important; 
+        height: 100vh !important; /* Полная высота экрана */
+        overflow: hidden !important; /* Строго запрещаем выход за пределы */
         /* СТРОГОЕ ПОЗИЦИОНИРОВАНИЕ для мобильных */
         left: 0 !important; /* Принудительно слева для всех панелей */
         right: auto !important; /* Отключаем правое позиционирование */
+        top: 0 !important; /* Сверху */
+        bottom: 0 !important; /* До низа */
+        position: fixed !important; /* Фиксированное позиционирование */
+        box-sizing: border-box !important; /* Включаем padding в размер */
     }
     
     /* Специальные стили для правой панели на мобильных - она тоже слева, но с другой анимацией */
