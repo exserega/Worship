@@ -142,7 +142,12 @@ export function displaySongDetails(songData, keyToSelect) {
     const keyDisplay = document.getElementById('youtube-video-key-display');
 
     if (!songData) {
-        songContent.innerHTML = '<h2>Выберите песню</h2><pre></pre>';
+        // Обновляем legend и pre, сохраняя fieldset структуру
+        const songTitle = songContent.querySelector('#song-title');
+        const songPre = songContent.querySelector('pre');
+        if (songTitle) songTitle.textContent = 'Выберите песню';
+        if (songPre) songPre.textContent = '';
+        
         playerContainer.innerHTML = '';
         playerSection.style.display = 'none';
         if (bpmDisplay) bpmDisplay.textContent = 'N/A';
@@ -183,12 +188,15 @@ export function displaySongDetails(songData, keyToSelect) {
     }
 
     const finalHighlightedLyrics = getRenderedSongText(originalLyrics, originalKeyFromSheet, currentSelectedKey);
-    songContent.innerHTML = `
-        <button id="copy-text-button" class="icon-button simple" title="Копировать текст песни">
-            <i class="far fa-copy"></i>
-        </button>
-        <h2>${title} — ${currentSelectedKey}</h2>
-        <pre>${finalHighlightedLyrics}</pre>`;
+    
+    // Обновляем legend и pre, сохраняя fieldset структуру
+    const songTitle = songContent.querySelector('#song-title');
+    const songPre = songContent.querySelector('pre');
+    const copyBtn = songContent.querySelector('#copy-text-button');
+    
+    if (songTitle) songTitle.textContent = `${title} — ${currentSelectedKey}`;
+    if (songPre) songPre.innerHTML = finalHighlightedLyrics;
+    if (copyBtn) copyBtn.style.display = 'block';
     
     updateFontSize();
     songContent.classList.toggle('chords-hidden', !state.areChordsVisible);
