@@ -223,7 +223,7 @@ body[data-theme="light"] .theme-icon.moon {
     min-width: 0; 
     border: 1px solid var(--border-color); 
     border-radius: var(--radius); 
-    padding: 8px 8px; 
+    padding: 6px 8px 10px 8px; /* Уменьшаем сверху, увеличиваем снизу */
     margin: 0; 
     background: transparent; 
     transition: border-color 0.3s ease; 
@@ -1127,7 +1127,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         flex: 1; 
         min-width: 0;
         height: 40px;
-        padding: 6px 4px;
+        padding: 4px 4px 8px 4px;
         display: flex;
         align-items: center;
     }
@@ -1188,7 +1188,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         flex: 1; 
         min-width: 0;
         height: 44px;
-        padding: 7px 6px;
+        padding: 5px 6px 9px 6px;
         display: flex;
         align-items: center;
     }
@@ -1279,7 +1279,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         min-width: 0; 
         flex: 1; 
         height: 42px;
-        padding: 6px 5px;
+        padding: 4px 5px 8px 5px;
         display: flex;
         align-items: center;
     }
