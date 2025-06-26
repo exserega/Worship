@@ -1033,7 +1033,7 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 /* --- Кнопка Копировать текст --- */
 #copy-text-button {
     position: absolute; /* Абсолютное позиционирование */
-    top: 5px;           /* Ближе к верхнему краю */
+    top: 2px;           /* Почти у самой границы */
     right: 5px;         /* Ближе к правому краю */
     z-index: 5;         /* Чтобы быть поверх текста, но ниже других элементов управления */
     width: 32px;        /* Меньший размер */
@@ -1400,7 +1400,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
          /* Кнопка Копировать на мобильных */
      #copy-text-button {
-         top: 3px;
+         top: 1px;
          right: 3px;
          width: 30px;
          height: 30px;
