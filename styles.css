@@ -394,7 +394,7 @@ body[data-theme="light"] button.icon-button.simple:active:not(:disabled) { backg
     background: var(--container-background-color);
     transition: color 0.3s ease;
 }
-#key-select { padding: 0 5px; font-size: 0.9rem; width: auto; min-width: 60px; text-align: center; height: 21px; border: none; background: transparent; margin: 0; flex-shrink: 0; }
+#key-select { padding: 0 5px; font-size: 0.9rem; width: 100%; min-width: 60px; text-align: center; height: 21px; border: none; background: transparent; margin: 0; flex-shrink: 0; }
 
 /* Группировка функциональных кнопок */
 .function-buttons-group {
@@ -1363,7 +1363,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     .key-group legend {
         font-size: 0.65rem;
     }
-    #key-select { min-width: 55px; height: 19px; padding: 0 3px; padding-right: 18px; background-position: right 3px center; background-size: 12px; text-align: left; box-sizing: border-box; }
+    #key-select { width: 100%; min-width: 55px; height: 19px; padding: 0 3px; padding-right: 18px; background-position: right 3px center; background-size: 12px; text-align: center; box-sizing: border-box; }
     
     /* Мобильная группировка кнопок */
     .function-buttons-group {
