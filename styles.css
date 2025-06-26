@@ -223,11 +223,11 @@ body[data-theme="light"] .theme-icon.moon {
     min-width: 0; 
     border: 1px solid var(--border-color); 
     border-radius: var(--radius); 
-    padding: 4px 8px; 
+    padding: 6px 8px; 
     margin: 0; 
     background: transparent; 
     transition: border-color 0.3s ease; 
-    height: 38px; /* Общая высота как у всех элементов */
+    height: 42px; /* Увеличенная высота для лучшего обрамления */
     box-sizing: border-box;
     display: flex;
     align-items: center;
@@ -1126,8 +1126,10 @@ body[data-theme="light"] .repertoire-view-button.active {
     .filter-group { 
         flex: 1; 
         min-width: 0;
-        height: 36px;
-        padding: 2px 4px;
+        height: 38px;
+        padding: 4px 4px;
+        display: flex;
+        align-items: center;
     }
     .select-filters-container .filter-group select {
         height: 16px;
@@ -1185,8 +1187,8 @@ body[data-theme="light"] .repertoire-view-button.active {
     .filter-group { 
         flex: 1; 
         min-width: 0;
-        height: 38px;
-        padding: 3px 6px;
+        height: 40px;
+        padding: 5px 6px;
         display: flex;
         align-items: center;
     }
@@ -1276,10 +1278,8 @@ body[data-theme="light"] .repertoire-view-button.active {
     .filter-group { 
         min-width: 0; 
         flex: 1; 
-        height: 36px;
-        display: flex;
-        align-items: center;
-        padding: 3px 5px;
+        height: 38px;
+        padding: 4px 5px;
         display: flex;
         align-items: center;
     }
