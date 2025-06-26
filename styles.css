@@ -249,7 +249,7 @@ select, input[type="text"] {
 }
 
 /* Селекты внутри fieldset должны быть меньше, чтобы была видна рамка */
-.filter-group select {
+.select-filters-container .filter-group select {
     height: 28px;
     padding: 4px 8px;
     padding-right: 24px;
@@ -1122,15 +1122,15 @@ body[data-theme="light"] .repertoire-view-button.active {
         min-width: 45px;
     }
     .filter-group { 
-        flex: 1 !important; 
-        min-width: 0 !important;
-        height: 36px !important;
-        padding: 2px 4px !important;
+        flex: 1; 
+        min-width: 0;
+        height: 36px;
+        padding: 2px 4px;
     }
-    .filter-group select {
-        height: 30px !important;
-        padding: 2px 4px !important;
-        padding-right: 16px !important;
+    .select-filters-container .filter-group select {
+        height: 30px;
+        padding: 2px 4px;
+        padding-right: 16px;
     }
     .filter-group legend { 
         display: none !important; /* Скрываем подписи на очень маленьких экранах */
@@ -1184,15 +1184,15 @@ body[data-theme="light"] .repertoire-view-button.active {
         flex-wrap: nowrap !important;
     }
     .filter-group { 
-        flex: 1 !important; 
-        min-width: 0 !important;
-        height: 38px !important;
-        padding: 3px 6px !important;
+        flex: 1; 
+        min-width: 0;
+        height: 38px;
+        padding: 3px 6px;
     }
-    .filter-group select {
-        height: 30px !important;
-        padding: 4px 6px !important;
-        padding-right: 20px !important;
+    .select-filters-container .filter-group select {
+        height: 30px;
+        padding: 4px 6px;
+        padding-right: 20px;
     }
     .filter-group legend { 
         font-size: 0.6rem !important;
@@ -1278,19 +1278,17 @@ body[data-theme="light"] .repertoire-view-button.active {
         gap: 3px !important; 
     }
     .filter-group { 
-        min-width: 0 !important; 
-        flex: 1 !important; 
-        height: 36px !important;
-        padding: 3px 5px 5px 5px !important;
+        min-width: 0; 
+        flex: 1; 
+        height: 36px;
+        padding: 3px 5px;
     }
     .filter-group legend {
         display: none !important; /* Скрываем подписи на мобильных */
     }
-    .select-filters-container select { 
-        font-size: 0.75rem !important; 
-        padding: 3px 5px !important; 
-        padding-right: 18px !important; 
-        height: 28px !important;
+    .select-filters-container .filter-group select { 
+        font-size: 0.75rem; 
+        height: 28px;
     }
     #theme-toggle-button { right: 10px; }
 
