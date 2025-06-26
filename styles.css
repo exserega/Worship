@@ -227,6 +227,7 @@ select, input[type="text"] {
     border-radius: var(--radius); transition: all 0.2s ease; outline: none;
     appearance: none; background: var(--input-bg-color); color: var(--text-color);
     width: 100%; box-sizing: border-box;
+    height: 38px; /* Единая высота для всех элементов управления */
 }
 select {
     /* Стрелка для темной темы (#e5e7eb = %23e5e7eb) */
@@ -779,7 +780,7 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
 /* Панель Репертуара - Селектор вокалиста */
 .repertoire-vocalist-selector { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; margin-bottom: 10px; /* Добавили отступ снизу */ }
 .repertoire-vocalist-selector label { font-size: 0.8rem; color: var(--label-color); text-transform: uppercase; transition: color 0.3s ease;}
-#repertoire-panel #vocalist-select { width: 100%; padding: 10px 14px; padding-right: 35px; font-size: 0.95rem; background-color: var(--input-bg-color); }
+#repertoire-panel #vocalist-select { width: 100%; padding: 10px 14px; padding-right: 35px; font-size: 0.95rem; background-color: var(--input-bg-color); height: 38px; box-sizing: border-box; }
 #repertoire-panel-list { /* Контейнер для аккордеона */ flex-grow: 1; min-height: 100px; overflow-y: auto; margin-bottom: 0; padding: 5px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--background-color); max-height: none !important; transition: background-color 0.3s ease, border-color 0.3s ease; }
 #repertoire-panel-list::-webkit-scrollbar { width: 6px; }
 #repertoire-panel-list::-webkit-scrollbar-track { background: var(--border-color); border-radius: 3px;}
@@ -1100,6 +1101,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         font-size: 0.7rem !important; 
         padding: 2px 4px !important; 
         padding-right: 16px !important; 
+        height: 36px !important;
     }
     
     /* Скрываем legend на очень маленьких экранах */
@@ -1160,6 +1162,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         font-size: 0.85rem !important; 
         padding: 6px 8px !important; 
         padding-right: 22px !important; 
+        height: 38px !important;
     }
 }
 
@@ -1225,7 +1228,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         margin-bottom: 15px; /* Слегка уменьшили */
     }
 
-    select, input { font-size: 14px; padding: 6px 8px; }
+    select, input { font-size: 14px; padding: 6px 8px; height: 36px; }
     select { padding-right: 26px; background-position: right 6px center; background-size: 12px; }
     button { font-size: 14px; }
     
@@ -1243,6 +1246,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         font-size: 0.75rem !important; 
         padding: 3px 5px !important; 
         padding-right: 18px !important; 
+        height: 36px !important;
     }
     #theme-toggle-button { right: 10px; }
 
@@ -1375,7 +1379,7 @@ body[data-theme="light"] .repertoire-view-button.active {
 #repertoire-panel {
     padding-top: 8px;
 }
-    #repertoire-panel #vocalist-select { padding: 8px 12px; padding-right: 30px; font-size: 0.9rem; margin-bottom: 8px; }
+    #repertoire-panel #vocalist-select { padding: 8px 12px; padding-right: 30px; font-size: 0.9rem; margin-bottom: 8px; height: 36px; box-sizing: border-box; }
     #repertoire-panel-list { padding: 5px; }
     #repertoire-panel .repertoire-item { font-size: 0.85rem; padding: 7px 8px 7px 15px; }
     /* Форма создания сет-листа */
@@ -1391,7 +1395,7 @@ body[data-theme="light"] .repertoire-view-button.active {
      }
 
     #setlists-panel .create-setlist-form { margin-bottom: 10px; }
-    #new-setlist-name-input { font-size: 0.9rem; padding: 7px 10px; }
+    #new-setlist-name-input { font-size: 0.9rem; padding: 7px 10px; height: 36px; box-sizing: border-box; }
     #create-setlist-button { padding: 7px 12px; font-size: 0.8rem; }
     /* Контролы текущего сет-листа на мобильных */
     #setlists-panel .current-setlist-controls {
