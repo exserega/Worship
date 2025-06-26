@@ -194,7 +194,9 @@ export function displaySongDetails(songData, keyToSelect) {
     const songPre = songContent.querySelector('pre');
     const copyBtn = songContent.querySelector('#copy-text-button');
     
-    if (songTitle) songTitle.textContent = title; // Убираем тональность из заголовка
+    // Убираем из заголовка всё что идет после скобок (строчки для поиска)
+    const cleanTitle = title.includes('(') ? title.split('(')[0].trim() : title;
+    if (songTitle) songTitle.textContent = cleanTitle;
     if (songPre) songPre.innerHTML = finalHighlightedLyrics;
     if (copyBtn) copyBtn.style.display = 'block';
     
