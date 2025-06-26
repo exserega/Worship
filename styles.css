@@ -1311,49 +1311,13 @@ body[data-theme="light"] .repertoire-view-button.active {
         box-sizing: border-box !important; 
         /* Убираем фоновые артефакты со ВСЕХ элементов на мобильных */
     }
-    *:not(select):not(button):not(input):not(textarea):not(.chord) {
-        background-image: none !important;
-        background: transparent !important;
-    }
+
     
-    /* УЛЬТРА-РАДИКАЛЬНОЕ устранение ВСЕХ переходов на мобильных */
-    *, *::before, *::after {
+    /* УМЕРЕННОЕ устранение фоновых артефактов только для body и html */
+    body, html {
         background-image: none !important;
         background-attachment: scroll !important;
-        box-shadow: none !important;
-        filter: none !important;
         backdrop-filter: none !important;
-    }
-    
-    /* Принудительно устраняем переходы с основных элементов */
-    body, html, .container, header, .controls, .search-group, 
-    .filter-group, .key-group, #song-content {
-        background: var(--background-color) !important;
-        background-image: none !important;
-        background-attachment: scroll !important;
-        background-repeat: no-repeat !important;
-        background-position: 0 0 !important;
-        background-size: auto !important;
-        backdrop-filter: none !important;
-        filter: none !important;
-    }
-    
-    .container {
-        background: var(--container-background-color) !important;
-    }
-    
-    /* ПРИНУДИТЕЛЬНО отключаем ВСЕ переходы и анимации на мобильных */
-    *, *::before, *::after {
-        transition: none !important;
-        animation: none !important;
-        transform: none !important;
-    }
-    
-    /* Исключения для элементов, которым нужны переходы */
-    .side-panel, .side-panel.open,
-    .modal-overlay, .modal-content,
-    .presentation-overlay {
-        transition: transform 0.3s ease !important;
     }
     
     /* ПРИНУДИТЕЛЬНОЕ ОГРАНИЧЕНИЕ для всех fixed элементов */
@@ -1369,11 +1333,6 @@ body[data-theme="light"] .repertoire-view-button.active {
         margin: 0 !important;
         border: none !important;
         transform: translateX(-100%) !important;
-        /* УСТРАНЯЕМ фоновые артефакты с панелей */
-        background: var(--container-background-color) !important;
-        background-image: none !important;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3) !important;
-        backdrop-filter: none !important;
     }
     
     .side-panel.open,
@@ -1388,16 +1347,9 @@ body[data-theme="light"] .repertoire-view-button.active {
     /* МАКСИМАЛЬНАЯ ОПТИМИЗАЦИЯ ОТСТУПОВ ДЛЯ ТЕКСТА */
     body { 
         padding: 1px; font-size: 14px; padding-bottom: 70px; /* Уменьшили с 2px до 1px */
-        /* ДОПОЛНИТЕЛЬНАЯ защита от фоновых артефактов на мобильных */
-        background: var(--background-color) !important;
-        background-image: none !important;
-        background-attachment: scroll !important;
     }
     .container { 
         padding: 3px; margin: 1px auto; /* Уменьшили с 6px/2px до 3px/1px */
-        /* Убираем любые фоновые эффекты с контейнера */
-        background: var(--container-background-color) !important;
-        background-image: none !important;
     }
     header { padding: 4px 6px; margin-bottom: 4px; } /* Уменьшили с 5px 8px до 4px 6px */
     h1 { font-size: 1.2rem; }
