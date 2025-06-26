@@ -70,7 +70,7 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 .container {
-    max-width: 600px; margin: 25px auto; padding: 20px;
+    max-width: 600px; margin: 15px auto; padding: 12px; /* Уменьшили margin с 25px до 15px, padding с 20px до 12px */
     box-shadow: var(--shadow); border-radius: var(--radius);
     background: var(--container-background-color); position: relative;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
@@ -217,12 +217,12 @@ body[data-theme="light"] .theme-icon.moon {
 
 
 /* --- Forms --- */
-.controls { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
+.controls { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; } /* Уменьшили gap и margin с 12px до 8px */
 .control-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .control-group label { font-size: 0.8rem; color: var(--label-color); margin-bottom: 4px; flex-basis: 100%; text-transform: uppercase; letter-spacing: 0.5px; transition: color 0.3s ease;}
 
 /* Контейнер для фильтров с компактными fieldset */
-.select-filters-container { display: flex; gap: 12px; flex-wrap: nowrap !important; flex-direction: row !important; margin-bottom: 12px; }
+.select-filters-container { display: flex; gap: 8px; flex-wrap: nowrap !important; flex-direction: row !important; margin-bottom: 8px; } /* Уменьшили gap и margin с 12px до 8px */
 .filter-group { 
     flex: 1; 
     min-width: 0; 
@@ -433,10 +433,10 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
 /* --- Отображение Песни --- */
 #song-content { 
     background: var(--container-background-color); 
-    padding: 15px 20px 20px 20px; /* Меньший отступ сверху под legend */
+    padding: 10px 12px 15px 12px; /* Уменьшили отступы с 15px 20px 20px 20px */
     border-radius: var(--radius); 
     box-shadow: var(--shadow); 
-    margin-top: 12px; 
+    margin-top: 8px; /* Уменьшили с 12px */
     position: relative; 
     overflow: hidden; 
     border: 1px solid var(--border-color); 
@@ -445,7 +445,7 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
     margin-left: 0;
     margin-right: 0;
 }
-#song-content pre { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; white-space: pre-wrap; word-wrap: break-word; line-height: 1.5; font-size: var(--lyrics-font-size, 1rem); color: var(--text-color); margin: 0; padding-top: 10px; /* Меньший отступ, так как legend уже создает отступ */ overflow-x: auto; transition: color 0.3s ease; }
+#song-content pre { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; white-space: pre-wrap; word-wrap: break-word; line-height: 1.5; font-size: var(--lyrics-font-size, 1rem); color: var(--text-color); margin: 0; padding-top: 6px; /* Уменьшили с 10px */ overflow-x: auto; transition: color 0.3s ease; }
 #song-content .chord {
     font-weight: 700 !important;
     color: var(--primary-color);
@@ -1297,16 +1297,17 @@ body[data-theme="light"] .repertoire-view-button.active {
         width: 90vw !important;
     }
     
-    body { padding: 2px; font-size: 14px; padding-bottom: 70px; }
-    .container { padding: 6px; margin: 2px auto; }
-    header { padding: 5px 8px; margin-bottom: 6px; }
+    /* МАКСИМАЛЬНАЯ ОПТИМИЗАЦИЯ ОТСТУПОВ ДЛЯ ТЕКСТА */
+    body { padding: 1px; font-size: 14px; padding-bottom: 70px; } /* Уменьшили с 2px до 1px */
+    .container { padding: 3px; margin: 1px auto; } /* Уменьшили с 6px/2px до 3px/1px */
+    header { padding: 4px 6px; margin-bottom: 4px; } /* Уменьшили с 5px 8px до 4px 6px */
     h1 { font-size: 1.2rem; }
-    .controls { gap: 10px; margin-bottom: 10px; }
+    .controls { gap: 8px; margin-bottom: 8px; } /* Уменьшили с 10px до 8px */
     
     /* Мобильные стили для fieldset поиска */
     .search-group {
-        padding: 3px 4px 6px 4px; /* Ультра-компактные отступы */
-        margin-bottom: 10px;
+        padding: 2px 3px 5px 3px; /* Уменьшили с 3px 4px 6px 4px */
+        margin-bottom: 8px; /* Уменьшили с 10px */
     }
     
     .search-group legend {
@@ -1315,29 +1316,29 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     .search-group #search-input {
         font-size: 14px;
-        padding: 6px 8px;
+        padding: 5px 6px; /* Уменьшили с 6px 8px */
         height: 36px;
     }
     #song-title {
         font-size: 0.9rem; /* Еще меньше для мобильных */
-        padding: 0 8px; /* Стандартный padding для мобильных */
+        padding: 0 6px; /* Уменьшили с 8px до 6px */
     }
 
-    select, input { font-size: 14px; padding: 6px 8px; height: 36px; }
-    select { padding-right: 26px; background-position: right 6px center; background-size: 12px; }
+    select, input { font-size: 14px; padding: 5px 6px; height: 36px; } /* Уменьшили с 6px 8px */
+    select { padding-right: 24px; background-position: right 5px center; background-size: 12px; } /* Уменьшили отступы */
     button { font-size: 14px; }
     
     /* Адаптивность для select-filters-container - уточненные стили для мобильных */
     .select-filters-container { 
         flex-direction: row !important; 
-        gap: 3px !important; 
-        margin-bottom: 10px !important;
+        gap: 2px !important; /* Уменьшили с 3px */
+        margin-bottom: 8px !important; /* Уменьшили с 10px */
     }
     .filter-group { 
         min-width: 0; 
         flex: 1; 
         height: 42px;
-        padding: 3px 3px 10px 3px; /* Минимальные отступы для максимального использования ширины */
+        padding: 2px 2px 8px 2px; /* Уменьшили с 3px 3px 10px 3px */
         display: flex;
         align-items: center; /* Возвращаем центрирование */
     }
@@ -1348,29 +1349,29 @@ body[data-theme="light"] .repertoire-view-button.active {
     .select-filters-container .filter-group select { 
         font-size: 0.775rem; /* Увеличили на 2px для мобильных (0.65rem + 0.125rem ≈ +2px) */
         height: 24px; /* Увеличена высота для мобильных */
-        padding: 0px 3px;
-        padding-right: 14px;
+        padding: 0px 2px; /* Уменьшили с 3px */
+        padding-right: 12px; /* Уменьшили с 14px */
     }
-    #theme-toggle-button { right: 10px; }
+    #theme-toggle-button { right: 8px; } /* Уменьшили с 10px */
 
     /* Ряд Тональность/Разделить/Масштаб */
-    .control-group:has(#key-select) { min-height: 36px; gap: 8px; margin-bottom: 10px; }
+    .control-group:has(#key-select) { min-height: 36px; gap: 6px; margin-bottom: 8px; } /* Уменьшили gap с 8px до 6px */
     
     /* Мобильный fieldset для тональности */
     .key-group {
         height: 36px;
-        padding: 2px 4px 7px 4px;
+        padding: 2px 3px 6px 3px; /* Уменьшили с 2px 4px 7px 4px */
     }
     .key-group legend {
         font-size: 0.65rem;
     }
-    #key-select { width: 100%; min-width: 55px; height: 19px; padding: 0 15px 0 15px; background-position: right 3px center; background-size: 12px; text-align: center; box-sizing: border-box; }
+    #key-select { width: 100%; min-width: 55px; height: 19px; padding: 0 12px 0 12px; background-position: right 2px center; background-size: 12px; text-align: center; box-sizing: border-box; } /* Уменьшили padding с 15px до 12px */
     
     /* Мобильная группировка кнопок */
     .function-buttons-group {
-        padding: 0 4px;
-        margin: 0 3px;
-        gap: 3px;
+        padding: 0 3px; /* Уменьшили с 4px */
+        margin: 0 2px; /* Уменьшили с 3px */
+        gap: 2px; /* Уменьшили с 3px */
         border-left: 1px solid color-mix(in srgb, var(--border-color) 40%, transparent);
         border-right: 1px solid color-mix(in srgb, var(--border-color) 40%, transparent);
     }
@@ -1401,7 +1402,7 @@ body[data-theme="light"] .repertoire-view-button.active {
          /* Кнопка Копировать на мобильных */
      #copy-text-button {
          top: 1px;
-         right: 3px;
+         right: 2px; /* Уменьшили с 3px */
          width: 30px;
          height: 30px;
          font-size: 0.8rem;
@@ -1410,27 +1411,27 @@ body[data-theme="light"] .repertoire-view-button.active {
 
 
     /* Footer */
-    .controls-footer { align-items: stretch; flex-direction: column; gap: 10px; margin-top: 15px; }
-    .controls-footer > * { width: auto; margin-bottom: 8px; align-self: center; }
+    .controls-footer { align-items: stretch; flex-direction: column; gap: 8px; margin-top: 12px; } /* Уменьшили gap с 10px до 8px, margin с 15px до 12px */
+    .controls-footer > * { width: auto; margin-bottom: 6px; align-self: center; } /* Уменьшили с 8px */
     .controls-footer .bpm-controls { justify-content: center; width: 100%; }
     .bpm-controls #time-signature, .bpm-controls #bpm-display { height: 36px; }
-    #metronome-button { width: 42px; height: 42px; padding: 0; margin: 5px auto; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; }
+    #metronome-button { width: 42px; height: 42px; padding: 0; margin: 4px auto; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; } /* Уменьшили margin с 5px */
     #metronome-button > i { font-size: 1.1rem; margin: 0; }
     #metronome-button .button-text { display: none; }
-    #holychords-button { padding: 8px 15px; height: 36px; }
-    #add-to-repertoire-button { padding: 10px 15px; height: 40px; }
+    #holychords-button { padding: 6px 12px; height: 36px; } /* Уменьшили padding с 8px 15px */
+    #add-to-repertoire-button { padding: 8px 12px; height: 40px; } /* Уменьшили padding с 10px 15px */
 
-    /* Другие мобильные стили */
-    #song-content { padding: 8px 10px 12px 10px; margin-top: 10px; } /* Компактные отступы для максимального использования экрана */
+    /* ===== САМАЯ ВАЖНАЯ ЧАСТЬ - ОБЛАСТЬ ТЕКСТА ===== */
+    #song-content { padding: 4px 6px 8px 6px; margin-top: 6px; } /* КАРДИНАЛЬНО уменьшили с 8px 10px 12px 10px и margin с 10px */
     #song-content pre {
         font-size: var(--lyrics-font-size); /* ИСПОЛЬЗУЕМ ПЕРЕМЕННУЮ */
-        line-height: 1.6;
-        padding: 6px 0;
+        line-height: 1.5; /* Оптимальная читаемость */
+        padding: 2px 0; /* МИНИМАЛЬНЫЙ отступ с 6px 0 */
         white-space: pre-wrap;
         word-wrap: break-word;
         overflow-x: auto;
     }
-
+    /* ===== КОНЕЦ САМОЙ ВАЖНОЙ ЧАСТИ ===== */
 
     /* МОБИЛЬНЫЕ ПАНЕЛИ - КРИТИЧЕСКАЯ ПЕРЕПИСКА */
     .side-panel { 
