@@ -1296,15 +1296,15 @@ body[data-theme="light"] .repertoire-view-button.active {
         width: 90vw !important;
     }
     
-    body { padding: 5px; font-size: 14px; padding-bottom: 70px; }
-    .container { padding: 10px; margin: 8px auto; }
-    header { padding: 5px 15px; margin-bottom: 6px; }
+    body { padding: 2px; font-size: 14px; padding-bottom: 70px; }
+    .container { padding: 6px; margin: 2px auto; }
+    header { padding: 5px 8px; margin-bottom: 6px; }
     h1 { font-size: 1.2rem; }
     .controls { gap: 10px; margin-bottom: 10px; }
     
     /* Мобильные стили для fieldset поиска */
     .search-group {
-        padding: 3px 6px 6px 6px; /* Максимально компактные отступы */
+        padding: 3px 4px 6px 4px; /* Ультра-компактные отступы */
         margin-bottom: 10px;
     }
     
@@ -1336,7 +1336,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         min-width: 0; 
         flex: 1; 
         height: 42px;
-        padding: 3px 5px 10px 5px; /* Меньший отступ сверху, больший снизу для смещения центра вверх */
+        padding: 3px 3px 10px 3px; /* Минимальные отступы для максимального использования ширины */
         display: flex;
         align-items: center; /* Возвращаем центрирование */
     }
@@ -1358,7 +1358,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     /* Мобильный fieldset для тональности */
     .key-group {
         height: 36px;
-        padding: 2px 6px 7px 6px;
+        padding: 2px 4px 7px 4px;
     }
     .key-group legend {
         font-size: 0.65rem;
@@ -1367,9 +1367,9 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     /* Мобильная группировка кнопок */
     .function-buttons-group {
-        padding: 0 8px;
-        margin: 0 5px;
-        gap: 5px;
+        padding: 0 4px;
+        margin: 0 3px;
+        gap: 3px;
         border-left: 1px solid color-mix(in srgb, var(--border-color) 40%, transparent);
         border-right: 1px solid color-mix(in srgb, var(--border-color) 40%, transparent);
     }
@@ -1397,10 +1397,10 @@ body[data-theme="light"] .repertoire-view-button.active {
         margin-right: 0; /* Убираем отступ иконки */
         font-size: 0.9rem;
     }
-    /* Кнопка Копировать на мобильных */
+         /* Кнопка Копировать на мобильных */
      #copy-text-button {
-         top: 8px;
-         right: 8px;
+         top: 6px;
+         right: 6px;
          width: 30px;
          height: 30px;
          font-size: 0.8rem;
@@ -1420,11 +1420,11 @@ body[data-theme="light"] .repertoire-view-button.active {
     #add-to-repertoire-button { padding: 10px 15px; height: 40px; }
 
     /* Другие мобильные стили */
-    #song-content { padding: 10px 15px 15px 15px; margin-top: 10px; } /* Меньший отступ сверху под legend */
+    #song-content { padding: 8px 10px 12px 10px; margin-top: 10px; } /* Компактные отступы для максимального использования экрана */
     #song-content pre {
         font-size: var(--lyrics-font-size); /* ИСПОЛЬЗУЕМ ПЕРЕМЕННУЮ */
         line-height: 1.6;
-        padding: 10px 0;
+        padding: 6px 0;
         white-space: pre-wrap;
         word-wrap: break-word;
         overflow-x: auto;
