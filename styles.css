@@ -1190,34 +1190,40 @@ body[data-theme="light"] .presentation-song .song-structure {
     margin-bottom: 0 !important;
 }
 
-/* РАДИКАЛЬНО сокращенные стили для legend */
+/* КАРДИНАЛЬНО ПЕРЕРАБОТАННЫЕ стили для legend */
 .song-block-legend {
     color: var(--primary-color);
     font-weight: 600;
-    font-size: calc(var(--lyrics-font-size, 1rem) * 1.0); /* Увеличил до 1.0 - такой же размер как основной текст */
+    font-size: calc(var(--lyrics-font-size, 1rem) * 1.0); /* Такой же размер как основной текст */
     text-transform: uppercase;
     letter-spacing: 0.2px;
-    transition: color 0.3s ease;
+    transition: color 0.3s ease, background-color 0.3s ease;
     
-    /* РАДИКАЛЬНОЕ сокращение расстояния */
-    padding: 0 8px !important; /* Нормальный padding */
-    margin: 0 0 -20px 12px !important; /* РАДИКАЛЬНЫЙ отрицательный margin для максимального сближения */
+    /* ДОБАВЛЯЕМ ФОН КАК У АККОРДОВ */
+    background-color: color-mix(in srgb, var(--accent-color) 2%, transparent);
+    border-radius: 3px;
+    
+    /* БЕЗОПАСНЫЕ отступы без обрезания */
+    padding: 2px 8px !important; /* Увеличили вертикальный padding для фона */
+    margin: 0 0 -10px 12px !important; /* Уменьшили отрицательный margin с -20px до -10px */
     border: none !important;
-    background: none !important;
-    line-height: 0.7 !important; /* Минимальная высота строки */
-    white-space: nowrap; /* Предотвращаем перенос названия блока */
-    overflow: hidden; /* Скрываем переполнение */
-    text-overflow: ellipsis; /* Добавляем многоточие при обрезании */
-    max-width: calc(100% - 24px); /* Ограничиваем ширину с учетом отступов */
+    line-height: 1.1 !important; /* Увеличили с 0.7 до 1.1 для нормального отображения */
     
-    /* Центрируем legend правильно */
+    /* Защита от переполнения */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 24px);
+    
+    /* Позиционирование */
     float: none !important;
     width: auto !important;
-    display: inline !important;
+    display: inline-block !important; /* Изменили с inline на inline-block для лучшего контроля */
+    vertical-align: top; /* Выравнивание по верху */
 }
 
 .song-block-content {
-    margin: -15px 0 0 0 !important; /* РАДИКАЛЬНЫЙ отрицательный margin - почти в притык! */
+    margin: -8px 0 0 0 !important; /* Уменьшили отрицательный margin с -15px до -8px под новый legend */
     padding: 0px 6px 4px 6px !important; /* Убираем верхний padding */
     white-space: pre-wrap; /* Изменяем с pre на pre-wrap для переноса */
     line-height: inherit;
@@ -1238,6 +1244,7 @@ body[data-theme="light"] .song-block {
 
 body[data-theme="light"] .song-block-legend {
     color: var(--secondary-color);
+    background-color: color-mix(in srgb, var(--accent-color) 5%, transparent); /* Более заметный фон в светлой теме как у аккордов */
 }
 
 
@@ -1937,20 +1944,35 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     
     .song-block-legend {
-        font-size: calc(var(--lyrics-font-size, 1rem) * 0.95) !important; /* Увеличил с 0.85 до 0.95 - почти как основной текст */
-        padding: 0 6px !important; /* Нормальный горизонтальный padding */
-        margin: 0 0 -15px 8px !important; /* Уменьшил отрицательный margin с -22px до -15px чтобы не обрезать */
-        letter-spacing: 0.1px !important; /* ЭКСТРА сокращение: с 0.2px до 0.1px */
-        line-height: 0.8 !important; /* Увеличил с 0.6 до 0.8 чтобы текст не обрезался */
-        white-space: nowrap !important; /* Предотвращаем перенос названия блока */
-        overflow: hidden !important; /* Скрываем переполнение */
-        text-overflow: ellipsis !important; /* Добавляем многоточие при обрезании */
-        max-width: calc(100% - 16px) !important; /* Ограничиваем ширину с учетом отступов */
+        font-size: calc(var(--lyrics-font-size, 1rem) * 0.95) !important; /* Почти как основной текст */
+        padding: 2px 6px !important; /* Добавили вертикальный padding для фона */
+        margin: 0 0 -5px 8px !important; /* КАРДИНАЛЬНО уменьшили отрицательный margin с -15px до -5px */
+        letter-spacing: 0.1px !important; 
+        line-height: 1.2 !important; /* Увеличили с 0.8 до 1.2 для полного отображения текста */
+        
+        /* Фон как у аккордов */
+        background-color: color-mix(in srgb, var(--accent-color) 2%, transparent) !important;
+        border-radius: 3px !important;
+        
+        /* Защита от переполнения */
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: calc(100% - 16px) !important;
+        
+        /* Позиционирование */
+        display: inline-block !important;
+        vertical-align: top !important;
     }
     
     .song-block-content {
-        margin: -12px 0 0 0 !important; /* Уменьшил отрицательный margin с -17px до -12px под новый legend */
+        margin: -3px 0 0 0 !important; /* Кардинально уменьшили отрицательный margin с -12px до -3px под новый legend */
         padding: 0px 4px 2px 4px !important; /* Убираем верхний padding */
+    }
+    
+    /* Фон для светлой темы на мобильных */
+    body[data-theme="light"] .song-block-legend {
+        background-color: color-mix(in srgb, var(--accent-color) 5%, transparent) !important;
     }
 }
 
