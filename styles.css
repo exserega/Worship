@@ -1203,11 +1203,11 @@ body[data-theme="light"] .presentation-song .song-structure {
     background-color: color-mix(in srgb, var(--accent-color) 2%, transparent);
     border-radius: 3px;
     
-    /* БЕЗОПАСНЫЕ отступы без обрезания */
-    padding: 2px 8px !important; /* Увеличили вертикальный padding для фона */
-    margin: 0 0 -10px 12px !important; /* Уменьшили отрицательный margin с -20px до -10px */
+    /* МАКСИМАЛЬНО КОМПАКТНЫЕ отступы */
+    padding: 1px 8px !important; /* Минимальный вертикальный padding для фона */
+    margin: 0 0 -16px 12px !important; /* Увеличили отрицательный margin с -10px до -16px для максимальной компактности */
     border: none !important;
-    line-height: 1.1 !important; /* Увеличили с 0.7 до 1.1 для нормального отображения */
+    line-height: 1.0 !important; /* Уменьшили с 1.1 до 1.0 для компактности */
     
     /* Защита от переполнения */
     white-space: nowrap;
@@ -1223,7 +1223,7 @@ body[data-theme="light"] .presentation-song .song-structure {
 }
 
 .song-block-content {
-    margin: -8px 0 0 0 !important; /* Уменьшили отрицательный margin с -15px до -8px под новый legend */
+    margin: -14px 0 0 0 !important; /* Увеличили отрицательный margin с -8px до -14px для максимальной компактности */
     padding: 0px 6px 4px 6px !important; /* Убираем верхний padding */
     white-space: pre-wrap; /* Изменяем с pre на pre-wrap для переноса */
     line-height: inherit;
@@ -1945,10 +1945,10 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     .song-block-legend {
         font-size: calc(var(--lyrics-font-size, 1rem) * 0.95) !important; /* Почти как основной текст */
-        padding: 2px 6px !important; /* Добавили вертикальный padding для фона */
-        margin: 0 0 -5px 8px !important; /* КАРДИНАЛЬНО уменьшили отрицательный margin с -15px до -5px */
+        padding: 1px 6px !important; /* Минимальный вертикальный padding для фона */
+        margin: 0 0 -12px 8px !important; /* Увеличили отрицательный margin с -5px до -12px для компактности */
         letter-spacing: 0.1px !important; 
-        line-height: 1.2 !important; /* Увеличили с 0.8 до 1.2 для полного отображения текста */
+        line-height: 1.0 !important; /* Уменьшили с 1.2 до 1.0 для компактности */
         
         /* Фон как у аккордов */
         background-color: color-mix(in srgb, var(--accent-color) 2%, transparent) !important;
@@ -1966,7 +1966,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     
     .song-block-content {
-        margin: -3px 0 0 0 !important; /* Кардинально уменьшили отрицательный margin с -12px до -3px под новый legend */
+        margin: -10px 0 0 0 !important; /* Увеличили отрицательный margin с -3px до -10px для компактности */
         padding: 0px 4px 2px 4px !important; /* Убираем верхний padding */
     }
     

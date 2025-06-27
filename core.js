@@ -159,15 +159,17 @@ function wrapSongBlocks(lyrics) {
 
     // Формируем HTML с fieldset и legend (КРАСИВЫЕ встроенные блоки!)
     return blocks.map(block => {
+        const content = block.content.join('\n');
         if (block.legend) {
-            const content = block.content.join('\n');
             return `<fieldset class="song-block">
 <legend class="song-block-legend">${block.legend}</legend>
 <div class="song-block-content">${content}</div>
 </fieldset>`;
         } else {
-            // Блок без заголовка (начало песни до первого маркера)
-            return block.content.join('\n');
+            // ВСЕГДА оборачиваем блок без заголовка (начало песни до первого маркера) в fieldset
+            return `<fieldset class="song-block">
+<div class="song-block-content">${content}</div>
+</fieldset>`;
         }
     }).join('\n');
 }
@@ -343,7 +345,7 @@ function getMetronomeState() {
     };
 }
 
-/** Интеллектуальное распределение блоков по двум колонкам с сохранением порядка */
+/** Упрощенное распределение блоков по двум колонкам с сохранением порядка */
 function distributeSongBlocksToColumns(processedHTML) {
     if (!processedHTML) return processedHTML;
     
@@ -351,76 +353,25 @@ function distributeSongBlocksToColumns(processedHTML) {
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = processedHTML;
     
-    // Находим все блоки и текстовые узлы
-    const elements = Array.from(tempDiv.childNodes).filter(node => {
-        // Включаем элементы и текстовые узлы с содержимым
-        return node.nodeType === Node.ELEMENT_NODE || 
-               (node.nodeType === Node.TEXT_NODE && node.textContent.trim());
-    });
+    // Теперь все должно быть уже в блоках, просто находим все fieldset элементы
+    const blocks = Array.from(tempDiv.querySelectorAll('.song-block'));
     
-    if (elements.length <= 1) {
+    if (blocks.length <= 1) {
         return processedHTML; // Нет смысла делить
     }
     
-    // Ищем ВСЕ текстовые блоки в начале без fieldset (вступительные аккорды)
-    let introText = '';
-    let startIndex = 0;
-    
-    // Собираем все начальные элементы без fieldset как вступление
-    let introElements = [];
-    for (let i = 0; i < elements.length; i++) {
-        const element = elements[i];
-        const isFieldsetBlock = element.nodeType === Node.ELEMENT_NODE && 
-                               element.classList?.contains('song-block');
-        
-        if (isFieldsetBlock) {
-            // Встретили первый блок - останавливаемся
-            startIndex = i;
-            break;
-        } else {
-            // Это текст без блока - добавляем к списку вступительных элементов
-            introElements.push(element);
-        }
-    }
-    
-    // Если есть вступительные элементы, обернем их в блок без названия
-    if (introElements.length > 0) {
-        // Собираем весь текст вступления
-        let introContent = '';
-        introElements.forEach(element => {
-            if (element.nodeType === Node.TEXT_NODE) {
-                introContent += element.textContent;
-            } else {
-                introContent += element.outerHTML || element.textContent;
-            }
-        });
-        
-        // Создаем блок без названия для вступления
-        introText = `<fieldset class="song-block">
-            <div class="song-block-content">${introContent}</div>
-        </fieldset>`;
-    }
-    
-    // Работаем с оставшимися элементами (блоками)
-    const blocksToDistribute = elements.slice(startIndex);
-    
-    if (blocksToDistribute.length === 0) {
-        return processedHTML; // Только вступление
-    }
-    
     // Оцениваем "вес" каждого блока для умного распределения
-    const blocksWithWeight = blocksToDistribute.map((element, originalIndex) => {
-        const content = element.textContent || '';
+    const blocksWithWeight = blocks.map((block, originalIndex) => {
+        const content = block.textContent || '';
         const lines = content.split('\n').filter(line => line.trim()).length;
-        const hasFieldset = element.nodeType === Node.ELEMENT_NODE && 
-                           element.classList && element.classList.contains('song-block');
+        const hasLegend = block.querySelector('.song-block-legend') !== null;
         
-        // Базовый вес = количество строк + бонус за fieldset (заголовок блока)
-        const weight = lines + (hasFieldset ? 1 : 0);
+        // Базовый вес = количество строк + бонус за legend (заголовок блока)
+        const weight = lines + (hasLegend ? 1 : 0);
         
         return {
-            element: element,
-            html: element.outerHTML || element.textContent,
+            element: block,
+            html: block.outerHTML,
             weight: weight,
             originalIndex: originalIndex // Сохраняем исходный порядок
         };
@@ -452,8 +403,8 @@ function distributeSongBlocksToColumns(processedHTML) {
         column1.length = 0;
         column2.length = 0;
         
-        blocksToDistribute.forEach((element, index) => {
-            const html = element.outerHTML || element.textContent;
+        blocks.forEach((block, index) => {
+            const html = block.outerHTML;
             if (index % 2 === 0) {
                 column1.push(html);
             } else {
@@ -463,12 +414,7 @@ function distributeSongBlocksToColumns(processedHTML) {
     }
     
     // Создаем HTML для двух колонок
-    let column1HTML = `<div class="column-1">`;
-    if (introText) {
-        column1HTML += introText + '\n'; // Вступление всегда в первой колонке
-    }
-    column1HTML += column1.join('\n') + '</div>';
-    
+    const column1HTML = `<div class="column-1">${column1.join('\n')}</div>`;
     const column2HTML = `<div class="column-2">${column2.join('\n')}</div>`;
     
     return column1HTML + column2HTML;
