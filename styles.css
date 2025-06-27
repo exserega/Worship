@@ -252,17 +252,25 @@ body[data-theme="light"] .theme-icon.moon {
     min-width: 0; 
     border: 1px solid var(--border-color); 
     border-radius: var(--radius); 
-    padding: 4px 8px 12px 8px; /* Возвращаем исходные отступы для естественного вида */
+    padding: 4px 8px 8px 8px; /* Возвращаем исходные отступы для естественного вида */
     margin: 0; 
     background: var(--input-bg-color); /* Такой же фон, как у поля поиска */
     transition: border-color 0.3s ease, background-color 0.3s ease; 
-    height: 46px; /* Высота остается той же */
+    height: 38px; /* ИСПРАВЛЯЕМ: делаем такую же высоту как у строки поиска */
     box-sizing: border-box;
     display: flex;
-    align-items: center; /* Возвращаем центрирование, но с асимметричным padding */
+    align-items: center; /* Центрируем содержимое по вертикали */
 }
 .filter-group legend { 
-    display: none; /* Скрываем legend элементы полностью */
+    font-size: 0.75rem; /* Увеличили размер текста для legend фильтров */
+    color: var(--label-color);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0 12px; /* Стандартные отступы как у других legend */
+    background: var(--container-background-color);
+    border-radius: 2px;
+    transition: color 0.3s ease;
 }
 
 select, input[type="text"] {
@@ -276,7 +284,7 @@ select, input[type="text"] {
 
 /* Селекты внутри fieldset должны быть меньше, чтобы была видна рамка */
 .select-filters-container .filter-group select {
-    height: 26px; /* Увеличена высота для лучшего заполнения fieldset */
+    height: 20px; /* ИСПРАВЛЯЕМ: уменьшаем высоту для правильного размещения в fieldset */
     padding: 1px 4px;
     padding-right: 18px;
     border: none;
@@ -313,7 +321,15 @@ input:focus, select:focus {
 }
 
 .search-group legend {
-    display: none; /* Скрываем legend элемент полностью */
+    font-size: 0.75rem; /* Увеличили размер текста для legend поиска */
+    color: var(--label-color);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0 12px; /* Стандартные отступы как у других legend */
+    background: var(--container-background-color);
+    border-radius: 2px;
+    transition: color 0.3s ease;
 }
 
 .search-group #search-input {
@@ -1213,26 +1229,30 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     
     .search-group legend {
-        display: none; /* Скрываем legend на очень маленьких экранах */
+        font-size: 0.7rem; /* Уменьшили размер для очень маленьких экранов */
+        padding: 0 8px; /* Уменьшили отступы */
     }
-            .filter-group { 
-            flex: 1; 
-            min-width: 0;
-            height: 40px;
-            padding: 3px 4px 9px 4px; /* Возвращаем исходные отступы */
-            display: flex;
-            align-items: center; /* Возвращаем центрирование */
-        }
-            .select-filters-container .filter-group select {
-        height: 22px; /* Увеличена высота для очень маленьких экранов */
+    
+    .filter-group { 
+        flex: 1; 
+        min-width: 0;
+        height: 36px; /* ИСПРАВЛЯЕМ: уменьшаем высоту для очень маленьких экранов */
+        padding: 3px 4px 6px 4px; /* Возвращаем исходные отступы */
+        display: flex;
+        align-items: center; /* Возвращаем центрирование */
+    }
+    
+    .select-filters-container .filter-group select {
+        height: 18px; /* ИСПРАВЛЯЕМ: уменьшаем высоту для очень маленьких экранов */
         padding: 0px 2px;
         padding-right: 12px;
         font-size: 0.85rem; /* Увеличили размер текста для очень маленьких экранов */
     }
+    
     .filter-group legend { 
-        display: none; /* Скрываем legend на очень маленьких экранах */
+        font-size: 0.7rem; /* Уменьшили размер для очень маленьких экранов */
+        padding: 0 8px; /* Уменьшили отступы */
     }
-
     
     /* ЭКСТРА-СТРОГИЕ ограничения для очень маленьких экранов */
     /* Разделение функциональных кнопок на очень маленьких экранах */
@@ -1370,19 +1390,20 @@ body[data-theme="light"] .repertoire-view-button.active {
     .filter-group { 
         flex: 1; 
         min-width: 0;
-        height: 44px;
-        padding: 3px 6px 11px 6px; /* Возвращаем исходные отступы */
+        height: 38px; /* ИСПРАВЛЯЕМ: делаем такую же высоту как строка поиска на планшетах */
+        padding: 3px 6px 8px 6px; /* Возвращаем исходные отступы */
         display: flex;
         align-items: center; /* Возвращаем центрирование */
     }
     .select-filters-container .filter-group select {
-        height: 28px; /* Увеличена высота для планшетов */
+        height: 20px; /* ИСПРАВЛЯЕМ: правильная высота для планшетов */
         padding: 1px 4px;
         padding-right: 16px;
         font-size: 1rem; /* Увеличили размер текста для планшетов */
     }
     .filter-group legend { 
-        display: none; /* Скрываем legend на планшетах */
+        font-size: 0.7rem; /* Размер для планшетов */
+        padding: 0 10px; /* Отступы для планшетов */
     }
     
     /* Поисковая группа на планшетах */
@@ -1505,7 +1526,8 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     
     .search-group legend {
-        display: none; /* Скрываем legend на мобильных */
+        font-size: 0.7rem; /* Размер для мобильных */
+        padding: 0 8px; /* Отступы для мобильных */
     }
     
     .search-group #search-input {
@@ -1531,17 +1553,18 @@ body[data-theme="light"] .repertoire-view-button.active {
     .filter-group { 
         min-width: 0; 
         flex: 1; 
-        height: 42px;
-        padding: 2px 2px 8px 2px; /* Возвращаем исходные отступы */
+        height: 36px; /* ИСПРАВЛЯЕМ: правильная высота для мобильных */
+        padding: 2px 2px 6px 2px; /* Возвращаем исходные отступы */
         display: flex;
         align-items: center; /* Возвращаем центрирование */
     }
     .filter-group legend {
-        display: none; /* Скрываем legend на мобильных */
+        font-size: 0.7rem; /* Размер для мобильных */
+        padding: 0 8px; /* Отступы для мобильных */
     }
     .select-filters-container .filter-group select { 
         font-size: 0.9rem; /* Увеличили размер текста для мобильных */
-        height: 24px; /* Увеличена высота для мобильных */
+        height: 18px; /* ИСПРАВЛЯЕМ: правильная высота для мобильных */
         padding: 0px 2px; /* Уменьшили с 3px */
         padding-right: 12px; /* Уменьшили с 14px */
     }
