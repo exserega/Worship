@@ -1183,7 +1183,7 @@ body[data-theme="light"] .presentation-song .song-structure {
     margin-bottom: 0 !important;
 }
 
-/* ПОЛНЫЙ СБРОС всех браузерных стилей для legend */
+/* ИСПРАВЛЕННЫЕ стили для legend */
 .song-block-legend {
     color: var(--primary-color);
     font-weight: 600;
@@ -1192,22 +1192,22 @@ body[data-theme="light"] .presentation-song .song-structure {
     letter-spacing: 0.2px;
     transition: color 0.3s ease;
     
-    /* ПОЛНЫЙ СБРОС браузерных стилей legend */
-    padding: 0 6px !important; /* Только горизонтальный padding для красоты */
-    margin: 0 !important; /* Убираем все margin */
+    /* Правильное позиционирование legend */
+    padding: 0 8px !important; /* Возвращаем нормальный padding */
+    margin: 0 0 -8px 0 !important; /* ОТРИЦАТЕЛЬНЫЙ нижний margin для приближения к содержимому */
     border: none !important;
     background: none !important;
-    line-height: 1.1 !important;
+    line-height: 1.0 !important;
     
-    /* Убираем встроенные отступы браузера */
+    /* Центрируем legend правильно */
     float: none !important;
     width: auto !important;
-    display: inline-block !important;
+    display: inline !important; /* Возвращаем inline для правильного позиционирования */
 }
 
 .song-block-content {
-    margin: 0 !important;
-    padding: 2px 6px 4px 6px !important; /* Минимальные отступы внутри содержимого */
+    margin: -5px 0 0 0 !important; /* ОТРИЦАТЕЛЬНЫЙ верхний margin для приближения к legend */
+    padding: 0px 6px 4px 6px !important; /* Убираем верхний padding */
     white-space: pre;
     line-height: inherit;
     box-sizing: border-box;
@@ -1413,12 +1413,14 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     .song-block-legend {
         font-size: 0.7rem !important; /* УЛЬТРА сокращение: с 0.75rem до 0.7rem */
-        padding: 0 3px !important; /* Минимальный горизонтальный padding */
+        padding: 0 4px !important; /* Минимальный горизонтальный padding */
+        margin: 0 0 -12px 0 !important; /* МАКСИМАЛЬНЫЙ отрицательный margin */
         letter-spacing: 0px !important; /* УЛЬТРА сокращение: убираем letter-spacing */
-        line-height: 0.9 !important; /* Минимальная высота строки */
+        line-height: 0.8 !important; /* Минимальная высота строки */
     }
     
     .song-block-content {
+        margin: -9px 0 0 0 !important; /* МАКСИМАЛЬНЫЙ отрицательный margin */
         padding: 0px 3px 1px 3px !important; /* Минимальные отступы внутри содержимого */
     }
 }
@@ -1919,13 +1921,15 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     .song-block-legend {
         font-size: 0.75rem !important; /* ЭКСТРА сокращение: с 0.8rem до 0.75rem */
-        padding: 0 4px !important; /* Минимальный горизонтальный padding */
+        padding: 0 6px !important; /* Нормальный горизонтальный padding */
+        margin: 0 0 -10px 0 !important; /* БОЛЬШИЙ отрицательный margin для мобильных */
         letter-spacing: 0.1px !important; /* ЭКСТРА сокращение: с 0.2px до 0.1px */
-        line-height: 1.0 !important; /* Минимальная высота строки */
+        line-height: 0.9 !important; /* Минимальная высота строки */
     }
     
     .song-block-content {
-        padding: 1px 4px 2px 4px !important; /* Минимальные отступы внутри содержимого */
+        margin: -7px 0 0 0 !important; /* БОЛЬШИЙ отрицательный margin для мобильных */
+        padding: 0px 4px 2px 4px !important; /* Убираем верхний padding */
     }
 }
 
