@@ -495,9 +495,9 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
     margin-right: 0;
 }
 #song-content pre { 
-    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; /* ВОЗВРАЩАЕМ исходный шрифт */
-    white-space: pre; /* ОСТАВЛЯЕМ: pre для точного позиционирования */
-    word-wrap: normal; /* ОСТАВЛЯЕМ: отключаем word-wrap */
+    font-family: 'Courier New', monospace; /* ПРИНУДИТЕЛЬНО самый строгий моноширинный шрифт */
+    white-space: pre; /* pre для точного позиционирования */
+    word-wrap: normal; /* отключаем word-wrap */
     line-height: 1.5; 
     font-size: var(--lyrics-font-size, 1rem); 
     color: var(--text-color); 
@@ -505,8 +505,11 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
     padding-top: 6px; 
     overflow-x: auto; 
     transition: color 0.3s ease;
-    letter-spacing: 0; /* ОСТАВЛЯЕМ: убираем letter-spacing */
-    word-spacing: 0; /* ОСТАВЛЯЕМ: убираем word-spacing */
+    letter-spacing: 0; /* убираем letter-spacing */
+    word-spacing: 0; /* убираем word-spacing */
+    tab-size: 1; /* КРИТИЧНО: размер табуляции */
+    -moz-tab-size: 1; /* для Firefox */
+    font-variant-numeric: tabular-nums; /* моноширинные цифры */
 }
 #song-content .chord {
     font-weight: 700 !important;
@@ -597,15 +600,18 @@ body[data-theme="light"] .presentation-notes i.fas {
 /* Текст песни в презентации */
 .presentation-song pre {
     font-size: clamp(12px, 2.9vw, 17px);
-    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; /* ВОЗВРАЩАЕМ исходный шрифт */
+    font-family: 'Courier New', monospace; /* ПРИНУДИТЕЛЬНО самый строгий моноширинный шрифт */
     line-height: 1.45;
-    white-space: pre; /* ОСТАВЛЯЕМ: pre для точного позиционирования */
-    word-wrap: normal; /* ОСТАВЛЯЕМ: отключаем word-wrap */
+    white-space: pre; /* pre для точного позиционирования */
+    word-wrap: normal; /* отключаем word-wrap */
     color: var(--text-color);
     transition: color 0.3s ease;
     margin-top: 0;
-    letter-spacing: 0; /* ОСТАВЛЯЕМ: убираем letter-spacing */
-    word-spacing: 0; /* ОСТАВЛЯЕМ: убираем word-spacing */
+    letter-spacing: 0; /* убираем letter-spacing */
+    word-spacing: 0; /* убираем word-spacing */
+    tab-size: 1; /* КРИТИЧНО: размер табуляции */
+    -moz-tab-size: 1; /* для Firefox */
+    font-variant-numeric: tabular-nums; /* моноширинные цифры */
 }
 
 /* --- Стиль аккордов в презентации (с фоном) --- */
@@ -1672,7 +1678,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         padding-top: 2px; /* МИНИМАЛЬНЫЙ отступ с 6px 0 */
         
         /* ВСЕ ОСТАЛЬНЫЕ СВОЙСТВА С ТОЧНЫМ ПОЗИЦИОНИРОВАНИЕМ */
-        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; /* ВОЗВРАЩАЕМ исходный шрифт */
+        font-family: 'Courier New', monospace; /* ПРИНУДИТЕЛЬНО самый строгий моноширинный шрифт */
         white-space: pre; /* PRE ДЛЯ ТОЧНОГО ПОЗИЦИОНИРОВАНИЯ */
         word-wrap: normal; /* ОТКЛЮЧАЕМ WORD-WRAP */
         color: var(--text-color); 
@@ -1681,6 +1687,9 @@ body[data-theme="light"] .repertoire-view-button.active {
         transition: color 0.3s ease;
         letter-spacing: 0; /* УБИРАЕМ LETTER-SPACING */
         word-spacing: 0; /* УБИРАЕМ WORD-SPACING */
+        tab-size: 1; /* КРИТИЧНО: размер табуляции */
+        -moz-tab-size: 1; /* для Firefox */
+        font-variant-numeric: tabular-nums; /* моноширинные цифры */
     }
     /* ===== КОНЕЦ САМОЙ ВАЖНОЙ ЧАСТИ ===== */
 
