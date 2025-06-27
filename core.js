@@ -343,7 +343,7 @@ function getMetronomeState() {
     };
 }
 
-/** Интеллектуальное распределение блоков по двум колонкам с балансировкой по высоте */
+/** Интеллектуальное распределение блоков по двум колонкам с сохранением порядка */
 function distributeSongBlocksToColumns(processedHTML) {
     if (!processedHTML) return processedHTML;
     
@@ -362,34 +362,53 @@ function distributeSongBlocksToColumns(processedHTML) {
         return processedHTML; // Нет смысла делить
     }
     
-    // Оцениваем "вес" каждого элемента (примерная высота)
-    const elementsWithWeight = elements.map(element => {
+    // Ищем первый текстовый блок без fieldset (вступительные аккорды)
+    let introText = '';
+    let startIndex = 0;
+    
+    // Проверяем первый элемент - если это текст без fieldset, это вступление
+    if (elements[0] && elements[0].nodeType === Node.TEXT_NODE) {
+        introText = elements[0].textContent;
+        startIndex = 1;
+    } else if (elements[0] && elements[0].nodeType === Node.ELEMENT_NODE && 
+               !elements[0].classList?.contains('song-block')) {
+        introText = elements[0].outerHTML || elements[0].textContent;
+        startIndex = 1;
+    }
+    
+    // Работаем с оставшимися элементами (блоками)
+    const blocksToDistribute = elements.slice(startIndex);
+    
+    if (blocksToDistribute.length === 0) {
+        return processedHTML; // Только вступление
+    }
+    
+    // Оцениваем "вес" каждого блока для умного распределения
+    const blocksWithWeight = blocksToDistribute.map((element, originalIndex) => {
         const content = element.textContent || '';
-        const lines = content.split('\n').length;
+        const lines = content.split('\n').filter(line => line.trim()).length;
         const hasFieldset = element.nodeType === Node.ELEMENT_NODE && 
                            element.classList && element.classList.contains('song-block');
         
         // Базовый вес = количество строк + бонус за fieldset (заголовок блока)
-        const weight = lines + (hasFieldset ? 2 : 0);
+        const weight = lines + (hasFieldset ? 1 : 0);
         
         return {
             element: element,
             html: element.outerHTML || element.textContent,
-            weight: weight
+            weight: weight,
+            originalIndex: originalIndex // Сохраняем исходный порядок
         };
     });
     
-    // Умное распределение: балансируем по весу
+    // СОХРАНЯЕМ ПОРЯДОК! Распределяем последовательно с учетом веса
     const column1 = [];
     const column2 = [];
     let weight1 = 0;
     let weight2 = 0;
     
-    // Сортируем по убыванию веса для лучшего распределения
-    elementsWithWeight.sort((a, b) => b.weight - a.weight);
-    
-    elementsWithWeight.forEach(item => {
-        // Добавляем в колонку с меньшим весом
+    blocksWithWeight.forEach(item => {
+        // Добавляем в колонку с меньшим весом, НО сохраняем порядок
         if (weight1 <= weight2) {
             column1.push(item.html);
             weight1 += item.weight;
@@ -399,17 +418,16 @@ function distributeSongBlocksToColumns(processedHTML) {
         }
     });
     
-    // Если разница в весе слишком большая, перераспределяем
+    // Если дисбаланс слишком большой, используем простое чередование
     const weightDiff = Math.abs(weight1 - weight2);
     const totalWeight = weight1 + weight2;
     
-    // Если разница больше 30% от общего веса, пытаемся улучшить баланс
-    if (weightDiff > totalWeight * 0.3) {
-        // Простое чередование как fallback для лучшего визуального баланса
+    if (totalWeight > 0 && weightDiff > totalWeight * 0.4) {
+        // Простое чередование с сохранением порядка
         column1.length = 0;
         column2.length = 0;
         
-        elements.forEach((element, index) => {
+        blocksToDistribute.forEach((element, index) => {
             const html = element.outerHTML || element.textContent;
             if (index % 2 === 0) {
                 column1.push(html);
@@ -420,7 +438,12 @@ function distributeSongBlocksToColumns(processedHTML) {
     }
     
     // Создаем HTML для двух колонок
-    const column1HTML = `<div class="column-1">${column1.join('\n')}</div>`;
+    let column1HTML = `<div class="column-1">`;
+    if (introText) {
+        column1HTML += introText + '\n'; // Вступление всегда в первой колонке
+    }
+    column1HTML += column1.join('\n') + '</div>';
+    
     const column2HTML = `<div class="column-2">${column2.join('\n')}</div>`;
     
     return column1HTML + column2HTML;
