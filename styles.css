@@ -495,7 +495,7 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
     margin-right: 0;
 }
 #song-content pre { 
-    font-family: 'Courier New', monospace; /* ПРИНУДИТЕЛЬНО самый строгий моноширинный шрифт */
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; /* ВОЗВРАЩАЕМ исходный шрифт */
     white-space: pre; /* pre для точного позиционирования */
     word-wrap: normal; /* отключаем word-wrap */
     line-height: 1.5; 
@@ -600,7 +600,7 @@ body[data-theme="light"] .presentation-notes i.fas {
 /* Текст песни в презентации */
 .presentation-song pre {
     font-size: clamp(12px, 2.9vw, 17px);
-    font-family: 'Courier New', monospace; /* ПРИНУДИТЕЛЬНО самый строгий моноширинный шрифт */
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; /* ВОЗВРАЩАЕМ исходный шрифт */
     line-height: 1.45;
     white-space: pre; /* pre для точного позиционирования */
     word-wrap: normal; /* отключаем word-wrap */
@@ -1678,7 +1678,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         padding-top: 2px; /* МИНИМАЛЬНЫЙ отступ с 6px 0 */
         
         /* ВСЕ ОСТАЛЬНЫЕ СВОЙСТВА С ТОЧНЫМ ПОЗИЦИОНИРОВАНИЕМ */
-        font-family: 'Courier New', monospace; /* ПРИНУДИТЕЛЬНО самый строгий моноширинный шрифт */
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; /* ВОЗВРАЩАЕМ исходный шрифт */
         white-space: pre; /* PRE ДЛЯ ТОЧНОГО ПОЗИЦИОНИРОВАНИЯ */
         word-wrap: normal; /* ОТКЛЮЧАЕМ WORD-WRAP */
         color: var(--text-color); 
