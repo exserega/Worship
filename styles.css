@@ -1173,7 +1173,13 @@ body[data-theme="light"] .presentation-song .song-structure {
     
     /* Убираем все браузерные отступы */
     min-width: 0;
+    max-width: 100%; /* Строго ограничиваем ширину */
     box-sizing: border-box;
+    
+    /* Принудительный перенос текста */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    overflow: hidden; /* Запрещаем выход за пределы */
 }
 
 .song-block:first-child {
@@ -1209,9 +1215,15 @@ body[data-theme="light"] .presentation-song .song-structure {
 .song-block-content {
     margin: -15px 0 0 0 !important; /* РАДИКАЛЬНЫЙ отрицательный margin - почти в притык! */
     padding: 0px 6px 4px 6px !important; /* Убираем верхний padding */
-    white-space: pre;
+    white-space: pre-wrap; /* Изменяем с pre на pre-wrap для переноса */
     line-height: inherit;
     box-sizing: border-box;
+    max-width: 100%; /* Строго ограничиваем ширину */
+    
+    /* Принудительный перенос текста */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    overflow: hidden; /* Запрещаем выход за пределы */
 }
 
 /* Светлая тема для блоков */
@@ -1946,10 +1958,11 @@ body[data-theme="light"] .repertoire-view-button.active {
 #song-content.split-columns pre {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px; /* МИНИМАЛЬНОЕ расстояние между колонками */
+    gap: 12px; /* Увеличиваем расстояние между колонками */
     column-count: unset; /* Отключаем старый column-count */
     position: relative;
     align-items: start; /* Выравниваем колонки по верху */
+    overflow: hidden; /* Запрещаем выход за пределы контейнера */
 }
 
 /* Убираем старую центральную линию */
@@ -1962,34 +1975,56 @@ body[data-theme="light"] .repertoire-view-button.active {
 #song-content.split-columns .column-2 {
     display: flex;
     flex-direction: column;
-    gap: 0; /* Расстояние между блоками внутри колонки контролируется блоками */
+    gap: 8px; /* Отступы между блоками внутри колонки */
     width: 100%;
+    max-width: 100%; /* Строго ограничиваем ширину */
     box-sizing: border-box;
+    overflow: hidden; /* Запрещаем выход за пределы */
 }
 
-/* Каждый блок занимает всю ширину своей колонки */
+/* Каждый блок занимает всю ширину своей колонки и не выходит за границы */
 #song-content.split-columns .song-block {
     break-inside: avoid; /* Запрещаем разрыв блока */
     page-break-inside: avoid; /* Для старых браузеров */
     display: block;
     width: 100%;
+    max-width: 100%; /* Строго ограничиваем ширину */
     box-sizing: border-box;
+    overflow: hidden; /* Запрещаем выход за пределы */
+    margin-bottom: 0; /* Убираем стандартные отступы - используем gap */
+}
+
+/* Содержимое блока должно переносится */
+#song-content.split-columns .song-block-content {
+    word-wrap: break-word !important; /* Принудительный перенос длинных слов */
+    word-break: break-word !important; /* Разрываем слова если нужно */
+    overflow-wrap: break-word !important; /* Современный стандарт */
+    white-space: pre-wrap !important; /* Сохраняем пробелы но разрешаем перенос */
+    max-width: 100% !important; /* Строго ограничиваем ширину */
+    overflow: hidden !important; /* Запрещаем выход за пределы */
 }
 
 /* Блоки без fieldset (текст до первого маркера) тоже не разрываем */
 #song-content.split-columns pre > *:not(.song-block):not(.column-1):not(.column-2) {
     break-inside: avoid;
     page-break-inside: avoid;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: pre-wrap !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
 }
 
 /* ПРЕЗЕНТАЦИЯ - аналогично */
 #presentation-content.split-columns .presentation-song pre {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px; /* Чуть больше для презентации */
+    gap: 15px; /* Чуть больше для презентации */
     column-count: unset;
     position: relative;
     align-items: start;
+    overflow: hidden;
 }
 
 #presentation-content.split-columns .presentation-song pre::before {
@@ -2000,9 +2035,11 @@ body[data-theme="light"] .repertoire-view-button.active {
 #presentation-content.split-columns .column-2 {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 10px; /* Отступы между блоками в презентации */
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 #presentation-content.split-columns .song-block {
@@ -2010,21 +2047,49 @@ body[data-theme="light"] .repertoire-view-button.active {
     page-break-inside: avoid;
     display: block;
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+
+#presentation-content.split-columns .song-block-content {
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: pre-wrap !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
 }
 
 #presentation-content.split-columns .presentation-song pre > *:not(.song-block):not(.column-1):not(.column-2) {
     break-inside: avoid;
     page-break-inside: avoid;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: pre-wrap !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
 }
 
 /* АДАПТИВНОСТЬ для мобильных */
 @media (max-width: 480px) {
     #song-content.split-columns pre {
-        gap: 4px; /* Еще меньше на мобильных */
+        gap: 8px; /* Меньше на мобильных */
+    }
+    
+    #song-content.split-columns .column-1,
+    #song-content.split-columns .column-2 {
+        gap: 6px; /* Меньше отступы между блоками на мобильных */
     }
     
     #presentation-content.split-columns .presentation-song pre {
-        gap: 6px;
+        gap: 10px;
+    }
+    
+    #presentation-content.split-columns .column-1,
+    #presentation-content.split-columns .column-2 {
+        gap: 8px;
     }
 }
