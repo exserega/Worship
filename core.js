@@ -157,7 +157,7 @@ function wrapSongBlocks(lyrics) {
         blocks.push(currentBlock);
     }
 
-    // Формируем HTML с fieldset
+    // Формируем HTML с fieldset и legend (КРАСИВЫЕ встроенные блоки!)
     return blocks.map(block => {
         if (block.legend) {
             const content = block.content.join('\n');
