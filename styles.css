@@ -1219,9 +1219,7 @@ body[data-theme="light"] .presentation-song .song-structure {
     float: none !important;
     width: auto !important;
     display: inline-flex !important; /* Изменили на inline-flex для лучшего центрирования */
-    align-items: center !important; /* ЦЕНТРИРУЕМ текст по вертикали */
-    justify-content: center !important; /* ЦЕНТРИРУЕМ текст по горизонтали */
-    text-align: center !important; /* Дополнительное центрирование текста */
+    align-items: center !important; /* ЦЕНТРИРУЕМ текст по вертикали внутри фона */
 }
 
 .song-block-content {
@@ -1446,9 +1444,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         
         /* Центрирование для мини-экранов */
         display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        text-align: center !important;
+        align-items: center !important; /* Только вертикальное центрирование внутри фона */
     }
     
     .song-block-content {
@@ -1970,9 +1966,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         
         /* Позиционирование и центрирование */
         display: inline-flex !important; /* Изменили на inline-flex для лучшего центрирования */
-        align-items: center !important; /* ЦЕНТРИРУЕМ текст по вертикали */
-        justify-content: center !important; /* ЦЕНТРИРУЕМ текст по горизонтали */
-        text-align: center !important; /* Дополнительное центрирование текста */
+        align-items: center !important; /* ЦЕНТРИРУЕМ текст по вертикали внутри фона */
     }
     
     .song-block-content {
