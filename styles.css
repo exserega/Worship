@@ -312,7 +312,7 @@ input:focus, select:focus {
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
     padding: 4px 8px 8px 8px; /* Минимальные отступы */
-    margin: 0 0 0px 0; /* МАКСИМАЛЬНОЕ сближение: убираем margin-bottom полностью */
+    margin: 0 0 -3px 0; /* ОТРИЦАТЕЛЬНЫЙ margin для еще большего сближения с фильтрами */
     background: transparent;
     transition: border-color 0.3s ease;
 }
@@ -398,7 +398,7 @@ body[data-theme="light"] button.icon-button.simple:active:not(:disabled) { backg
     align-items: center; 
     min-height: 38px; 
     gap: 12px; 
-    margin-bottom: 12px; 
+    margin-bottom: -3px; /* ОТРИЦАТЕЛЬНЫЙ margin для сближения с областью песни */
     margin-top: 60px; /* КАРДИНАЛЬНОЕ разделение: с 30px до 60px для четкого визуального разделения */
     padding-top: 20px; /* Дополнительный отступ сверху */
     border-top: 2px solid var(--border-color); /* Визуальный разделитель */
@@ -1221,7 +1221,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     /* Компактный fieldset поиска на маленьких экранах */
     .search-group {
         padding: 2px 4px 5px 4px; /* Ультра-минимальные отступы */
-        margin-bottom: 0px; /* МАКСИМАЛЬНОЕ сближение: убираем margin-bottom полностью на очень маленьких экранах */
+        margin-bottom: -2px; /* ОТРИЦАТЕЛЬНЫЙ margin для сближения с фильтрами на очень маленьких экранах */
     }
     
     .search-group legend {
@@ -1251,6 +1251,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     /* Разделение функциональных кнопок на очень маленьких экранах */
     .control-group:has(#key-select) { 
         margin-top: 35px; /* КАРДИНАЛЬНОЕ разделение: с 18px до 35px на очень маленьких экранах */
+        margin-bottom: -2px; /* ОТРИЦАТЕЛЬНЫЙ margin для сближения с областью песни на очень маленьких экранах */
         padding-top: 10px; /* Дополнительный отступ сверху */
     }
     
@@ -1400,12 +1401,13 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     /* Поисковая группа на планшетах */
     .search-group {
-        margin-bottom: 0px; /* МАКСИМАЛЬНОЕ сближение: убираем margin-bottom полностью на планшетах */
+        margin-bottom: -2px; /* ОТРИЦАТЕЛЬНЫЙ margin для сближения с фильтрами на планшетах */
     }
     
     /* Разделение функциональных кнопок на планшетах */
     .control-group:has(#key-select) { 
         margin-top: 50px; /* КАРДИНАЛЬНОЕ разделение: с 25px до 50px на планшетах */
+        margin-bottom: -2px; /* ОТРИЦАТЕЛЬНЫЙ margin для сближения с областью песни на планшетах */
         padding-top: 15px; /* Дополнительный отступ сверху */
     }
     
@@ -1513,7 +1515,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     /* Мобильные стили для fieldset поиска */
     .search-group {
         padding: 2px 3px 5px 3px; /* Уменьшили с 3px 4px 6px 4px */
-        margin-bottom: 0px; /* МАКСИМАЛЬНОЕ сближение: убираем margin-bottom полностью на мобильных */
+        margin-bottom: -2px; /* ОТРИЦАТЕЛЬНЫЙ margin для сближения с фильтрами на мобильных */
     }
     
     .search-group legend {
@@ -1564,7 +1566,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     .control-group:has(#key-select) { 
         min-height: 36px; 
         gap: 6px; 
-        margin-bottom: 8px; 
+        margin-bottom: -2px; /* ОТРИЦАТЕЛЬНЫЙ margin для сближения с областью песни на мобильных */
         margin-top: 40px; /* КАРДИНАЛЬНОЕ разделение: с 20px до 40px на мобильных */
         padding-top: 12px; /* Дополнительный отступ сверху */
     }
