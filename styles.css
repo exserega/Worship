@@ -1163,8 +1163,8 @@ body[data-theme="light"] .presentation-song .song-structure {
 .song-block {
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
-    margin: 8px 0;
-    padding: 8px 12px 12px 12px;
+    margin: 3px 0; /* СОКРАЩЕНО: с 8px до 3px между блоками */
+    padding: 2px 6px 4px 6px; /* СОКРАЩЕНО: с 8px 12px 12px 12px до 2px 6px 4px 6px */
     background-color: var(--container-background-color);
     transition: border-color 0.3s ease, background-color 0.3s ease;
 }
@@ -1180,11 +1180,12 @@ body[data-theme="light"] .presentation-song .song-structure {
 .song-block-legend {
     color: var(--primary-color);
     font-weight: 600;
-    font-size: 0.9rem;
-    padding: 0 8px;
+    font-size: 0.85rem; /* СОКРАЩЕНО: с 0.9rem до 0.85rem */
+    padding: 0 6px; /* СОКРАЩЕНО: с 0 8px до 0 6px */
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px; /* СОКРАЩЕНО: с 0.5px до 0.3px */
     transition: color 0.3s ease;
+    margin-bottom: 2px; /* МИНИМАЛЬНЫЙ отступ от legend до содержимого */
 }
 
 .song-block-content {
@@ -1384,6 +1385,20 @@ body[data-theme="light"] .repertoire-view-button.active {
     .favorite-item, .setlist-item, .setlist-song-item, .repertoire-item { 
         font-size: 0.75rem !important; 
         padding: 6px 8px !important; 
+    }
+    
+    /* УЛЬТРА-КОМПАКТНЫЕ блоки песни для очень маленьких экранов */
+    .song-block {
+        margin: 0px 0; /* УЛЬТРА сокращение: убираем margin полностью */
+        padding: 0px 3px 1px 3px; /* УЛЬТРА сокращение: минимальные отступы */
+        border-radius: 2px; /* Уменьшаем скругления */
+    }
+    
+    .song-block-legend {
+        font-size: 0.75rem; /* УЛЬТРА сокращение: с 0.8rem до 0.75rem */
+        padding: 0 3px; /* УЛЬТРА сокращение: с 0 4px до 0 3px */
+        letter-spacing: 0.1px; /* УЛЬТРА сокращение: с 0.2px до 0.1px */
+        margin-bottom: 0px; /* УЛЬТРА сокращение: убираем margin полностью */
     }
 }
 /* === КОНЕЦ ВАРИАНТА 4 === */
@@ -1875,6 +1890,19 @@ body[data-theme="light"] .repertoire-view-button.active {
     /* Модальное окно на мобильных */
     .modal-content { padding: 20px; width: 90%; }
     .modal-title { font-size: 1.1rem; }
+    
+    /* МОБИЛЬНЫЕ блоки песни - ЭКСТРА компактные */
+    .song-block {
+        margin: 1px 0; /* ЭКСТРА сокращение: с 3px до 1px между блоками */
+        padding: 1px 4px 2px 4px; /* ЭКСТРА сокращение: с 2px 6px 4px 6px до 1px 4px 2px 4px */
+    }
+    
+    .song-block-legend {
+        font-size: 0.8rem; /* ЭКСТРА сокращение: с 0.85rem до 0.8rem */
+        padding: 0 4px; /* ЭКСТРА сокращение: с 0 6px до 0 4px */
+        letter-spacing: 0.2px; /* ЭКСТРА сокращение: с 0.3px до 0.2px */
+        margin-bottom: 1px; /* ЭКСТРА сокращение: с 2px до 1px */
+    }
 }
 
 /* ============================================ */
