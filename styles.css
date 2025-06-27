@@ -252,7 +252,7 @@ body[data-theme="light"] .theme-icon.moon {
     min-width: 0; 
     border: 1px solid var(--border-color); 
     border-radius: var(--radius); 
-    padding: 4px 8px 12px 8px; /* Меньший отступ сверху, больший снизу для смещения центра вверх */
+    padding: 8px 8px 12px 8px; /* Увеличили верхний отступ с 4px до 8px, чтобы уменьшить область фона селекта */
     margin: 0; 
     background: var(--input-bg-color); /* Такой же фон, как у поля поиска */
     transition: border-color 0.3s ease, background-color 0.3s ease; 
@@ -312,7 +312,7 @@ input:focus, select:focus {
     position: relative;
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
-    padding: 4px 8px 8px 8px; /* Минимальные отступы */
+    padding: 8px 8px 8px 8px; /* Увеличили верхний отступ с 4px до 8px для единообразия с фильтрами */
     margin: 0 0 -3px 0; /* ОТРИЦАТЕЛЬНЫЙ margin для еще большего сближения с фильтрами */
     background: transparent;
     transition: border-color 0.3s ease;
@@ -1224,7 +1224,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     /* Компактный fieldset поиска на маленьких экранах */
     .search-group {
-        padding: 2px 4px 5px 4px; /* Ультра-минимальные отступы */
+        padding: 6px 4px 5px 4px; /* Увеличили верхний отступ с 2px до 6px для единообразия */
         margin-bottom: -2px; /* ОТРИЦАТЕЛЬНЫЙ margin для сближения с фильтрами на очень маленьких экранах */
     }
     
@@ -1237,7 +1237,7 @@ body[data-theme="light"] .repertoire-view-button.active {
             flex: 1; 
             min-width: 0;
             height: 40px;
-            padding: 3px 4px 9px 4px; /* Меньший отступ сверху, больший снизу для смещения центра вверх */
+            padding: 6px 4px 9px 4px; /* Увеличили верхний отступ с 3px до 6px для уменьшения области фона селекта */
             display: flex;
             align-items: center; /* Возвращаем центрирование */
         }
@@ -1392,7 +1392,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         flex: 1; 
         min-width: 0;
         height: 44px;
-        padding: 3px 6px 11px 6px; /* Меньший отступ сверху, больший снизу для смещения центра вверх */
+        padding: 7px 6px 11px 6px; /* Увеличили верхний отступ с 3px до 7px для уменьшения области фона селекта */
         display: flex;
         align-items: center; /* Возвращаем центрирование */
     }
@@ -1524,7 +1524,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     /* Мобильные стили для fieldset поиска */
     .search-group {
-        padding: 2px 3px 5px 3px; /* Уменьшили с 3px 4px 6px 4px */
+        padding: 6px 3px 5px 3px; /* Увеличили верхний отступ с 2px до 6px для единообразия */
         margin-bottom: -2px; /* ОТРИЦАТЕЛЬНЫЙ margin для сближения с фильтрами на мобильных */
     }
     
@@ -1558,7 +1558,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         min-width: 0; 
         flex: 1; 
         height: 42px;
-        padding: 2px 2px 8px 2px; /* Уменьшили с 3px 3px 10px 3px */
+        padding: 6px 2px 8px 2px; /* Увеличили верхний отступ с 2px до 6px для уменьшения области фона селекта */
         display: flex;
         align-items: center; /* Возвращаем центрирование */
     }
