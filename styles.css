@@ -266,8 +266,8 @@ body[data-theme="light"] .theme-icon.moon {
     color: var(--label-color); 
     padding: 0 6px; 
     font-weight: 500; 
-    background: var(--input-bg-color); /* Такой же фон, как у панели */
-    transition: color 0.3s ease, background-color 0.3s ease; 
+    background: transparent; /* Прозрачный фон для естественного вида */
+    transition: color 0.3s ease; 
 }
 
 select, input[type="text"] {
