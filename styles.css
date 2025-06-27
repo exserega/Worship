@@ -262,13 +262,7 @@ body[data-theme="light"] .theme-icon.moon {
     align-items: center; /* Возвращаем центрирование, но с асимметричным padding */
 }
 .filter-group legend { 
-    font-size: 0.75rem; /* Увеличили с 0.7rem для лучшей читаемости */
-    color: var(--label-color); 
-    padding: 0 4px; /* Уменьшили padding для более компактного вида */
-    font-weight: 500; 
-    background: var(--container-background-color); /* Временно возвращаем обычный фон для проверки */
-    border-radius: 2px; /* Небольшое скругление для лучшего вида */
-    transition: color 0.3s ease, background-color 0.3s ease; 
+    display: none; /* Скрываем legend элементы полностью */
 }
 
 select, input[type="text"] {
@@ -319,12 +313,7 @@ input:focus, select:focus {
 }
 
 .search-group legend {
-    font-size: 0.7rem;
-    color: var(--label-color);
-    padding: 0 4px; /* Уменьшили padding для компактности */
-    font-weight: 500;
-    background: linear-gradient(to bottom, var(--container-background-color) 40%, var(--input-bg-color) 60%); /* Более плавный градиент: верх - контейнер, низ - поле ввода */
-    transition: color 0.3s ease, background 0.3s ease;
+    display: none; /* Скрываем legend элемент полностью */
 }
 
 .search-group #search-input {
@@ -437,12 +426,7 @@ body[data-theme="light"] button.icon-button.simple:active:not(:disabled) { backg
     flex-shrink: 0;
 }
 .key-group legend {
-    font-size: 0.7rem;
-    color: var(--label-color);
-    padding: 0 4px; /* Уменьшили padding для компактности */
-    font-weight: 500;
-    background: var(--container-background-color); /* Здесь оставляем обычный фон, так как fieldset прозрачный */
-    transition: color 0.3s ease, background-color 0.3s ease;
+    display: none; /* Скрываем legend элемент полностью */
 }
 #key-select { padding: 0 15px 0 15px; font-size: 0.9rem; width: 100%; min-width: 60px; text-align: center; height: 21px; border: none; background: transparent; margin: 0; flex-shrink: 0; }
 
@@ -1229,9 +1213,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     
     .search-group legend {
-        font-size: 0.6rem;
-        padding: 0 3px; /* Компактный padding для очень маленьких экранов */
-        background: linear-gradient(to bottom, var(--container-background-color) 40%, var(--input-bg-color) 60%); /* Более плавный градиент для очень маленьких экранов */
+        display: none; /* Скрываем legend на очень маленьких экранах */
     }
             .filter-group { 
             flex: 1; 
@@ -1248,10 +1230,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         font-size: 0.85rem; /* Увеличили размер текста для очень маленьких экранов */
     }
     .filter-group legend { 
-        font-size: 0.6rem;
-        padding: 0 3px; /* Еще более компактный padding для очень маленьких экранов */
-        background: linear-gradient(to bottom, var(--container-background-color) 40%, var(--input-bg-color) 60%); /* Более плавный градиент для очень маленьких экранов */
-        display: block; /* Показываем подписи даже на очень маленьких экранах */
+        display: none; /* Скрываем legend на очень маленьких экранах */
     }
 
     
@@ -1403,10 +1382,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         font-size: 1rem; /* Увеличили размер текста для планшетов */
     }
     .filter-group legend { 
-        font-size: 0.7rem; /* Увеличили с 0.6rem для планшетов */
-        padding: 0 4px; /* Компактный padding для планшетов */
-        background: linear-gradient(to bottom, var(--container-background-color) 40%, var(--input-bg-color) 60%); /* Более плавный градиент для планшетов */
-        display: block; /* Показываем на планшетах */
+        display: none; /* Скрываем legend на планшетах */
     }
     
     /* Поисковая группа на планшетах */
@@ -1529,9 +1505,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     
     .search-group legend {
-        font-size: 0.65rem;
-        padding: 0 3px; /* Компактный padding для мобильных */
-        background: linear-gradient(to bottom, var(--container-background-color) 40%, var(--input-bg-color) 60%); /* Более плавный градиент для мобильных */
+        display: none; /* Скрываем legend на мобильных */
     }
     
     .search-group #search-input {
@@ -1563,10 +1537,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         align-items: center; /* Возвращаем центрирование */
     }
     .filter-group legend {
-        font-size: 0.65rem;
-        padding: 0 3px; /* Компактный padding для мобильных */
-        background: linear-gradient(to bottom, var(--container-background-color) 40%, var(--input-bg-color) 60%); /* Более плавный градиент для мобильных */
-        display: block; /* Показываем подписи на мобильных */
+        display: none; /* Скрываем legend на мобильных */
     }
     .select-filters-container .filter-group select { 
         font-size: 0.9rem; /* Увеличили размер текста для мобильных */
@@ -1591,9 +1562,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         padding: 2px 3px 6px 3px; /* Уменьшили с 2px 4px 7px 4px */
     }
     .key-group legend {
-        font-size: 0.65rem;
-        padding: 0 3px; /* Компактный padding для мобильных */
-        background: var(--container-background-color); /* Обязательно указываем фон */
+        display: none; /* Скрываем legend на мобильных */
     }
     #key-select { width: 100%; min-width: 55px; height: 19px; padding: 0 12px 0 12px; background-position: right 2px center; background-size: 12px; text-align: center; box-sizing: border-box; } /* Уменьшили padding с 15px до 12px */
     

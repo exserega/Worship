@@ -277,7 +277,7 @@ export function updateMetronomeButton(isActive) {
 
 /** Заполняет выпадающий список категорий (листов) */
 export function populateSheetSelect() {
-    sheetSelect.innerHTML = '<option value="">-- Выберите категорию --</option>';
+    sheetSelect.innerHTML = '<option value="">-- Категория --</option>';
     SONG_CATEGORIES_ORDER.forEach(categoryName => {
         if (state.songsBySheet[categoryName] && state.songsBySheet[categoryName].length > 0) {
             const option = document.createElement('option');
