@@ -1194,7 +1194,7 @@ body[data-theme="light"] .presentation-song .song-structure {
 .song-block-legend {
     color: var(--primary-color);
     font-weight: 600;
-    font-size: 0.8rem;
+    font-size: calc(var(--lyrics-font-size, 1rem) * 0.75); /* Масштабируется с основным текстом */
     text-transform: uppercase;
     letter-spacing: 0.2px;
     transition: color 0.3s ease;
@@ -1933,7 +1933,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     
     .song-block-legend {
-        font-size: 0.75rem !important; /* ЭКСТРА сокращение: с 0.8rem до 0.75rem */
+        font-size: calc(var(--lyrics-font-size, 1rem) * 0.7) !important; /* Масштабируется для мобильных */
         padding: 0 6px !important; /* Нормальный горизонтальный padding */
         margin: 0 0 -22px 8px !important; /* РАДИКАЛЬНЫЙ отрицательный margin для мобильных */
         letter-spacing: 0.1px !important; /* ЭКСТРА сокращение: с 0.2px до 0.1px */

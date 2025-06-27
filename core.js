@@ -343,7 +343,7 @@ function getMetronomeState() {
     };
 }
 
-/** Интеллектуальное распределение блоков по двум колонкам */
+/** Интеллектуальное распределение блоков по двум колонкам с балансировкой по высоте */
 function distributeSongBlocksToColumns(processedHTML) {
     if (!processedHTML) return processedHTML;
     
@@ -362,17 +362,62 @@ function distributeSongBlocksToColumns(processedHTML) {
         return processedHTML; // Нет смысла делить
     }
     
-    // Простое распределение: четные элементы в первую колонку, нечетные во вторую
+    // Оцениваем "вес" каждого элемента (примерная высота)
+    const elementsWithWeight = elements.map(element => {
+        const content = element.textContent || '';
+        const lines = content.split('\n').length;
+        const hasFieldset = element.nodeType === Node.ELEMENT_NODE && 
+                           element.classList && element.classList.contains('song-block');
+        
+        // Базовый вес = количество строк + бонус за fieldset (заголовок блока)
+        const weight = lines + (hasFieldset ? 2 : 0);
+        
+        return {
+            element: element,
+            html: element.outerHTML || element.textContent,
+            weight: weight
+        };
+    });
+    
+    // Умное распределение: балансируем по весу
     const column1 = [];
     const column2 = [];
+    let weight1 = 0;
+    let weight2 = 0;
     
-    elements.forEach((element, index) => {
-        if (index % 2 === 0) {
-            column1.push(element.outerHTML || element.textContent);
+    // Сортируем по убыванию веса для лучшего распределения
+    elementsWithWeight.sort((a, b) => b.weight - a.weight);
+    
+    elementsWithWeight.forEach(item => {
+        // Добавляем в колонку с меньшим весом
+        if (weight1 <= weight2) {
+            column1.push(item.html);
+            weight1 += item.weight;
         } else {
-            column2.push(element.outerHTML || element.textContent);
+            column2.push(item.html);
+            weight2 += item.weight;
         }
     });
+    
+    // Если разница в весе слишком большая, перераспределяем
+    const weightDiff = Math.abs(weight1 - weight2);
+    const totalWeight = weight1 + weight2;
+    
+    // Если разница больше 30% от общего веса, пытаемся улучшить баланс
+    if (weightDiff > totalWeight * 0.3) {
+        // Простое чередование как fallback для лучшего визуального баланса
+        column1.length = 0;
+        column2.length = 0;
+        
+        elements.forEach((element, index) => {
+            const html = element.outerHTML || element.textContent;
+            if (index % 2 === 0) {
+                column1.push(html);
+            } else {
+                column2.push(html);
+            }
+        });
+    }
     
     // Создаем HTML для двух колонок
     const column1HTML = `<div class="column-1">${column1.join('\n')}</div>`;
