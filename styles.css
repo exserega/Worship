@@ -1181,12 +1181,15 @@ body[data-theme="light"] .presentation-song .song-structure {
     color: var(--primary-color);
     font-weight: 600;
     font-size: 0.8rem; /* МАКСИМАЛЬНО сокращено: с 0.85rem до 0.8rem */
-    padding: 0 4px; /* МАКСИМАЛЬНО сокращено: с 0 6px до 0 4px */
+    padding: 0; /* УБИРАЕМ все padding у legend */
+    margin: 0; /* УБИРАЕМ все margin у legend */
     text-transform: uppercase;
     letter-spacing: 0.2px; /* МАКСИМАЛЬНО сокращено: с 0.3px до 0.2px */
     transition: color 0.3s ease;
-    margin-bottom: -5px; /* МАКСИМАЛЬНЫЙ отрицательный margin для прижатия к содержимому */
-    line-height: 1.1; /* Сокращаем высоту строки legend */
+    line-height: 1.0; /* Минимальная высота строки legend */
+    display: block; /* Делаем обычным блоком вместо legend */
+    position: relative; /* Для точного позиционирования */
+    top: -2px; /* Поднимаем legend ближе к содержимому */
 }
 
 .song-block-content {
@@ -1397,10 +1400,11 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     .song-block-legend {
         font-size: 0.7rem; /* УЛЬТРА сокращение: с 0.75rem до 0.7rem */
-        padding: 0 2px; /* УЛЬТРА сокращение: с 0 3px до 0 2px */
+        padding: 0; /* УБИРАЕМ все padding */
+        margin: 0; /* УБИРАЕМ все margin */
         letter-spacing: 0px; /* УЛЬТРА сокращение: убираем letter-spacing */
-        margin-bottom: -7px; /* УЛЬТРА отрицательный margin для максимального прижатия */
-        line-height: 0.9; /* Минимальная высота строки */
+        line-height: 0.8; /* Минимальная высота строки */
+        top: -4px; /* Максимально поднимаем на маленьких экранах */
     }
 }
 /* === КОНЕЦ ВАРИАНТА 4 === */
@@ -1901,10 +1905,11 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     .song-block-legend {
         font-size: 0.75rem; /* ЭКСТРА сокращение: с 0.8rem до 0.75rem */
-        padding: 0 3px; /* ЭКСТРА сокращение: с 0 4px до 0 3px */
+        padding: 0; /* УБИРАЕМ все padding */
+        margin: 0; /* УБИРАЕМ все margin */
         letter-spacing: 0.1px; /* ЭКСТРА сокращение: с 0.2px до 0.1px */
-        margin-bottom: -6px; /* ЭКСТРА отрицательный margin для максимального прижатия */
-        line-height: 1.0; /* Минимальная высота строки */
+        line-height: 0.9; /* Минимальная высота строки */
+        top: -3px; /* Поднимаем еще выше на мобильных */
     }
 }
 
