@@ -2,7 +2,18 @@
 
 import { SONG_CATEGORIES_ORDER, MIN_FONT_SIZE, chords } from './constants.js';
 import * as state from './state.js';
-import { getRenderedSongText, extractYouTubeVideoId, isMobileView } from './core.js';
+import { 
+    getTransposition, 
+    transposeLyrics, 
+    processLyrics, 
+    highlightChords, 
+    highlightStructure, 
+    wrapSongBlocks,
+    getRenderedSongText, 
+    extractYouTubeVideoId, 
+    isMobileView,
+    distributeSongBlocksToColumns
+} from './core.js';
 import * as api from './api.js';
 
 
@@ -187,7 +198,12 @@ export function displaySongDetails(songData, keyToSelect) {
         }
     }
 
-    const finalHighlightedLyrics = getRenderedSongText(originalLyrics, originalKeyFromSheet, currentSelectedKey);
+    let finalHighlightedLyrics = getRenderedSongText(originalLyrics, originalKeyFromSheet, currentSelectedKey);
+    
+    // Если включен двухколоночный режим, распределяем блоки по колонкам
+    if (songContent.classList.contains('split-columns')) {
+        finalHighlightedLyrics = distributeSongBlocksToColumns(finalHighlightedLyrics);
+    }
     
     // Обновляем legend и pre, сохраняя fieldset структуру
     const songTitle = songContent.querySelector('#song-title');
@@ -515,7 +531,12 @@ export function displayCurrentPresentationSong() {
     const targetKey = songRef.preferredKey || originalKey;
     const songNote = songRef.notes || '';
 
-    const finalHighlightedLyrics = getRenderedSongText(originalLyrics, originalKey, targetKey);
+    let finalHighlightedLyrics = getRenderedSongText(originalLyrics, originalKey, targetKey);
+    
+    // Если включен двухколоночный режим в презентации, распределяем блоки
+    if (state.isPresentationSplit) {
+        finalHighlightedLyrics = distributeSongBlocksToColumns(finalHighlightedLyrics);
+    }
 
     const songHtml = `
         <div class="presentation-song">

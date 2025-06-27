@@ -281,7 +281,13 @@ function setupEventListeners() {
             const newKey = ui.keySelect.value;
             const originalKey = songData['Оригинальная тональность'];
             const title = songData.name;
-            const finalHtml = core.getRenderedSongText(songData['Текст и аккорды'], originalKey, newKey);
+            let finalHtml = core.getRenderedSongText(songData['Текст и аккорды'], originalKey, newKey);
+            
+            // Если включен двухколоночный режим, распределяем блоки по колонкам
+            if (ui.songContent.classList.contains('split-columns')) {
+                finalHtml = core.distributeSongBlocksToColumns(finalHtml);
+            }
+            
             const preElement = ui.songContent.querySelector('pre');
             const h2Element = ui.songContent.querySelector('h2');
             if (preElement) preElement.innerHTML = finalHtml;
@@ -320,7 +326,25 @@ function setupEventListeners() {
     ui.splitTextButton.addEventListener('click', () => {
         const lyricsElement = ui.songContent.querySelector('pre');
         if (lyricsElement && lyricsElement.textContent?.trim()) {
+            // Переключаем класс двухколоночного режима
             ui.songContent.classList.toggle('split-columns');
+            
+            // Перерендериваем текущую песню с учетом нового режима
+            const songId = ui.songSelect.value;
+            const songData = songId ? state.allSongs.find(s => s.id === songId) : null;
+            if (songData) {
+                const currentKey = ui.keySelect.value;
+                const originalKey = songData['Оригинальная тональность'];
+                let finalHtml = core.getRenderedSongText(songData['Текст и аккорды'], originalKey, currentKey);
+                
+                // Если теперь включен двухколоночный режим, распределяем блоки
+                if (ui.songContent.classList.contains('split-columns')) {
+                    finalHtml = core.distributeSongBlocksToColumns(finalHtml);
+                }
+                
+                lyricsElement.innerHTML = finalHtml;
+            }
+            
             ui.updateSplitButton();
         } else {
             alert('Нет текста песни для разделения.');
@@ -454,6 +478,10 @@ function setupEventListeners() {
     ui.presSplitTextBtn.addEventListener('click', () => {
         state.setIsPresentationSplit(!state.isPresentationSplit);
         ui.presentationContent.classList.toggle('split-columns', state.isPresentationSplit);
+        
+        // Перерендериваем текущую песню в презентации с учетом нового режима
+        ui.displayCurrentPresentationSong();
+        
         ui.updatePresentationSplitButtonState();
     });
     

@@ -529,8 +529,9 @@ body[data-theme="light"] #song-content .chord {
     background-color: color-mix(in srgb, var(--accent-color) 5%, transparent);
 }
 
-#song-content.split-columns pre { column-count: 2; column-gap: 30px; position: relative;}
-#song-content.split-columns pre::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background-color: var(--border-color); transform: translateX(-50%); z-index: 1; transition: background-color 0.3s ease; }
+/* СТАРЫЕ СТИЛИ ДВУХКОЛОНОЧНОГО РЕЖИМА - ОТКЛЮЧЕНЫ */
+/* #song-content.split-columns pre { column-count: 2; column-gap: 30px; position: relative;}
+#song-content.split-columns pre::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background-color: var(--border-color); transform: translateX(-50%); z-index: 1; transition: background-color 0.3s ease; } */
 
 /* --- YouTube Player --- */
 #youtube-player-section { max-width: 600px; margin: 25px auto 15px auto; }
@@ -657,10 +658,10 @@ body[data-theme="light"] .presentation-control-btn:active { background-color: rg
 .presentation-nav-btn:disabled { color: #666; cursor: not-allowed; }
 .presentation-counter { color: #ddd; font-size: 0.9rem; text-align: center; }
 .presentation-loading { padding: 50px 20px; text-align: center; font-size: 1.1rem; color: var(--label-color); }
-/* Разделение колонок в презентации */
-#presentation-content.split-columns .presentation-song pre { column-count: 2; column-gap: 35px; position: relative; }
+/* СТАРЫЕ СТИЛИ РАЗДЕЛЕНИЯ КОЛОНОК В ПРЕЗЕНТАЦИИ - ОТКЛЮЧЕНЫ */
+/* #presentation-content.split-columns .presentation-song pre { column-count: 2; column-gap: 35px; position: relative; }
 #presentation-content.split-columns .presentation-song pre::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background-color: var(--border-color); transform: translateX(-50%); z-index: 1; transition: background-color 0.3s ease;}
-body[data-theme="light"] #presentation-content.split-columns .presentation-song pre::before { background-color: #ccc; }
+body[data-theme="light"] #presentation-content.split-columns .presentation-song pre::before { background-color: #ccc; } */
 
 
 /* ============================================ */
@@ -1908,7 +1909,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     .presentation-controls { padding: 6px 10px; }
     .presentation-nav-btn { font-size: 1.5rem; padding: 4px 10px; }
     .presentation-counter { font-size: 0.8rem; }
-    #presentation-content.split-columns .presentation-song pre { column-gap: 25px; }
+    /* #presentation-content.split-columns .presentation-song pre { column-gap: 25px; } */
 
     /* Модальное окно на мобильных */
     .modal-content { padding: 20px; width: 90%; }
@@ -1936,3 +1937,94 @@ body[data-theme="light"] .repertoire-view-button.active {
 /* ============================================ */
 /* === КОНЕЦ ФАЙЛА CSS === */
 /* ============================================ */
+
+/* ============================================ */
+/* НОВЫЙ ДВУХКОЛОНОЧНЫЙ РЕЖИМ ДЛЯ БЛОКОВ      */
+/* ============================================ */
+
+/* ОСНОВНОЙ двухколоночный режим - используем CSS Grid */
+#song-content.split-columns pre {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px; /* МИНИМАЛЬНОЕ расстояние между колонками */
+    column-count: unset; /* Отключаем старый column-count */
+    position: relative;
+    align-items: start; /* Выравниваем колонки по верху */
+}
+
+/* Убираем старую центральную линию */
+#song-content.split-columns pre::before {
+    display: none;
+}
+
+/* Стили для колонок */
+#song-content.split-columns .column-1,
+#song-content.split-columns .column-2 {
+    display: flex;
+    flex-direction: column;
+    gap: 0; /* Расстояние между блоками внутри колонки контролируется блоками */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Каждый блок занимает всю ширину своей колонки */
+#song-content.split-columns .song-block {
+    break-inside: avoid; /* Запрещаем разрыв блока */
+    page-break-inside: avoid; /* Для старых браузеров */
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Блоки без fieldset (текст до первого маркера) тоже не разрываем */
+#song-content.split-columns pre > *:not(.song-block):not(.column-1):not(.column-2) {
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+/* ПРЕЗЕНТАЦИЯ - аналогично */
+#presentation-content.split-columns .presentation-song pre {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px; /* Чуть больше для презентации */
+    column-count: unset;
+    position: relative;
+    align-items: start;
+}
+
+#presentation-content.split-columns .presentation-song pre::before {
+    display: none;
+}
+
+#presentation-content.split-columns .column-1,
+#presentation-content.split-columns .column-2 {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#presentation-content.split-columns .song-block {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#presentation-content.split-columns .presentation-song pre > *:not(.song-block):not(.column-1):not(.column-2) {
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+/* АДАПТИВНОСТЬ для мобильных */
+@media (max-width: 480px) {
+    #song-content.split-columns pre {
+        gap: 4px; /* Еще меньше на мобильных */
+    }
+    
+    #presentation-content.split-columns .presentation-song pre {
+        gap: 6px;
+    }
+}

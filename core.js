@@ -343,6 +343,43 @@ function getMetronomeState() {
     };
 }
 
+/** Интеллектуальное распределение блоков по двум колонкам */
+function distributeSongBlocksToColumns(processedHTML) {
+    if (!processedHTML) return processedHTML;
+    
+    // Создаем временный элемент для парсинга HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = processedHTML;
+    
+    // Находим все блоки и текстовые узлы
+    const elements = Array.from(tempDiv.childNodes).filter(node => {
+        // Включаем элементы и текстовые узлы с содержимым
+        return node.nodeType === Node.ELEMENT_NODE || 
+               (node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+    });
+    
+    if (elements.length <= 1) {
+        return processedHTML; // Нет смысла делить
+    }
+    
+    // Простое распределение: четные элементы в первую колонку, нечетные во вторую
+    const column1 = [];
+    const column2 = [];
+    
+    elements.forEach((element, index) => {
+        if (index % 2 === 0) {
+            column1.push(element.outerHTML || element.textContent);
+        } else {
+            column2.push(element.outerHTML || element.textContent);
+        }
+    });
+    
+    // Создаем HTML для двух колонок
+    const column1HTML = `<div class="column-1">${column1.join('\n')}</div>`;
+    const column2HTML = `<div class="column-2">${column2.join('\n')}</div>`;
+    
+    return column1HTML + column2HTML;
+}
 
 export {
     getTransposition,
@@ -358,5 +395,6 @@ export {
     resumeAudioContext,
     loadAudioFile,
     toggleMetronome,
-    getMetronomeState
+    getMetronomeState,
+    distributeSongBlocksToColumns
 }; 
