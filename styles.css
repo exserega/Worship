@@ -1103,8 +1103,8 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
     position: relative;
 }
 
-/* Перечеркивание ноты когда аккорды скрыты */
-#toggle-chords-button.chords-hidden-active i::after {
+/* Перечеркивание ноты ВСЕГДА (показывает функцию "убрать аккорды") */
+#toggle-chords-button i::after {
     content: '';
     position: absolute;
     top: 50%;
@@ -1768,8 +1768,8 @@ body[data-theme="light"] .repertoire-view-button.active {
         position: relative;
     }
     
-    /* Перечеркивание ноты на мобильных */
-    #toggle-chords-button.chords-hidden-active i::after {
+    /* Перечеркивание ноты на мобильных ВСЕГДА */
+    #toggle-chords-button i::after {
         content: '';
         position: absolute;
         top: 50%;
