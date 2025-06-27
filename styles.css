@@ -1100,6 +1100,20 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 #toggle-chords-button i {
     margin-right: 6px; /* Отступ иконки от текста */
     font-size: 0.9em;
+    position: relative;
+}
+
+/* Перечеркивание ноты когда аккорды скрыты */
+#toggle-chords-button.chords-hidden-active i::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120%;
+    height: 2px;
+    background-color: currentColor;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    z-index: 1;
 }
 
 /* Активное состояние кнопки скрытия аккордов */
@@ -1751,6 +1765,20 @@ body[data-theme="light"] .repertoire-view-button.active {
      #toggle-chords-button i {
         margin-right: 0; /* Убираем отступ иконки */
         font-size: 0.9rem;
+        position: relative;
+    }
+    
+    /* Перечеркивание ноты на мобильных */
+    #toggle-chords-button.chords-hidden-active i::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 120%;
+        height: 2px;
+        background-color: currentColor;
+        transform: translate(-50%, -50%) rotate(-45deg);
+        z-index: 1;
     }
     
     /* Активное состояние кнопки на мобильных */

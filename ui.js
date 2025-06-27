@@ -257,8 +257,8 @@ export function updateBPM(newBPM) {
 
 /** Обновление кнопки скрытия/показа аккордов */
 export function updateToggleChordsButton() {
-    // Всегда используем перечеркнутую ноту (используем volume-mute как альтернативу)
-    const icon = '<i class="fas fa-volume-mute"></i>';
+    // Всегда используем музыкальную ноту
+    const icon = '<i class="fas fa-music"></i>';
     const textShow = '<span class="button-text">Аккорды</span>';
     
     const currentTitle = state.areChordsVisible ? 'Скрыть аккорды' : 'Показать аккорды';
