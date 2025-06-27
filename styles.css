@@ -264,10 +264,10 @@ body[data-theme="light"] .theme-icon.moon {
 .filter-group legend { 
     font-size: 0.75rem; /* Увеличили с 0.7rem для лучшей читаемости */
     color: var(--label-color); 
-    padding: 0 6px; 
+    padding: 0 4px; /* Уменьшили padding для более компактного вида */
     font-weight: 500; 
-    background: transparent; /* Прозрачный фон для естественного вида */
-    transition: color 0.3s ease; 
+    background: var(--container-background-color); /* Возвращаем фон как у основного контейнера */
+    transition: color 0.3s ease, background-color 0.3s ease; 
 }
 
 select, input[type="text"] {
@@ -320,10 +320,10 @@ input:focus, select:focus {
 .search-group legend {
     font-size: 0.7rem;
     color: var(--label-color);
-    padding: 0 6px;
+    padding: 0 4px; /* Уменьшили padding для компактности */
     font-weight: 500;
     background: var(--container-background-color);
-    transition: color 0.3s ease;
+    transition: color 0.3s ease, background-color 0.3s ease;
 }
 
 .search-group #search-input {
@@ -438,10 +438,10 @@ body[data-theme="light"] button.icon-button.simple:active:not(:disabled) { backg
 .key-group legend {
     font-size: 0.7rem;
     color: var(--label-color);
-    padding: 0 6px;
+    padding: 0 4px; /* Уменьшили padding для компактности */
     font-weight: 500;
     background: var(--container-background-color);
-    transition: color 0.3s ease;
+    transition: color 0.3s ease, background-color 0.3s ease;
 }
 #key-select { padding: 0 15px 0 15px; font-size: 0.9rem; width: 100%; min-width: 60px; text-align: center; height: 21px; border: none; background: transparent; margin: 0; flex-shrink: 0; }
 
@@ -1229,6 +1229,8 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     .search-group legend {
         font-size: 0.6rem;
+        padding: 0 3px; /* Компактный padding для очень маленьких экранов */
+        background: var(--container-background-color); /* Обязательно указываем фон */
     }
             .filter-group { 
             flex: 1; 
@@ -1246,6 +1248,8 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     .filter-group legend { 
         font-size: 0.6rem;
+        padding: 0 3px; /* Еще более компактный padding для очень маленьких экранов */
+        background: var(--container-background-color); /* Обязательно указываем фон */
         display: block; /* Показываем подписи даже на очень маленьких экранах */
     }
 
@@ -1399,6 +1403,8 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     .filter-group legend { 
         font-size: 0.7rem; /* Увеличили с 0.6rem для планшетов */
+        padding: 0 4px; /* Компактный padding для планшетов */
+        background: var(--container-background-color); /* Обязательно указываем фон */
         display: block; /* Показываем на планшетах */
     }
     
@@ -1523,6 +1529,8 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     .search-group legend {
         font-size: 0.65rem;
+        padding: 0 3px; /* Компактный padding для мобильных */
+        background: var(--container-background-color); /* Обязательно указываем фон */
     }
     
     .search-group #search-input {
@@ -1555,6 +1563,8 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     .filter-group legend {
         font-size: 0.65rem;
+        padding: 0 3px; /* Компактный padding для мобильных */
+        background: var(--container-background-color); /* Обязательно указываем фон */
         display: block; /* Показываем подписи на мобильных */
     }
     .select-filters-container .filter-group select { 
@@ -1581,6 +1591,8 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     .key-group legend {
         font-size: 0.65rem;
+        padding: 0 3px; /* Компактный padding для мобильных */
+        background: var(--container-background-color); /* Обязательно указываем фон */
     }
     #key-select { width: 100%; min-width: 55px; height: 19px; padding: 0 12px 0 12px; background-position: right 2px center; background-size: 12px; text-align: center; box-sizing: border-box; } /* Уменьшили padding с 15px до 12px */
     
