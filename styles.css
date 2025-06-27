@@ -1082,9 +1082,18 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 /* ============================================ */
 
 /* --- Логика скрытия аккордов --- */
-#song-content.chords-hidden .chord {
-    display: none; /* Просто скрываем элементы с классом .chord */
-
+#song-content.chords-hidden .chord,
+.presentation-content.chords-hidden .chord {
+    /* Скрываем аккорды без создания пробелов */
+    position: absolute;
+    left: -9999px;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    font-size: 0;
+    line-height: 0;
+    margin: 0;
+    padding: 0;
 }
 
 /* --- Кнопка Скрыть/Показать аккорды --- */
@@ -1096,6 +1105,7 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
     font-size: 0.85rem;
     margin-left: 5px; /* Небольшой отступ слева */
     order: -1; /* Можно попробовать подвинуть левее кнопки Split */
+    position: relative; /* Для позиционирования псевдоэлемента */
 }
 #toggle-chords-button i {
     margin-right: 6px; /* Отступ иконки от текста */
@@ -1103,17 +1113,17 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
     position: relative;
 }
 
-/* Перечеркивание ноты ВСЕГДА (показывает функцию "убрать аккорды") */
-#toggle-chords-button i::after {
+/* Перечеркивание ВСЕЙ КНОПКИ от угла до угла */
+#toggle-chords-button::after {
     content: '';
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 120%;
-    height: 2px;
-    background-color: currentColor;
-    transform: translate(-50%, -50%) rotate(-45deg);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top right, transparent 47%, currentColor 47%, currentColor 53%, transparent 53%);
     z-index: 1;
+    pointer-events: none;
 }
 
 /* Активное состояние кнопки скрытия аккордов */
@@ -1768,17 +1778,17 @@ body[data-theme="light"] .repertoire-view-button.active {
         position: relative;
     }
     
-    /* Перечеркивание ноты на мобильных ВСЕГДА */
-    #toggle-chords-button i::after {
+    /* Перечеркивание всей кнопки на мобильных */
+    #toggle-chords-button::after {
         content: '';
         position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 120%;
-        height: 2px;
-        background-color: currentColor;
-        transform: translate(-50%, -50%) rotate(-45deg);
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to top right, transparent 47%, currentColor 47%, currentColor 53%, transparent 53%);
         z-index: 1;
+        pointer-events: none;
     }
     
     /* Активное состояние кнопки на мобильных */
