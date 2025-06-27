@@ -1224,7 +1224,7 @@ body[data-theme="light"] .presentation-song .song-structure {
 
 .song-block-content {
     margin: -14px 0 0 0 !important; /* Увеличили отрицательный margin с -8px до -14px для максимальной компактности */
-    padding: 0px 6px 4px 6px !important; /* Убираем верхний padding */
+    padding: 0px 6px 2px 6px !important; /* Сократили нижний padding с 4px до 2px (в 2 раза) */
     white-space: pre-wrap; /* Изменяем с pre на pre-wrap для переноса */
     line-height: inherit;
     box-sizing: border-box;
@@ -1445,7 +1445,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     .song-block-content {
         margin: -20px 0 0 0 !important; /* ЭКСТРЕМАЛЬНЫЙ отрицательный margin - МАКСИМАЛЬНОЕ сближение! */
-        padding: 0px 3px 1px 3px !important; /* Минимальные отступы внутри содержимого */
+        padding: 0px 3px 0px 3px !important; /* Убрали нижний padding полностью (с 1px до 0px) */
     }
 }
 /* === КОНЕЦ ВАРИАНТА 4 === */
@@ -1967,7 +1967,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     .song-block-content {
         margin: -10px 0 0 0 !important; /* Увеличили отрицательный margin с -3px до -10px для компактности */
-        padding: 0px 4px 2px 4px !important; /* Убираем верхний padding */
+        padding: 0px 4px 1px 4px !important; /* Сократили нижний padding с 2px до 1px (в 2 раза) */
     }
     
     /* Фон для светлой темы на мобильных */
