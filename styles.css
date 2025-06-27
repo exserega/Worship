@@ -1193,7 +1193,7 @@ body[data-theme="light"] .presentation-song .song-structure {
 /* КАРДИНАЛЬНО ПЕРЕРАБОТАННЫЕ стили для legend */
 .song-block-legend {
     color: var(--primary-color);
-    font-weight: 600;
+    font-weight: 700; /* Увеличили жирность с 600 до 700 для лучшего выделения */
     font-size: calc(var(--lyrics-font-size, 1rem) * 1.0); /* Такой же размер как основной текст */
     text-transform: uppercase;
     letter-spacing: 0.2px;
@@ -1204,10 +1204,10 @@ body[data-theme="light"] .presentation-song .song-structure {
     border-radius: 3px;
     
     /* МАКСИМАЛЬНО КОМПАКТНЫЕ отступы */
-    padding: 3px 8px !important; /* Увеличили вертикальный padding для лучшего центрирования текста */
+    padding: 4px 8px !important; /* Увеличили вертикальный padding еще больше для лучшего центрирования */
     margin: 0 0 -16px 12px !important; /* Увеличили отрицательный margin с -10px до -16px для максимальной компактности */
     border: none !important;
-    line-height: 1.2 !important; /* Увеличили line-height для лучшего вертикального выравнивания */
+    line-height: 1.3 !important; /* Увеличили line-height для еще лучшего вертикального выравнивания */
     
     /* Защита от переполнения */
     white-space: nowrap;
@@ -1437,10 +1437,11 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     .song-block-legend {
         font-size: 0.7rem !important; /* УЛЬТРА сокращение: с 0.75rem до 0.7rem */
-        padding: 2px 4px !important; /* Увеличили padding для лучшего центрирования */
+        font-weight: 700 !important; /* Более жирный шрифт для выделения */
+        padding: 3px 4px !important; /* Увеличили padding еще больше для лучшего центрирования */
         margin: 0 0 -25px 6px !important; /* ЭКСТРЕМАЛЬНЫЙ отрицательный margin для мини-экранов */
         letter-spacing: 0px !important; /* УЛЬТРА сокращение: убираем letter-spacing */
-        line-height: 1.1 !important; /* Увеличили line-height для лучшего вертикального выравнивания */
+        line-height: 1.2 !important; /* Увеличили line-height для еще лучшего вертикального выравнивания */
         
         /* Центрирование для мини-экранов */
         display: inline-flex !important;
@@ -1949,10 +1950,11 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     .song-block-legend {
         font-size: calc(var(--lyrics-font-size, 1rem) * 0.95) !important; /* Почти как основной текст */
-        padding: 3px 6px !important; /* Увеличили вертикальный padding для лучшего центрирования текста */
+        font-weight: 700 !important; /* Более жирный шрифт для выделения */
+        padding: 4px 6px !important; /* Увеличили вертикальный padding еще больше для лучшего центрирования */
         margin: 0 0 -12px 8px !important; /* Увеличили отрицательный margin с -5px до -12px для компактности */
         letter-spacing: 0.1px !important; 
-        line-height: 1.2 !important; /* Увеличили line-height для лучшего вертикального выравнивания */
+        line-height: 1.3 !important; /* Увеличили line-height для еще лучшего вертикального выравнивания */
         
         /* Фон как у аккордов */
         background-color: color-mix(in srgb, var(--accent-color) 2%, transparent) !important;
