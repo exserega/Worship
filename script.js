@@ -553,6 +553,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupEventListeners();
     setupSwipeToClose();
     ui.updateFontSize();
+    
+    // Устанавливаем двухколоночный режим по умолчанию
+    ui.songContent.classList.add('split-columns');
+    ui.updateSplitButton();
 
     try {
         await api.loadAllSongsFromFirestore();

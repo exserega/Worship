@@ -272,10 +272,11 @@ export function updateToggleChordsButton() {
 /** Обновление кнопки разделения текста */
 export function updateSplitButton() {
     const isSplit = songContent.classList.contains('split-columns');
-    const icon = isSplit ? '<i class="fas fa-align-justify"></i>' : '<i class="fas fa-columns"></i>';
-    const text = isSplit ? '<span class="button-text">Объединить</span>' : '<span class="button-text">Разделить</span>';
+    // Поменяли логику: теперь по умолчанию двухколоночный режим
+    const icon = isSplit ? '<i class="fas fa-columns"></i>' : '<i class="fas fa-align-justify"></i>';
+    const text = isSplit ? '<span class="button-text">2 колонки</span>' : '<span class="button-text">1 колонка</span>';
     splitTextButton.innerHTML = icon + (isMobileView() ? '' : text);
-    splitTextButton.setAttribute('aria-label', isSplit ? 'Объединить колонки' : 'Разделить текст');
+    splitTextButton.setAttribute('aria-label', isSplit ? 'Режим: 2 колонки' : 'Режим: 1 колонка');
 }
 
 /** Обновление кнопки метронома */
