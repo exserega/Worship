@@ -399,23 +399,26 @@ body[data-theme="light"] button.icon-button.simple:active:not(:disabled) { backg
     min-height: 38px; 
     gap: 12px; 
     margin-bottom: -3px; /* ОТРИЦАТЕЛЬНЫЙ margin для сближения с областью песни */
-    margin-top: 60px; /* КАРДИНАЛЬНОЕ разделение: с 30px до 60px для четкого визуального разделения */
-    padding-top: 20px; /* Дополнительный отступ сверху */
-    border-top: 2px solid var(--border-color); /* Визуальный разделитель */
+    margin-top: 25px; /* УМЕРЕННОЕ разделение: достаточно для визуального разделения */
+    padding-top: 15px; /* Небольшой отступ сверху */
     position: relative;
 }
 
-/* Добавляем визуальную метку разделения */
+/* Элегантная тонкая линия разделения */
 .control-group:has(#key-select)::before {
     content: '';
     position: absolute;
-    top: -1px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 2px;
-    background: var(--primary-color);
-    border-radius: 2px;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right, 
+        transparent 0%, 
+        var(--border-color) 20%, 
+        var(--primary-color) 50%, 
+        var(--border-color) 80%, 
+        transparent 100%);
+    opacity: 0.6;
 }
 
 /* Fieldset для тональности */
@@ -1250,9 +1253,9 @@ body[data-theme="light"] .repertoire-view-button.active {
     /* ЭКСТРА-СТРОГИЕ ограничения для очень маленьких экранов */
     /* Разделение функциональных кнопок на очень маленьких экранах */
     .control-group:has(#key-select) { 
-        margin-top: 35px; /* КАРДИНАЛЬНОЕ разделение: с 18px до 35px на очень маленьких экранах */
+        margin-top: 15px; /* УМЕРЕННОЕ разделение на очень маленьких экранах */
         margin-bottom: -2px; /* ОТРИЦАТЕЛЬНЫЙ margin для сближения с областью песни на очень маленьких экранах */
-        padding-top: 10px; /* Дополнительный отступ сверху */
+        padding-top: 8px; /* Небольшой отступ сверху */
     }
     
     /* Область песни на очень маленьких экранах */
@@ -1406,9 +1409,9 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     /* Разделение функциональных кнопок на планшетах */
     .control-group:has(#key-select) { 
-        margin-top: 50px; /* КАРДИНАЛЬНОЕ разделение: с 25px до 50px на планшетах */
+        margin-top: 20px; /* УМЕРЕННОЕ разделение на планшетах */
         margin-bottom: -2px; /* ОТРИЦАТЕЛЬНЫЙ margin для сближения с областью песни на планшетах */
-        padding-top: 15px; /* Дополнительный отступ сверху */
+        padding-top: 12px; /* Небольшой отступ сверху */
     }
     
     /* Область песни на планшетах */
@@ -1567,8 +1570,8 @@ body[data-theme="light"] .repertoire-view-button.active {
         min-height: 36px; 
         gap: 6px; 
         margin-bottom: -2px; /* ОТРИЦАТЕЛЬНЫЙ margin для сближения с областью песни на мобильных */
-        margin-top: 40px; /* КАРДИНАЛЬНОЕ разделение: с 20px до 40px на мобильных */
-        padding-top: 12px; /* Дополнительный отступ сверху */
+        margin-top: 18px; /* УМЕРЕННОЕ разделение на мобильных */
+        padding-top: 10px; /* Небольшой отступ сверху */
     }
     
     /* Мобильный fieldset для тональности */
