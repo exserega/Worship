@@ -86,12 +86,12 @@ function transposeLyrics(lyrics, transposition) {
     }
 }
 
-/** Обработка строк текста для коррекции выравнивания пробелов */
+/** Обработка строк текста - оставляем оригинальное форматирование для точного позиционирования аккордов */
 function processLyrics(lyrics) {
     if (!lyrics) return '';
-    return lyrics.split('\n').map(line => {
-        return line.replace(/ {2,}/g, match => ' '.repeat(Math.max(1, Math.ceil(match.length / 2))));
-    }).join('\n');
+    // ВАЖНО: НЕ изменяем пробелы! Они критически важны для позиционирования аккордов
+    // Firebase содержит точное расположение аккордов с правильными пробелами
+    return lyrics;
 }
 
 /** Выделение аккордов тегами span для стилизации */

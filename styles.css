@@ -498,12 +498,12 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
 #song-content .chord {
     font-weight: 700 !important;
     color: var(--primary-color);
-    display: inline-block; /* Нужно для фона и паддингов */
+    display: inline; /* ИЗМЕНЕНО: inline вместо inline-block для точного позиционирования */
     background-color: color-mix(in srgb, var(--accent-color) 2%, transparent); /* Полупрозрачный фон */
-    padding: 1px 5px; /* Небольшие отступы вокруг аккорда */
+    padding: 1px 3px; /* УМЕНЬШИЛИ: меньше padding для точного позиционирования */
     border-radius: 4px; /* Скругленные углы */
-    margin: 0 2px; /* Заменяем margin-right на горизонтальные отступы */
-    line-height: 1.2; /* Может понадобиться для выравнивания */
+    margin: 0; /* УБРАЛИ: margin убирает смещение аккордов */
+    line-height: inherit; /* ИЗМЕНЕНО: наследуем line-height от родителя */
     vertical-align: baseline; /* Выравнивание по базовой линии */
     transition: color 0.3s ease, background-color 0.3s ease;
 }
@@ -597,12 +597,12 @@ body[data-theme="light"] .presentation-notes i.fas {
 .presentation-song .chord {
     font-weight: 700 !important;
     color: var(--primary-color);
-    display: inline-block;
+    display: inline; /* ИЗМЕНЕНО: inline для точного позиционирования */
     background-color: color-mix(in srgb, var(--accent-color) 2%, transparent);
-    padding: 1px 5px;
+    padding: 1px 3px; /* УМЕНЬШИЛИ: меньше padding */
     border-radius: 4px;
-    margin: 0 2px;
-    line-height: 1.2;
+    margin: 0; /* УБРАЛИ: margin убирает смещение */
+    line-height: inherit; /* ИЗМЕНЕНО: наследуем line-height */
     vertical-align: baseline;
     transition: color 0.3s ease, background-color 0.3s ease;
 }
