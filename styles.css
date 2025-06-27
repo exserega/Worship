@@ -515,13 +515,13 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
     font-weight: 700 !important;
     color: var(--primary-color);
     display: inline; /* inline для точного позиционирования */
-    background-color: transparent; /* УБИРАЕМ фон чтобы не влиял на позиционирование */
-    padding: 0; /* УБИРАЕМ: padding полностью для идеального позиционирования */
-    border-radius: 0; /* УБИРАЕМ: border-radius не нужен без фона */
-    margin: 0; /* УБИРАЕМ: margin убирает смещение аккордов */
+    background-color: color-mix(in srgb, var(--accent-color) 2%, transparent); /* ВОЗВРАЩАЕМ еле заметный фон */
+    padding: 1px 2px; /* МИНИМАЛЬНЫЙ padding для фона */
+    border-radius: 3px; /* ВОЗВРАЩАЕМ скругления для фона */
+    margin: 0; /* margin остается 0 */
     line-height: inherit; /* наследуем line-height от родителя */
     vertical-align: baseline; /* Выравнивание по базовой линии */
-    transition: color 0.3s ease;
+    transition: color 0.3s ease, background-color 0.3s ease;
 }
 /* Стили аккордов в светлой теме */
 body[data-theme="light"] #song-content .chord {
@@ -619,13 +619,13 @@ body[data-theme="light"] .presentation-notes i.fas {
     font-weight: 700 !important;
     color: var(--primary-color);
     display: inline; /* inline для точного позиционирования */
-    background-color: transparent; /* УБИРАЕМ фон чтобы не влиял на позиционирование */
-    padding: 0; /* УБИРАЕМ: padding полностью для идеального позиционирования */
-    border-radius: 0; /* УБИРАЕМ: border-radius не нужен без фона */
-    margin: 0; /* УБИРАЕМ: margin убирает смещение */
+    background-color: color-mix(in srgb, var(--accent-color) 2%, transparent); /* ВОЗВРАЩАЕМ еле заметный фон */
+    padding: 1px 2px; /* МИНИМАЛЬНЫЙ padding для фона */
+    border-radius: 3px; /* ВОЗВРАЩАЕМ скругления для фона */
+    margin: 0; /* margin остается 0 */
     line-height: inherit; /* наследуем line-height */
     vertical-align: baseline;
-    transition: color 0.3s ease;
+    transition: color 0.3s ease, background-color 0.3s ease;
 }
 /* Стили аккордов в светлой теме презентации */
 body[data-theme="light"] .presentation-song .chord {
@@ -1157,6 +1157,51 @@ pre > .song-structure:first-child {
 }
 body[data-theme="light"] .presentation-song .song-structure {
      color: var(--secondary-color); /* Цвет для светлой темы в презентации */
+}
+
+/* === СТИЛИ ДЛЯ БЛОКОВ ПЕСНИ === */
+.song-block {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    margin: 8px 0;
+    padding: 8px 12px 12px 12px;
+    background-color: var(--container-background-color);
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.song-block:first-child {
+    margin-top: 0;
+}
+
+.song-block:last-child {
+    margin-bottom: 0;
+}
+
+.song-block-legend {
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: color 0.3s ease;
+}
+
+.song-block-content {
+    margin: 0;
+    padding: 0;
+    white-space: pre;
+    line-height: inherit;
+}
+
+/* Светлая тема для блоков */
+body[data-theme="light"] .song-block {
+    border-color: var(--border-color);
+    background-color: var(--container-background-color);
+}
+
+body[data-theme="light"] .song-block-legend {
+    color: var(--secondary-color);
 }
 
 

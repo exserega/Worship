@@ -113,8 +113,8 @@ function highlightChords(lyrics) {
     }
 }
 
-/** Выделение маркеров структуры песни (Куплет, Припев и т.д.) */
-function highlightStructure(lyrics) {
+/** Оборачивание блоков песни в fieldset с legend */
+function wrapSongBlocks(lyrics) {
     if (!lyrics) return '';
 
     const markers = [
@@ -127,14 +127,55 @@ function highlightStructure(lyrics) {
     const markerPattern = `^\\s*(\\d+\\s+)?(${uniqueMarkers.join('|')})(\\s*\\d*)?\\s*[:.]?\\s*$`;
     const markerRegex = new RegExp(markerPattern, 'i');
 
-    return lyrics.split('\n').map(line => {
+    const lines = lyrics.split('\n');
+    const blocks = [];
+    let currentBlock = { legend: '', content: [] };
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
         const trimmedLine = line.trim();
+        
         if (markerRegex.test(trimmedLine)) {
-             return line.replace(trimmedLine, `<span class="song-structure">${trimmedLine}</span>`);
+            // Если это структурный маркер
+            if (currentBlock.content.length > 0) {
+                // Сохраняем предыдущий блок
+                blocks.push(currentBlock);
+            }
+            // Начинаем новый блок
+            currentBlock = { 
+                legend: trimmedLine, 
+                content: [] 
+            };
         } else {
-            return line;
+            // Добавляем строку в текущий блок
+            currentBlock.content.push(line);
+        }
+    }
+    
+    // Добавляем последний блок
+    if (currentBlock.legend || currentBlock.content.length > 0) {
+        blocks.push(currentBlock);
+    }
+
+    // Формируем HTML с fieldset
+    return blocks.map(block => {
+        if (block.legend) {
+            const content = block.content.join('\n');
+            return `<fieldset class="song-block">
+<legend class="song-block-legend">${block.legend}</legend>
+<div class="song-block-content">${content}</div>
+</fieldset>`;
+        } else {
+            // Блок без заголовка (начало песни до первого маркера)
+            return block.content.join('\n');
         }
     }).join('\n');
+}
+
+/** Выделение аккордов в уже обработанном тексте (устарело - заменено на wrapSongBlocks) */
+function highlightStructure(lyrics) {
+    // Теперь эта функция не нужна, так как структура обрабатывается в wrapSongBlocks
+    return lyrics;
 }
 
 /** Комплексная обработка текста песни: обработка пробелов, транспонирование и подсветка. */
@@ -143,8 +184,8 @@ function getRenderedSongText(originalLyrics, originalKey, targetKey) {
     const processedLyrics = processLyrics(originalLyrics);
     const transposition = getTransposition(originalKey, targetKey);
     const transposedLyrics = transposeLyrics(processedLyrics, transposition);
-    const structureHighlightedLyrics = highlightStructure(transposedLyrics);
-    const finalHighlightedLyrics = highlightChords(structureHighlightedLyrics);
+    const blocksWrappedLyrics = wrapSongBlocks(transposedLyrics);
+    const finalHighlightedLyrics = highlightChords(blocksWrappedLyrics);
     return finalHighlightedLyrics;
 }
 
@@ -309,6 +350,7 @@ export {
     processLyrics,
     highlightChords,
     highlightStructure,
+    wrapSongBlocks,
     getRenderedSongText,
     extractYouTubeVideoId,
     isMobileView,
