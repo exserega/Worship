@@ -495,9 +495,9 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
     margin-right: 0;
 }
 #song-content pre { 
-    font-family: 'Courier New', Courier, monospace; /* ИЗМЕНЕНО: более строгий моноширинный шрифт */
-    white-space: pre; /* ИЗМЕНЕНО: pre вместо pre-wrap для точного позиционирования */
-    word-wrap: normal; /* ИЗМЕНЕНО: отключаем word-wrap */
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; /* ВОЗВРАЩАЕМ исходный шрифт */
+    white-space: pre; /* ОСТАВЛЯЕМ: pre для точного позиционирования */
+    word-wrap: normal; /* ОСТАВЛЯЕМ: отключаем word-wrap */
     line-height: 1.5; 
     font-size: var(--lyrics-font-size, 1rem); 
     color: var(--text-color); 
@@ -505,20 +505,20 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
     padding-top: 6px; 
     overflow-x: auto; 
     transition: color 0.3s ease;
-    letter-spacing: 0; /* ДОБАВЛЕНО: убираем letter-spacing */
-    word-spacing: 0; /* ДОБАВЛЕНО: убираем word-spacing */
+    letter-spacing: 0; /* ОСТАВЛЯЕМ: убираем letter-spacing */
+    word-spacing: 0; /* ОСТАВЛЯЕМ: убираем word-spacing */
 }
 #song-content .chord {
     font-weight: 700 !important;
     color: var(--primary-color);
-    display: inline; /* ИЗМЕНЕНО: inline вместо inline-block для точного позиционирования */
-    background-color: color-mix(in srgb, var(--accent-color) 2%, transparent); /* Полупрозрачный фон */
-    padding: 1px 3px; /* УМЕНЬШИЛИ: меньше padding для точного позиционирования */
-    border-radius: 4px; /* Скругленные углы */
-    margin: 0; /* УБРАЛИ: margin убирает смещение аккордов */
-    line-height: inherit; /* ИЗМЕНЕНО: наследуем line-height от родителя */
+    display: inline; /* inline для точного позиционирования */
+    background-color: transparent; /* УБИРАЕМ фон чтобы не влиял на позиционирование */
+    padding: 0; /* УБИРАЕМ: padding полностью для идеального позиционирования */
+    border-radius: 0; /* УБИРАЕМ: border-radius не нужен без фона */
+    margin: 0; /* УБИРАЕМ: margin убирает смещение аккордов */
+    line-height: inherit; /* наследуем line-height от родителя */
     vertical-align: baseline; /* Выравнивание по базовой линии */
-    transition: color 0.3s ease, background-color 0.3s ease;
+    transition: color 0.3s ease;
 }
 /* Стили аккордов в светлой теме */
 body[data-theme="light"] #song-content .chord {
@@ -597,29 +597,29 @@ body[data-theme="light"] .presentation-notes i.fas {
 /* Текст песни в презентации */
 .presentation-song pre {
     font-size: clamp(12px, 2.9vw, 17px);
-    font-family: 'Courier New', Courier, monospace; /* ИЗМЕНЕНО: тот же моноширинный шрифт */
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; /* ВОЗВРАЩАЕМ исходный шрифт */
     line-height: 1.45;
-    white-space: pre; /* ИЗМЕНЕНО: pre для точного позиционирования */
-    word-wrap: normal; /* ИЗМЕНЕНО: отключаем word-wrap */
+    white-space: pre; /* ОСТАВЛЯЕМ: pre для точного позиционирования */
+    word-wrap: normal; /* ОСТАВЛЯЕМ: отключаем word-wrap */
     color: var(--text-color);
     transition: color 0.3s ease;
     margin-top: 0;
-    letter-spacing: 0; /* ДОБАВЛЕНО: убираем letter-spacing */
-    word-spacing: 0; /* ДОБАВЛЕНО: убираем word-spacing */
+    letter-spacing: 0; /* ОСТАВЛЯЕМ: убираем letter-spacing */
+    word-spacing: 0; /* ОСТАВЛЯЕМ: убираем word-spacing */
 }
 
 /* --- Стиль аккордов в презентации (с фоном) --- */
 .presentation-song .chord {
     font-weight: 700 !important;
     color: var(--primary-color);
-    display: inline; /* ИЗМЕНЕНО: inline для точного позиционирования */
-    background-color: color-mix(in srgb, var(--accent-color) 2%, transparent);
-    padding: 1px 3px; /* УМЕНЬШИЛИ: меньше padding */
-    border-radius: 4px;
-    margin: 0; /* УБРАЛИ: margin убирает смещение */
-    line-height: inherit; /* ИЗМЕНЕНО: наследуем line-height */
+    display: inline; /* inline для точного позиционирования */
+    background-color: transparent; /* УБИРАЕМ фон чтобы не влиял на позиционирование */
+    padding: 0; /* УБИРАЕМ: padding полностью для идеального позиционирования */
+    border-radius: 0; /* УБИРАЕМ: border-radius не нужен без фона */
+    margin: 0; /* УБИРАЕМ: margin убирает смещение */
+    line-height: inherit; /* наследуем line-height */
     vertical-align: baseline;
-    transition: color 0.3s ease, background-color 0.3s ease;
+    transition: color 0.3s ease;
 }
 /* Стили аккордов в светлой теме презентации */
 body[data-theme="light"] .presentation-song .chord {
@@ -1672,7 +1672,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         padding-top: 2px; /* МИНИМАЛЬНЫЙ отступ с 6px 0 */
         
         /* ВСЕ ОСТАЛЬНЫЕ СВОЙСТВА С ТОЧНЫМ ПОЗИЦИОНИРОВАНИЕМ */
-        font-family: 'Courier New', Courier, monospace; /* МОНОШИРИННЫЙ ШРИФТ */
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; /* ВОЗВРАЩАЕМ исходный шрифт */
         white-space: pre; /* PRE ДЛЯ ТОЧНОГО ПОЗИЦИОНИРОВАНИЯ */
         word-wrap: normal; /* ОТКЛЮЧАЕМ WORD-WRAP */
         color: var(--text-color); 
