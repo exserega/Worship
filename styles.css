@@ -1183,7 +1183,7 @@ body[data-theme="light"] .presentation-song .song-structure {
     margin-bottom: 0 !important;
 }
 
-/* ИСПРАВЛЕННЫЕ стили для legend */
+/* РАДИКАЛЬНО сокращенные стили для legend */
 .song-block-legend {
     color: var(--primary-color);
     font-weight: 600;
@@ -1192,21 +1192,21 @@ body[data-theme="light"] .presentation-song .song-structure {
     letter-spacing: 0.2px;
     transition: color 0.3s ease;
     
-    /* Правильное позиционирование legend */
+    /* РАДИКАЛЬНОЕ сокращение расстояния */
     padding: 0 8px !important; /* Нормальный padding */
-    margin: 0 0 -12px 12px !important; /* ЕЩЕ БОЛЬШИЙ отрицательный margin + левый отступ для сдвига от угла */
+    margin: 0 0 -20px 12px !important; /* РАДИКАЛЬНЫЙ отрицательный margin для максимального сближения */
     border: none !important;
     background: none !important;
-    line-height: 0.9 !important; /* Уменьшаем высоту строки */
+    line-height: 0.7 !important; /* Минимальная высота строки */
     
     /* Центрируем legend правильно */
     float: none !important;
     width: auto !important;
-    display: inline !important; /* Возвращаем inline для правильного позиционирования */
+    display: inline !important;
 }
 
 .song-block-content {
-    margin: -8px 0 0 0 !important; /* ЕЩЕ БОЛЬШИЙ отрицательный верхний margin для приближения к legend */
+    margin: -15px 0 0 0 !important; /* РАДИКАЛЬНЫЙ отрицательный margin - почти в притык! */
     padding: 0px 6px 4px 6px !important; /* Убираем верхний padding */
     white-space: pre;
     line-height: inherit;
@@ -1414,13 +1414,13 @@ body[data-theme="light"] .repertoire-view-button.active {
     .song-block-legend {
         font-size: 0.7rem !important; /* УЛЬТРА сокращение: с 0.75rem до 0.7rem */
         padding: 0 4px !important; /* Минимальный горизонтальный padding */
-        margin: 0 0 -16px 6px !important; /* МАКСИМАЛЬНЫЙ отрицательный margin + отступ от угла */
+        margin: 0 0 -25px 6px !important; /* ЭКСТРЕМАЛЬНЫЙ отрицательный margin для мини-экранов */
         letter-spacing: 0px !important; /* УЛЬТРА сокращение: убираем letter-spacing */
-        line-height: 0.7 !important; /* Минимальная высота строки */
+        line-height: 0.5 !important; /* ЭКСТРЕМАЛЬНО маленькая высота строки */
     }
     
     .song-block-content {
-        margin: -12px 0 0 0 !important; /* МАКСИМАЛЬНЫЙ отрицательный margin */
+        margin: -20px 0 0 0 !important; /* ЭКСТРЕМАЛЬНЫЙ отрицательный margin - МАКСИМАЛЬНОЕ сближение! */
         padding: 0px 3px 1px 3px !important; /* Минимальные отступы внутри содержимого */
     }
 }
@@ -1922,13 +1922,13 @@ body[data-theme="light"] .repertoire-view-button.active {
     .song-block-legend {
         font-size: 0.75rem !important; /* ЭКСТРА сокращение: с 0.8rem до 0.75rem */
         padding: 0 6px !important; /* Нормальный горизонтальный padding */
-        margin: 0 0 -14px 8px !important; /* ЕЩЕ БОЛЬШИЙ отрицательный margin + отступ от угла */
+        margin: 0 0 -22px 8px !important; /* РАДИКАЛЬНЫЙ отрицательный margin для мобильных */
         letter-spacing: 0.1px !important; /* ЭКСТРА сокращение: с 0.2px до 0.1px */
-        line-height: 0.8 !important; /* Еще меньше высота строки */
+        line-height: 0.6 !important; /* РАДИКАЛЬНО маленькая высота строки */
     }
     
     .song-block-content {
-        margin: -10px 0 0 0 !important; /* ЕЩЕ БОЛЬШИЙ отрицательный margin для мобильных */
+        margin: -17px 0 0 0 !important; /* РАДИКАЛЬНЫЙ отрицательный margin - почти в притык на мобильных! */
         padding: 0px 4px 2px 4px !important; /* Убираем верхний padding */
     }
 }
