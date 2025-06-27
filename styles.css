@@ -1163,8 +1163,8 @@ body[data-theme="light"] .presentation-song .song-structure {
 .song-block {
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
-    margin: 3px 0; /* СОКРАЩЕНО: с 8px до 3px между блоками */
-    padding: 2px 6px 4px 6px; /* СОКРАЩЕНО: с 8px 12px 12px 12px до 2px 6px 4px 6px */
+    margin: 1px 0; /* СОКРАЩЕНО: с 3px до 1px между блоками */
+    padding: 1px 6px 3px 6px; /* СОКРАЩЕНО: верхний padding с 2px до 1px */
     background-color: var(--container-background-color);
     transition: border-color 0.3s ease, background-color 0.3s ease;
 }
@@ -1185,7 +1185,7 @@ body[data-theme="light"] .presentation-song .song-structure {
     text-transform: uppercase;
     letter-spacing: 0.3px; /* СОКРАЩЕНО: с 0.5px до 0.3px */
     transition: color 0.3s ease;
-    margin-bottom: 2px; /* МИНИМАЛЬНЫЙ отступ от legend до содержимого */
+    margin-bottom: -2px; /* ОТРИЦАТЕЛЬНЫЙ margin для максимального сближения с содержимым */
 }
 
 .song-block-content {
@@ -1398,7 +1398,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         font-size: 0.75rem; /* УЛЬТРА сокращение: с 0.8rem до 0.75rem */
         padding: 0 3px; /* УЛЬТРА сокращение: с 0 4px до 0 3px */
         letter-spacing: 0.1px; /* УЛЬТРА сокращение: с 0.2px до 0.1px */
-        margin-bottom: 0px; /* УЛЬТРА сокращение: убираем margin полностью */
+        margin-bottom: -4px; /* УЛЬТРА отрицательный margin для максимального прижатия к содержимому */
     }
 }
 /* === КОНЕЦ ВАРИАНТА 4 === */
@@ -1893,15 +1893,15 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     /* МОБИЛЬНЫЕ блоки песни - ЭКСТРА компактные */
     .song-block {
-        margin: 1px 0; /* ЭКСТРА сокращение: с 3px до 1px между блоками */
-        padding: 1px 4px 2px 4px; /* ЭКСТРА сокращение: с 2px 6px 4px 6px до 1px 4px 2px 4px */
+        margin: 0px 0; /* ЭКСТРА сокращение: с 1px до 0px между блоками */
+        padding: 0px 4px 2px 4px; /* ЭКСТРА сокращение: убираем верхний padding */
     }
     
     .song-block-legend {
         font-size: 0.8rem; /* ЭКСТРА сокращение: с 0.85rem до 0.8rem */
         padding: 0 4px; /* ЭКСТРА сокращение: с 0 6px до 0 4px */
         letter-spacing: 0.2px; /* ЭКСТРА сокращение: с 0.3px до 0.2px */
-        margin-bottom: 1px; /* ЭКСТРА сокращение: с 2px до 1px */
+        margin-bottom: -3px; /* ЭКСТРА отрицательный margin для максимального сближения */
     }
 }
 
