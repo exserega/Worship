@@ -266,8 +266,8 @@ body[data-theme="light"] .theme-icon.moon {
     color: var(--label-color); 
     padding: 0 4px; /* Уменьшили padding для более компактного вида */
     font-weight: 500; 
-    background: var(--container-background-color); /* Возвращаем фон как у основного контейнера */
-    transition: color 0.3s ease, background-color 0.3s ease; 
+    background: linear-gradient(to bottom, var(--container-background-color) 50%, var(--input-bg-color) 50%); /* Градиент: верх - контейнер, низ - селект */
+    transition: color 0.3s ease, background 0.3s ease; 
 }
 
 select, input[type="text"] {
@@ -322,8 +322,8 @@ input:focus, select:focus {
     color: var(--label-color);
     padding: 0 4px; /* Уменьшили padding для компактности */
     font-weight: 500;
-    background: var(--container-background-color);
-    transition: color 0.3s ease, background-color 0.3s ease;
+    background: linear-gradient(to bottom, var(--container-background-color) 50%, var(--input-bg-color) 50%); /* Градиент: верх - контейнер, низ - поле ввода */
+    transition: color 0.3s ease, background 0.3s ease;
 }
 
 .search-group #search-input {
@@ -440,7 +440,7 @@ body[data-theme="light"] button.icon-button.simple:active:not(:disabled) { backg
     color: var(--label-color);
     padding: 0 4px; /* Уменьшили padding для компактности */
     font-weight: 500;
-    background: var(--container-background-color);
+    background: var(--container-background-color); /* Здесь оставляем обычный фон, так как fieldset прозрачный */
     transition: color 0.3s ease, background-color 0.3s ease;
 }
 #key-select { padding: 0 15px 0 15px; font-size: 0.9rem; width: 100%; min-width: 60px; text-align: center; height: 21px; border: none; background: transparent; margin: 0; flex-shrink: 0; }
@@ -1230,7 +1230,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     .search-group legend {
         font-size: 0.6rem;
         padding: 0 3px; /* Компактный padding для очень маленьких экранов */
-        background: var(--container-background-color); /* Обязательно указываем фон */
+        background: linear-gradient(to bottom, var(--container-background-color) 50%, var(--input-bg-color) 50%); /* Градиент для очень маленьких экранов */
     }
             .filter-group { 
             flex: 1; 
@@ -1249,7 +1249,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     .filter-group legend { 
         font-size: 0.6rem;
         padding: 0 3px; /* Еще более компактный padding для очень маленьких экранов */
-        background: var(--container-background-color); /* Обязательно указываем фон */
+        background: linear-gradient(to bottom, var(--container-background-color) 50%, var(--input-bg-color) 50%); /* Градиент для очень маленьких экранов */
         display: block; /* Показываем подписи даже на очень маленьких экранах */
     }
 
@@ -1404,7 +1404,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     .filter-group legend { 
         font-size: 0.7rem; /* Увеличили с 0.6rem для планшетов */
         padding: 0 4px; /* Компактный padding для планшетов */
-        background: var(--container-background-color); /* Обязательно указываем фон */
+        background: linear-gradient(to bottom, var(--container-background-color) 50%, var(--input-bg-color) 50%); /* Градиент для планшетов */
         display: block; /* Показываем на планшетах */
     }
     
@@ -1530,7 +1530,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     .search-group legend {
         font-size: 0.65rem;
         padding: 0 3px; /* Компактный padding для мобильных */
-        background: var(--container-background-color); /* Обязательно указываем фон */
+        background: linear-gradient(to bottom, var(--container-background-color) 50%, var(--input-bg-color) 50%); /* Градиент для мобильных */
     }
     
     .search-group #search-input {
@@ -1564,7 +1564,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     .filter-group legend {
         font-size: 0.65rem;
         padding: 0 3px; /* Компактный padding для мобильных */
-        background: var(--container-background-color); /* Обязательно указываем фон */
+        background: linear-gradient(to bottom, var(--container-background-color) 50%, var(--input-bg-color) 50%); /* Градиент для мобильных */
         display: block; /* Показываем подписи на мобильных */
     }
     .select-filters-container .filter-group select { 
