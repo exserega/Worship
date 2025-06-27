@@ -246,7 +246,7 @@ body[data-theme="light"] .theme-icon.moon {
 .control-group label { font-size: 0.8rem; color: var(--label-color); margin-bottom: 4px; flex-basis: 100%; text-transform: uppercase; letter-spacing: 0.5px; transition: color 0.3s ease;}
 
 /* Контейнер для фильтров с компактными fieldset */
-.select-filters-container { display: flex; gap: 8px; flex-wrap: nowrap !important; flex-direction: row !important; margin-bottom: 8px; } /* Уменьшили gap и margin с 12px до 8px */
+.select-filters-container { display: flex; gap: 8px; flex-wrap: nowrap !important; flex-direction: row !important; margin-bottom: 4px; } /* УМЕНЬШИЛИ margin-bottom с 8px до 4px - сближаем с поиском */
 .filter-group { 
     flex: 1; 
     min-width: 0; 
@@ -312,7 +312,7 @@ input:focus, select:focus {
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
     padding: 4px 8px 8px 8px; /* Минимальные отступы */
-    margin: 0 0 12px 0;
+    margin: 0 0 6px 0; /* УМЕНЬШИЛИ margin-bottom с 12px до 6px - сближаем с фильтрами */
     background: transparent;
     transition: border-color 0.3s ease;
 }
@@ -394,7 +394,7 @@ body[data-theme="light"] button.icon-button.simple:active:not(:disabled) { backg
 
 
 /* Ряд Тональность/Разделить/Масштаб */
-.control-group:has(#key-select) { align-items: center; min-height: 38px; gap: 12px; margin-bottom: 12px; }
+.control-group:has(#key-select) { align-items: center; min-height: 38px; gap: 12px; margin-bottom: 12px; margin-top: 20px; } /* ДОБАВИЛИ margin-top: 20px - создаем разделение с областью поиска */
 
 /* Fieldset для тональности */
 .key-group {
@@ -460,7 +460,7 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
     padding: 10px 12px 15px 12px; /* Уменьшили отступы с 15px 20px 20px 20px */
     border-radius: var(--radius); 
     box-shadow: none; 
-    margin-top: 8px; /* Уменьшили с 12px */
+    margin-top: 4px; /* УМЕНЬШИЛИ с 8px до 4px - сближаем с функциональными кнопками */
     position: relative; 
     overflow: hidden; 
     border: 1px solid var(--border-color); 
@@ -1193,12 +1193,13 @@ body[data-theme="light"] .repertoire-view-button.active {
         flex-direction: row !important; 
         flex-wrap: nowrap !important;
         gap: 2px !important; 
+        margin-bottom: 2px !important; /* Сближаем с поиском на очень маленьких экранах */
     }
     
     /* Компактный fieldset поиска на маленьких экранах */
     .search-group {
         padding: 2px 4px 5px 4px; /* Ультра-минимальные отступы */
-        margin-bottom: 8px;
+        margin-bottom: 3px; /* УМЕНЬШИЛИ с 8px до 3px - сближаем с фильтрами */
     }
     
     .search-group legend {
@@ -1225,6 +1226,16 @@ body[data-theme="light"] .repertoire-view-button.active {
 
     
     /* ЭКСТРА-СТРОГИЕ ограничения для очень маленьких экранов */
+    /* Разделение функциональных кнопок на очень маленьких экранах */
+    .control-group:has(#key-select) { 
+        margin-top: 12px; /* Создаем разделение с областью поиска на очень маленьких экранах */
+    }
+    
+    /* Область песни на очень маленьких экранах */
+    #song-content { 
+        margin-top: 2px; /* Сближаем с функциональными кнопками на очень маленьких экранах */
+    }
+    
     .side-panel { 
         width: 260px !important; 
         max-width: 80vw !important;
@@ -1343,6 +1354,7 @@ body[data-theme="light"] .repertoire-view-button.active {
         flex-direction: row !important; 
         gap: 8px !important; 
         flex-wrap: nowrap !important;
+        margin-bottom: 4px !important; /* ДОБАВИЛИ - сближаем с поиском на планшетах */
     }
     .filter-group { 
         flex: 1; 
@@ -1361,6 +1373,21 @@ body[data-theme="light"] .repertoire-view-button.active {
     .filter-group legend { 
         font-size: 0.6rem;
         display: block; /* Показываем на планшетах */
+    }
+    
+    /* Поисковая группа на планшетах */
+    .search-group {
+        margin-bottom: 5px; /* Сближаем с фильтрами на планшетах */
+    }
+    
+    /* Разделение функциональных кнопок на планшетах */
+    .control-group:has(#key-select) { 
+        margin-top: 18px; /* Создаем разделение с областью поиска на планшетах */
+    }
+    
+    /* Область песни на планшетах */
+    #song-content { 
+        margin-top: 5px; /* Сближаем с функциональными кнопками на планшетах */
     }
 
 }
@@ -1462,7 +1489,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     /* Мобильные стили для fieldset поиска */
     .search-group {
         padding: 2px 3px 5px 3px; /* Уменьшили с 3px 4px 6px 4px */
-        margin-bottom: 8px; /* Уменьшили с 10px */
+        margin-bottom: 4px; /* УМЕНЬШИЛИ с 8px до 4px - сближаем с фильтрами на мобильных */
     }
     
     .search-group legend {
@@ -1487,7 +1514,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     .select-filters-container { 
         flex-direction: row !important; 
         gap: 2px !important; /* Уменьшили с 3px */
-        margin-bottom: 8px !important; /* Уменьшили с 10px */
+        margin-bottom: 3px !important; /* УМЕНЬШИЛИ с 8px до 3px - сближаем с поиском на мобильных */
     }
     .filter-group { 
         min-width: 0; 
@@ -1510,7 +1537,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     #theme-toggle-button { right: 8px; } /* Уменьшили с 10px */
 
     /* Ряд Тональность/Разделить/Масштаб */
-    .control-group:has(#key-select) { min-height: 36px; gap: 6px; margin-bottom: 8px; } /* Уменьшили gap с 8px до 6px */
+    .control-group:has(#key-select) { min-height: 36px; gap: 6px; margin-bottom: 8px; margin-top: 15px; } /* Уменьшили gap с 8px до 6px, ДОБАВИЛИ margin-top: 15px для разделения на мобильных */
     
     /* Мобильный fieldset для тональности */
     .key-group {
@@ -1580,7 +1607,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     #song-content { 
         /* МОБИЛЬНЫЕ ОТСТУПЫ */
         padding: 4px 6px 8px 6px; /* КАРДИНАЛЬНО уменьшили с 8px 10px 12px 10px */
-        margin-top: 6px; /* Уменьшили с 10px */
+        margin-top: 3px; /* УМЕНЬШИЛИ с 6px до 3px - сближаем с функциональными кнопками на мобильных */
         
         /* ВСЕ ОСТАЛЬНЫЕ СВОЙСТВА ОБЯЗАТЕЛЬНО НАСЛЕДУЕМ */
         background: var(--container-background-color); 
