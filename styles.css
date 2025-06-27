@@ -1102,6 +1102,14 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
     font-size: 0.9em;
 }
 
+/* Активное состояние кнопки скрытия аккордов */
+#toggle-chords-button.chords-hidden-active {
+    background-color: var(--primary-color) !important;
+    color: var(--button-text-color) !important;
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
 /* --- Кнопка Копировать текст --- */
 #copy-text-button {
     position: absolute; /* Абсолютное позиционирование */
@@ -1743,6 +1751,13 @@ body[data-theme="light"] .repertoire-view-button.active {
      #toggle-chords-button i {
         margin-right: 0; /* Убираем отступ иконки */
         font-size: 0.9rem;
+    }
+    
+    /* Активное состояние кнопки на мобильных */
+    #toggle-chords-button.chords-hidden-active {
+        background-color: var(--primary-color) !important;
+        color: var(--button-text-color) !important;
+        border-color: var(--primary-color) !important;
     }
          /* Кнопка Копировать на мобильных */
      #copy-text-button {

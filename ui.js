@@ -257,16 +257,18 @@ export function updateBPM(newBPM) {
 
 /** Обновление кнопки скрытия/показа аккордов */
 export function updateToggleChordsButton() {
-    const iconGuitar = '<i class="fas fa-guitar"></i>';
-    const iconMusic = '<i class="fas fa-music"></i>';
+    // Всегда используем перечеркнутую ноту (используем volume-mute как альтернативу)
+    const icon = '<i class="fas fa-volume-mute"></i>';
     const textShow = '<span class="button-text">Аккорды</span>';
     
-    const currentIcon = state.areChordsVisible ? iconGuitar : iconMusic;
     const currentTitle = state.areChordsVisible ? 'Скрыть аккорды' : 'Показать аккорды';
 
-    toggleChordsButton.innerHTML = currentIcon + (isMobileView() ? '' : textShow);
+    toggleChordsButton.innerHTML = icon + (isMobileView() ? '' : textShow);
     toggleChordsButton.title = currentTitle;
     toggleChordsButton.disabled = !songSelect || !songSelect.value;
+    
+    // Меняем цвет кнопки в зависимости от состояния
+    toggleChordsButton.classList.toggle('chords-hidden-active', !state.areChordsVisible);
 }
 
 /** Обновление кнопки разделения текста */
