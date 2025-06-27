@@ -1194,7 +1194,7 @@ body[data-theme="light"] .presentation-song .song-structure {
 .song-block-legend {
     color: var(--primary-color);
     font-weight: 600;
-    font-size: calc(var(--lyrics-font-size, 1rem) * 0.75); /* Масштабируется с основным текстом */
+    font-size: calc(var(--lyrics-font-size, 1rem) * 0.9); /* Увеличил с 0.75 до 0.9 - больше относительно текста */
     text-transform: uppercase;
     letter-spacing: 0.2px;
     transition: color 0.3s ease;
@@ -1205,6 +1205,10 @@ body[data-theme="light"] .presentation-song .song-structure {
     border: none !important;
     background: none !important;
     line-height: 0.7 !important; /* Минимальная высота строки */
+    white-space: nowrap; /* Предотвращаем перенос названия блока */
+    overflow: hidden; /* Скрываем переполнение */
+    text-overflow: ellipsis; /* Добавляем многоточие при обрезании */
+    max-width: calc(100% - 24px); /* Ограничиваем ширину с учетом отступов */
     
     /* Центрируем legend правильно */
     float: none !important;
@@ -1933,11 +1937,15 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     
     .song-block-legend {
-        font-size: calc(var(--lyrics-font-size, 1rem) * 0.7) !important; /* Масштабируется для мобильных */
+        font-size: calc(var(--lyrics-font-size, 1rem) * 0.85) !important; /* Увеличил с 0.7 до 0.85 - больше относительно текста */
         padding: 0 6px !important; /* Нормальный горизонтальный padding */
         margin: 0 0 -22px 8px !important; /* РАДИКАЛЬНЫЙ отрицательный margin для мобильных */
         letter-spacing: 0.1px !important; /* ЭКСТРА сокращение: с 0.2px до 0.1px */
         line-height: 0.6 !important; /* РАДИКАЛЬНО маленькая высота строки */
+        white-space: nowrap !important; /* Предотвращаем перенос названия блока */
+        overflow: hidden !important; /* Скрываем переполнение */
+        text-overflow: ellipsis !important; /* Добавляем многоточие при обрезании */
+        max-width: calc(100% - 16px) !important; /* Ограничиваем ширину с учетом отступов */
     }
     
     .song-block-content {

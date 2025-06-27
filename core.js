@@ -362,18 +362,29 @@ function distributeSongBlocksToColumns(processedHTML) {
         return processedHTML; // Нет смысла делить
     }
     
-    // Ищем первый текстовый блок без fieldset (вступительные аккорды)
+    // Ищем ВСЕ текстовые блоки в начале без fieldset (вступительные аккорды)
     let introText = '';
     let startIndex = 0;
     
-    // Проверяем первый элемент - если это текст без fieldset, это вступление
-    if (elements[0] && elements[0].nodeType === Node.TEXT_NODE) {
-        introText = elements[0].textContent;
-        startIndex = 1;
-    } else if (elements[0] && elements[0].nodeType === Node.ELEMENT_NODE && 
-               !elements[0].classList?.contains('song-block')) {
-        introText = elements[0].outerHTML || elements[0].textContent;
-        startIndex = 1;
+    // Собираем все начальные элементы без fieldset как вступление
+    for (let i = 0; i < elements.length; i++) {
+        const element = elements[i];
+        const isFieldsetBlock = element.nodeType === Node.ELEMENT_NODE && 
+                               element.classList?.contains('song-block');
+        
+        if (isFieldsetBlock) {
+            // Встретили первый блок - останавливаемся
+            startIndex = i;
+            break;
+        } else {
+            // Это текст без блока - добавляем к вступлению
+            if (element.nodeType === Node.TEXT_NODE) {
+                introText += element.textContent;
+            } else {
+                introText += element.outerHTML || element.textContent;
+            }
+            if (i < elements.length - 1) introText += '\n'; // Разделяем строки
+        }
     }
     
     // Работаем с оставшимися элементами (блоками)
