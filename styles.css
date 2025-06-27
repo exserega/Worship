@@ -1163,8 +1163,8 @@ body[data-theme="light"] .presentation-song .song-structure {
 .song-block {
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
-    margin: 1px 0; /* СОКРАЩЕНО: с 3px до 1px между блоками */
-    padding: 1px 6px 3px 6px; /* СОКРАЩЕНО: верхний padding с 2px до 1px */
+    margin: 0px 0; /* МАКСИМАЛЬНО сокращено: убираем margin между блоками */
+    padding: 0px 4px 1px 4px; /* МАКСИМАЛЬНО сокращено: минимальные отступы от границ */
     background-color: var(--container-background-color);
     transition: border-color 0.3s ease, background-color 0.3s ease;
 }
@@ -1180,12 +1180,13 @@ body[data-theme="light"] .presentation-song .song-structure {
 .song-block-legend {
     color: var(--primary-color);
     font-weight: 600;
-    font-size: 0.85rem; /* СОКРАЩЕНО: с 0.9rem до 0.85rem */
-    padding: 0 6px; /* СОКРАЩЕНО: с 0 8px до 0 6px */
+    font-size: 0.8rem; /* МАКСИМАЛЬНО сокращено: с 0.85rem до 0.8rem */
+    padding: 0 4px; /* МАКСИМАЛЬНО сокращено: с 0 6px до 0 4px */
     text-transform: uppercase;
-    letter-spacing: 0.3px; /* СОКРАЩЕНО: с 0.5px до 0.3px */
+    letter-spacing: 0.2px; /* МАКСИМАЛЬНО сокращено: с 0.3px до 0.2px */
     transition: color 0.3s ease;
-    margin-bottom: -2px; /* ОТРИЦАТЕЛЬНЫЙ margin для максимального сближения с содержимым */
+    margin-bottom: -5px; /* МАКСИМАЛЬНЫЙ отрицательный margin для прижатия к содержимому */
+    line-height: 1.1; /* Сокращаем высоту строки legend */
 }
 
 .song-block-content {
@@ -1390,15 +1391,16 @@ body[data-theme="light"] .repertoire-view-button.active {
     /* УЛЬТРА-КОМПАКТНЫЕ блоки песни для очень маленьких экранов */
     .song-block {
         margin: 0px 0; /* УЛЬТРА сокращение: убираем margin полностью */
-        padding: 0px 3px 1px 3px; /* УЛЬТРА сокращение: минимальные отступы */
-        border-radius: 2px; /* Уменьшаем скругления */
+        padding: 0px 2px 0px 2px; /* УЛЬТРА сокращение: убираем все вертикальные отступы */
+        border-radius: 1px; /* Минимальные скругления */
     }
     
     .song-block-legend {
-        font-size: 0.75rem; /* УЛЬТРА сокращение: с 0.8rem до 0.75rem */
-        padding: 0 3px; /* УЛЬТРА сокращение: с 0 4px до 0 3px */
-        letter-spacing: 0.1px; /* УЛЬТРА сокращение: с 0.2px до 0.1px */
-        margin-bottom: -4px; /* УЛЬТРА отрицательный margin для максимального прижатия к содержимому */
+        font-size: 0.7rem; /* УЛЬТРА сокращение: с 0.75rem до 0.7rem */
+        padding: 0 2px; /* УЛЬТРА сокращение: с 0 3px до 0 2px */
+        letter-spacing: 0px; /* УЛЬТРА сокращение: убираем letter-spacing */
+        margin-bottom: -7px; /* УЛЬТРА отрицательный margin для максимального прижатия */
+        line-height: 0.9; /* Минимальная высота строки */
     }
 }
 /* === КОНЕЦ ВАРИАНТА 4 === */
@@ -1893,15 +1895,16 @@ body[data-theme="light"] .repertoire-view-button.active {
     
     /* МОБИЛЬНЫЕ блоки песни - ЭКСТРА компактные */
     .song-block {
-        margin: 0px 0; /* ЭКСТРА сокращение: с 1px до 0px между блоками */
-        padding: 0px 4px 2px 4px; /* ЭКСТРА сокращение: убираем верхний padding */
+        margin: 0px 0; /* Убираем margin между блоками полностью */
+        padding: 0px 3px 0px 3px; /* ЭКСТРА сокращение: убираем все вертикальные отступы */
     }
     
     .song-block-legend {
-        font-size: 0.8rem; /* ЭКСТРА сокращение: с 0.85rem до 0.8rem */
-        padding: 0 4px; /* ЭКСТРА сокращение: с 0 6px до 0 4px */
-        letter-spacing: 0.2px; /* ЭКСТРА сокращение: с 0.3px до 0.2px */
-        margin-bottom: -3px; /* ЭКСТРА отрицательный margin для максимального сближения */
+        font-size: 0.75rem; /* ЭКСТРА сокращение: с 0.8rem до 0.75rem */
+        padding: 0 3px; /* ЭКСТРА сокращение: с 0 4px до 0 3px */
+        letter-spacing: 0.1px; /* ЭКСТРА сокращение: с 0.2px до 0.1px */
+        margin-bottom: -6px; /* ЭКСТРА отрицательный margin для максимального прижатия */
+        line-height: 1.0; /* Минимальная высота строки */
     }
 }
 
