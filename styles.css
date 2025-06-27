@@ -494,7 +494,20 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
     margin-left: 0;
     margin-right: 0;
 }
-#song-content pre { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; white-space: pre-wrap; word-wrap: break-word; line-height: 1.5; font-size: var(--lyrics-font-size, 1rem); color: var(--text-color); margin: 0; padding-top: 6px; /* Уменьшили с 10px */ overflow-x: auto; transition: color 0.3s ease; }
+#song-content pre { 
+    font-family: 'Courier New', Courier, monospace; /* ИЗМЕНЕНО: более строгий моноширинный шрифт */
+    white-space: pre; /* ИЗМЕНЕНО: pre вместо pre-wrap для точного позиционирования */
+    word-wrap: normal; /* ИЗМЕНЕНО: отключаем word-wrap */
+    line-height: 1.5; 
+    font-size: var(--lyrics-font-size, 1rem); 
+    color: var(--text-color); 
+    margin: 0; 
+    padding-top: 6px; 
+    overflow-x: auto; 
+    transition: color 0.3s ease;
+    letter-spacing: 0; /* ДОБАВЛЕНО: убираем letter-spacing */
+    word-spacing: 0; /* ДОБАВЛЕНО: убираем word-spacing */
+}
 #song-content .chord {
     font-weight: 700 !important;
     color: var(--primary-color);
@@ -584,13 +597,15 @@ body[data-theme="light"] .presentation-notes i.fas {
 /* Текст песни в презентации */
 .presentation-song pre {
     font-size: clamp(12px, 2.9vw, 17px);
-    font-family: 'Tahoma', Courier, monospace;
+    font-family: 'Courier New', Courier, monospace; /* ИЗМЕНЕНО: тот же моноширинный шрифт */
     line-height: 1.45;
-    white-space: pre-wrap;
-    word-wrap: break-word;
+    white-space: pre; /* ИЗМЕНЕНО: pre для точного позиционирования */
+    word-wrap: normal; /* ИЗМЕНЕНО: отключаем word-wrap */
     color: var(--text-color);
     transition: color 0.3s ease;
-    margin-top: 0; /* Убедимся, что нет лишнего отступа сверху */
+    margin-top: 0;
+    letter-spacing: 0; /* ДОБАВЛЕНО: убираем letter-spacing */
+    word-spacing: 0; /* ДОБАВЛЕНО: убираем word-spacing */
 }
 
 /* --- Стиль аккордов в презентации (с фоном) --- */
@@ -1656,14 +1671,16 @@ body[data-theme="light"] .repertoire-view-button.active {
         line-height: 1.5; /* Оптимальная читаемость */
         padding-top: 2px; /* МИНИМАЛЬНЫЙ отступ с 6px 0 */
         
-        /* ВСЕ ОСТАЛЬНЫЕ СВОЙСТВА ОБЯЗАТЕЛЬНО НАСЛЕДУЕМ */
-        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; 
-        white-space: pre-wrap; 
-        word-wrap: break-word; 
+        /* ВСЕ ОСТАЛЬНЫЕ СВОЙСТВА С ТОЧНЫМ ПОЗИЦИОНИРОВАНИЕМ */
+        font-family: 'Courier New', Courier, monospace; /* МОНОШИРИННЫЙ ШРИФТ */
+        white-space: pre; /* PRE ДЛЯ ТОЧНОГО ПОЗИЦИОНИРОВАНИЯ */
+        word-wrap: normal; /* ОТКЛЮЧАЕМ WORD-WRAP */
         color: var(--text-color); 
         margin: 0; 
         overflow-x: auto; 
         transition: color 0.3s ease;
+        letter-spacing: 0; /* УБИРАЕМ LETTER-SPACING */
+        word-spacing: 0; /* УБИРАЕМ WORD-SPACING */
     }
     /* ===== КОНЕЦ САМОЙ ВАЖНОЙ ЧАСТИ ===== */
 
