@@ -1194,7 +1194,7 @@ body[data-theme="light"] .presentation-song .song-structure {
 .song-block-legend {
     color: var(--primary-color);
     font-weight: 600;
-    font-size: calc(var(--lyrics-font-size, 1rem) * 0.9); /* Увеличил с 0.75 до 0.9 - больше относительно текста */
+    font-size: calc(var(--lyrics-font-size, 1rem) * 1.0); /* Увеличил до 1.0 - такой же размер как основной текст */
     text-transform: uppercase;
     letter-spacing: 0.2px;
     transition: color 0.3s ease;
@@ -1937,11 +1937,11 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     
     .song-block-legend {
-        font-size: calc(var(--lyrics-font-size, 1rem) * 0.85) !important; /* Увеличил с 0.7 до 0.85 - больше относительно текста */
+        font-size: calc(var(--lyrics-font-size, 1rem) * 0.95) !important; /* Увеличил с 0.85 до 0.95 - почти как основной текст */
         padding: 0 6px !important; /* Нормальный горизонтальный padding */
-        margin: 0 0 -22px 8px !important; /* РАДИКАЛЬНЫЙ отрицательный margin для мобильных */
+        margin: 0 0 -15px 8px !important; /* Уменьшил отрицательный margin с -22px до -15px чтобы не обрезать */
         letter-spacing: 0.1px !important; /* ЭКСТРА сокращение: с 0.2px до 0.1px */
-        line-height: 0.6 !important; /* РАДИКАЛЬНО маленькая высота строки */
+        line-height: 0.8 !important; /* Увеличил с 0.6 до 0.8 чтобы текст не обрезался */
         white-space: nowrap !important; /* Предотвращаем перенос названия блока */
         overflow: hidden !important; /* Скрываем переполнение */
         text-overflow: ellipsis !important; /* Добавляем многоточие при обрезании */
@@ -1949,7 +1949,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     
     .song-block-content {
-        margin: -17px 0 0 0 !important; /* РАДИКАЛЬНЫЙ отрицательный margin - почти в притык на мобильных! */
+        margin: -12px 0 0 0 !important; /* Уменьшил отрицательный margin с -17px до -12px под новый legend */
         padding: 0px 4px 2px 4px !important; /* Убираем верхний padding */
     }
 }
