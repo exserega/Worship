@@ -158,47 +158,47 @@ function saveParserData() {
 const ADAPTIVE_DICTIONARY = {
     verse: {
         primary: ['куплет', 'verse', 'строфа', 'запев', 'строка'],
-        variations: ['к', 'v', 'стих', 'verse', 'строфа', 'куп'],
+        variations: ['к', 'v', 'стих', 'куп'],
         patterns: [/^(\d+\s*)?(куплет|verse|строфа|запев|к|v)(\s*\d*)?/i]
     },
     chorus: {
         primary: ['припев', 'chorus', 'рефрен', 'хор', 'хорус'],
-        variations: ['пр', 'п', 'c', 'ch', 'припев', 'chorus', 'рефрен'],
+        variations: ['пр', 'п', 'c', 'ch'],
         patterns: [/^(\d+\s*)?(припев|chorus|рефрен|хор|пр|п|c|ch)(\s*\d*)?/i]
     },
     bridge: {
         primary: ['бридж', 'bridge', 'мостик', 'мост', 'переход', 'связка'],
-        variations: ['бр', 'b', 'br', 'мост', 'bridge', 'переход'],
+        variations: ['бр', 'b', 'br'],
         patterns: [/^(\d+\s*)?(бридж|bridge|мостик|мост|переход|бр|b|br)(\s*\d*)?/i]
     },
     intro: {
-        primary: ['интро', 'intro', 'вступление', 'начало', 'открытие'],
-        variations: ['ин', 'i', 'вст', 'intro', 'начало'],
-        patterns: [/^(\d+\s*)?(интро|intro|вступление|начало|ин|i|вст)(\s*\d*)?/i]
+        primary: ['интро', 'intro', 'вступление', 'начало', 'открытие', 'вставка'],
+        variations: ['ин', 'i', 'вст'],
+        patterns: [/^(\d+\s*)?(интро|intro|вступление|начало|ин|i|вст|вставка)(\s*\d*)?/i]
     },
     outro: {
         primary: ['аутро', 'outro', 'окончание', 'финал', 'концовка', 'завершение'],
-        variations: ['ау', 'o', 'out', 'финал', 'outro', 'конец'],
+        variations: ['ау', 'o', 'out'],
         patterns: [/^(\d+\s*)?(аутро|outro|окончание|финал|концовка|ау|o|out)(\s*\d*)?/i]
     },
     solo: {
         primary: ['соло', 'solo', 'инструментал', 'проигрыш', 'инстр'],
-        variations: ['с', 's', 'инстр', 'solo', 'проигрыш'],
+        variations: ['с', 's'],
         patterns: [/^(\d+\s*)?(соло|solo|инструментал|проигрыш|с|s|инстр)(\s*\d*)?/i]
     },
     preChorus: {
-        primary: ['предприпев', 'pre-chorus', 'прехорус', 'подготовка'],
-        variations: ['пред', 'pre', 'подг', 'pre-chorus'],
-        patterns: [/^(\d+\s*)?(предприпев|pre-chorus|прехорус|пред|pre)(\s*\d*)?/i]
+        primary: ['предприпев', 'pre-chorus', 'прехорус', 'подготовка', 'пред припев', 'пред-припев'],
+        variations: ['пред', 'pre'],
+        patterns: [/^(\d+\s*)?(предприпев|pre-chorus|прехорус|пред\s*припев|пред-припев|пред|pre)(\s*\d*)?/i]
     },
     tag: {
         primary: ['тег', 'tag', 'кода', 'повтор', 'эхо'],
-        variations: ['т', 'tag', 'кода', 'повт'],
+        variations: ['т', 'повт'],
         patterns: [/^(\d+\s*)?(тег|tag|кода|повтор|т|повт)(\s*\d*)?/i]
     },
     interlude: {
         primary: ['интерлюдия', 'interlude', 'пауза', 'промежуток'],
-        variations: ['инт', 'inter', 'пауза'],
+        variations: ['инт', 'inter'],
         patterns: [/^(\d+\s*)?(интерлюдия|interlude|пауза|инт|inter)(\s*\d*)?/i]
     }
 };
@@ -209,48 +209,125 @@ function detectExplicitMarkers(line, context) {
     if (!trimmed) return null;
     
     // СТРОГАЯ проверка: строка должна быть ТОЛЬКО маркером или почти только маркером
-    if (trimmed.length > 25) return null; // Слишком длинная строка не может быть заголовком
+    if (trimmed.length > 40) return null; // Увеличиваем лимит для сложных случаев
     
     let bestMatch = null;
     let highestConfidence = 0;
     
-    for (const [blockType, data] of Object.entries(ADAPTIVE_DICTIONARY)) {
-        // Проверяем основные термины - ТОЛЬКО точные совпадения
-        for (const term of data.primary) {
-            const regex = new RegExp(`^(\\d+\\s*)?(${term})(\\s*\\d*)?\\s*[:.]?\\s*$`, 'i');
-            if (regex.test(trimmed)) {
-                const confidence = 0.95; // Высокая уверенность для точных совпадений
-                if (confidence > highestConfidence) {
-                    highestConfidence = confidence;
-                    bestMatch = { type: blockType, confidence, method: 'explicit', term };
-                }
-            }
-        }
+    // НОВЫЕ РАСШИРЕННЫЕ ПАТТЕРНЫ для сложных случаев
+    const extendedPatterns = [
+        // Паттерн: "Припев x3", "Припев x2", "Мост x2" и т.д.
+        {
+            regex: /^(припев|chorus|мост|bridge|куплет|verse|бридж|соло|solo|интро|intro|аутро|outro|вставка|предприпев|pre-chorus|пред\s*припев|пред-припев)\s*[xх×]\s*(\d+)$/i,
+            getType: (match) => {
+                const base = match[1].toLowerCase();
+                if (['припев', 'chorus'].includes(base)) return 'chorus';
+                if (['мост', 'bridge', 'бридж'].includes(base)) return 'bridge';
+                if (['куплет', 'verse'].includes(base)) return 'verse';
+                if (['соло', 'solo'].includes(base)) return 'solo';
+                if (['интро', 'intro'].includes(base)) return 'intro';
+                if (['аутро', 'outro'].includes(base)) return 'outro';
+                if (['вставка'].includes(base)) return 'intro';
+                if (['предприпев', 'pre-chorus', 'пред припев', 'пред-припев'].includes(base.replace(/\s+/g, ' '))) return 'preChorus';
+                return 'unknown';
+            },
+            confidence: 0.95
+        },
         
-        // Проверяем вариации - только короткие
-        for (const variation of data.variations) {
-            if (variation.length < 4) { // Только короткие сокращения
-                const regex = new RegExp(`^(\\d+\\s*)?(${variation})(\\s*\\d*)?\\s*[:.]?\\s*$`, 'i');
-                if (regex.test(trimmed)) {
-                    const confidence = 0.9;
-                    if (confidence > highestConfidence) {
-                        highestConfidence = confidence;
-                        bestMatch = { type: blockType, confidence, method: 'variation', term: variation };
-                    }
-                }
+        // Паттерн: "Припев 2 вариант", "3 вариант моста", "2 вариант моста" и т.д.
+        {
+            regex: /^(\d+\s*)?(припев|chorus|мост|bridge|куплет|verse|бридж|соло|solo|интро|intro|аутро|outro|вставка|предприпев|pre-chorus|пред\s*припев|пред-припев)\s+(\d+\s*)?(вариант|variant)$/i,
+            getType: (match) => {
+                const base = match[2].toLowerCase();
+                if (['припев', 'chorus'].includes(base)) return 'chorus';
+                if (['мост', 'bridge', 'бридж'].includes(base)) return 'bridge';
+                if (['куплет', 'verse'].includes(base)) return 'verse';
+                if (['соло', 'solo'].includes(base)) return 'solo';
+                if (['интро', 'intro'].includes(base)) return 'intro';
+                if (['аутро', 'outro'].includes(base)) return 'outro';
+                if (['вставка'].includes(base)) return 'intro';
+                if (['предприпев', 'pre-chorus', 'пред припев', 'пред-припев'].includes(base.replace(/\s+/g, ' '))) return 'preChorus';
+                return 'unknown';
+            },
+            confidence: 0.95
+        },
+        
+        // Паттерн: "2 вариант припева", "3 вариант моста" и т.д.
+        {
+            regex: /^(\d+\s*)?(вариант|variant)\s+(припева|chorus|моста|bridge|куплета|verse|бриджа|соло|solo|интро|intro|аутро|outro|вставки|предприпева|pre-chorus)$/i,
+            getType: (match) => {
+                const base = match[3].toLowerCase();
+                if (['припева', 'chorus'].includes(base)) return 'chorus';
+                if (['моста', 'bridge', 'бриджа'].includes(base)) return 'bridge';
+                if (['куплета', 'verse'].includes(base)) return 'verse';
+                if (['соло', 'solo'].includes(base)) return 'solo';
+                if (['интро', 'intro'].includes(base)) return 'intro';
+                if (['аутро', 'outro'].includes(base)) return 'outro';
+                if (['вставки'].includes(base)) return 'intro';
+                if (['предприпева', 'pre-chorus'].includes(base)) return 'preChorus';
+                return 'unknown';
+            },
+            confidence: 0.95
+        }
+    ];
+    
+    // Проверяем расширенные паттерны
+    for (const pattern of extendedPatterns) {
+        const match = trimmed.match(pattern.regex);
+        if (match) {
+            const type = pattern.getType(match);
+            if (type !== 'unknown' && pattern.confidence > highestConfidence) {
+                highestConfidence = pattern.confidence;
+                bestMatch = { 
+                    type, 
+                    confidence: pattern.confidence, 
+                    method: 'extended_pattern', 
+                    term: match[0] 
+                };
             }
         }
     }
     
-    // Проверяем изученные термины - только если они короткие
-    for (const [learnedTerm, blockType] of songParserData.learnedTerms) {
-        if (learnedTerm.length < 20) {
-            const regex = new RegExp(`^(\\d+\\s*)?(${learnedTerm})(\\s*\\d*)?\\s*[:.]?\\s*$`, 'i');
-            if (regex.test(trimmed)) {
-                const confidence = 0.92;
-                if (confidence > highestConfidence) {
-                    highestConfidence = confidence;
-                    bestMatch = { type: blockType, confidence, method: 'learned', term: learnedTerm };
+    // Обычные паттерны (если расширенные не сработали)
+    if (!bestMatch) {
+        for (const [blockType, data] of Object.entries(ADAPTIVE_DICTIONARY)) {
+            // Проверяем основные термины - ТОЛЬКО точные совпадения
+            for (const term of data.primary) {
+                const regex = new RegExp(`^(\\d+\\s*)?(${term})(\\s*\\d*)?\\s*[:.]?\\s*$`, 'i');
+                if (regex.test(trimmed)) {
+                    const confidence = 0.95; // Высокая уверенность для точных совпадений
+                    if (confidence > highestConfidence) {
+                        highestConfidence = confidence;
+                        bestMatch = { type: blockType, confidence, method: 'explicit', term };
+                    }
+                }
+            }
+            
+            // Проверяем вариации - только короткие
+            for (const variation of data.variations) {
+                if (variation.length < 4) { // Только короткие сокращения
+                    const regex = new RegExp(`^(\\d+\\s*)?(${variation})(\\s*\\d*)?\\s*[:.]?\\s*$`, 'i');
+                    if (regex.test(trimmed)) {
+                        const confidence = 0.9;
+                        if (confidence > highestConfidence) {
+                            highestConfidence = confidence;
+                            bestMatch = { type: blockType, confidence, method: 'variation', term: variation };
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Проверяем изученные термины - только если они короткие
+        for (const [learnedTerm, blockType] of songParserData.learnedTerms) {
+            if (learnedTerm.length < 30) {
+                const regex = new RegExp(`^(\\d+\\s*)?(${learnedTerm})(\\s*\\d*)?\\s*[:.]?\\s*$`, 'i');
+                if (regex.test(trimmed)) {
+                    const confidence = 0.92;
+                    if (confidence > highestConfidence) {
+                        highestConfidence = confidence;
+                        bestMatch = { type: blockType, confidence, method: 'learned', term: learnedTerm };
+                    }
                 }
             }
         }
