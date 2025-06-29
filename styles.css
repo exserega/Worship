@@ -1137,14 +1137,14 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 /* --- Кнопка Копировать текст --- */
 #copy-text-button {
     position: absolute; /* Абсолютное позиционирование */
-    top: -40px;         /* Выше контейнера с текстом */
-    right: 0px;         /* Правее - на одном уровне с правым краем */
-    z-index: 5;         /* Чтобы быть поверх текста, но ниже других элементов управления */
+    top: 5px;           /* Внутри контейнера, но выше */
+    right: 8px;         /* Правее от края */
+    z-index: 10;        /* Увеличил z-index чтобы быть поверх всего */
     width: 32px;        /* Меньший размер */
     height: 32px;
     font-size: 0.85rem; /* Меньшая иконка */
     /* Наследует стили .icon-button.simple */
-    opacity: 0.6; /* Слегка прозрачная по умолчанию */
+    opacity: 0.7; /* Сделал чуть более видимой */
     transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
     display: none; /* По умолчанию скрыта, пока не выбрана песня */
 }
@@ -1799,11 +1799,12 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
          /* Кнопка Копировать на мобильных */
      #copy-text-button {
-         top: -35px;     /* Выше контейнера на мобильных */
-         right: 0px;     /* Правее */
+         top: 3px;       /* Внутри контейнера */
+         right: 5px;     /* Правее от края */
          width: 30px;
          height: 30px;
          font-size: 0.8rem;
+         opacity: 0.8;   /* Более видимая на мобильных */
      }
      /* --- Конец мобильных стилей для новых кнопок --- */
 
