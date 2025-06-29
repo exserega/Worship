@@ -9,6 +9,7 @@ import {
     highlightChords, 
     highlightStructure, 
     wrapSongBlocks,
+    correctBlockType,
     getRenderedSongText, 
     extractYouTubeVideoId, 
     isMobileView,

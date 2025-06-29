@@ -1282,6 +1282,121 @@ body[data-theme="light"] .song-block-legend {
     background-color: color-mix(in srgb, var(--accent-color) 5%, transparent); /* Более заметный фон в светлой теме как у аккордов */
 }
 
+/* === ИНТЕЛЛЕКТУАЛЬНЫЙ ПАРСЕР: СТИЛИ УВЕРЕННОСТИ === */
+
+/* Высокая уверенность распознавания (80%+) */
+.song-block.high-confidence {
+    border-color: color-mix(in srgb, var(--accent-color) 60%, transparent);
+}
+
+.song-block.high-confidence .song-block-legend {
+    border-color: color-mix(in srgb, var(--accent-color) 80%, transparent);
+    background: color-mix(in srgb, var(--accent-color) 8%, transparent);
+}
+
+body[data-theme="light"] .song-block.high-confidence .song-block-legend {
+    background: color-mix(in srgb, var(--accent-color) 12%, transparent);
+    border-color: color-mix(in srgb, var(--accent-color) 40%, transparent);
+}
+
+/* Средняя уверенность распознавания (50-80%) */
+.song-block.medium-confidence {
+    border-color: color-mix(in srgb, #fbbf24 40%, transparent);
+}
+
+.song-block.medium-confidence .song-block-legend {
+    border-color: color-mix(in srgb, #fbbf24 60%, transparent);
+    background: color-mix(in srgb, #fbbf24 5%, transparent);
+}
+
+body[data-theme="light"] .song-block.medium-confidence .song-block-legend {
+    background: color-mix(in srgb, #fbbf24 8%, transparent);
+    border-color: color-mix(in srgb, #fbbf24 30%, transparent);
+}
+
+/* Низкая уверенность распознавания (<50%) */
+.song-block.low-confidence {
+    border-color: color-mix(in srgb, var(--danger-color) 30%, transparent);
+}
+
+.song-block.low-confidence .song-block-legend {
+    border-color: color-mix(in srgb, var(--danger-color) 50%, transparent);
+    background: color-mix(in srgb, var(--danger-color) 3%, transparent);
+}
+
+body[data-theme="light"] .song-block.low-confidence .song-block-legend {
+    background: color-mix(in srgb, var(--danger-color) 5%, transparent);
+    border-color: color-mix(in srgb, var(--danger-color) 25%, transparent);
+}
+
+/* Анимация для новых блоков */
+.song-block[data-method="learned"] {
+    animation: learnedBlock 0.5s ease-out;
+}
+
+@keyframes learnedBlock {
+    0% {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 15px color-mix(in srgb, var(--accent-color) 30%, transparent);
+    }
+    100% {
+        border-color: color-mix(in srgb, var(--accent-color) 60%, transparent);
+        box-shadow: none;
+    }
+}
+
+/* Дополнительные визуальные подсказки */
+.song-block[data-type="verse"] .song-block-legend::before {
+    content: "📝 ";
+    opacity: 0.7;
+}
+
+.song-block[data-type="chorus"] .song-block-legend::before {
+    content: "🎵 ";
+    opacity: 0.7;
+}
+
+.song-block[data-type="bridge"] .song-block-legend::before {
+    content: "🌉 ";
+    opacity: 0.7;
+}
+
+.song-block[data-type="intro"] .song-block-legend::before {
+    content: "🎬 ";
+    opacity: 0.7;
+}
+
+.song-block[data-type="outro"] .song-block-legend::before {
+    content: "🎭 ";
+    opacity: 0.7;
+}
+
+.song-block[data-type="solo"] .song-block-legend::before {
+    content: "🎸 ";
+    opacity: 0.7;
+}
+
+/* Подсказка при наведении на блок */
+.song-block[data-confidence][data-method] .song-block-legend:hover::after {
+    content: "Уверенность: " attr(data-confidence) "% (" attr(data-method) ")";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+body[data-theme="light"] .song-block[data-confidence][data-method] .song-block-legend:hover::after {
+    background: rgba(0, 0, 0, 0.8);
+}
+
 
 
 

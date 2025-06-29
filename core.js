@@ -113,39 +113,323 @@ function highlightChords(lyrics) {
     }
 }
 
-/** Оборачивание блоков песни в fieldset с legend */
+/** РЕВОЛЮЦИОННЫЙ ИНТЕЛЛЕКТУАЛЬНЫЙ ПАРСЕР БЛОКОВ ПЕСЕН */
+
+// Глобальное хранилище для машинного обучения
+let songParserData = {
+    learnedTerms: new Map(),
+    patternHistory: new Map(),
+    userCorrections: new Map(),
+    confidence: new Map()
+};
+
+// Инициализация из localStorage
+function initializeParserData() {
+    try {
+        const stored = localStorage.getItem('songParserData');
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            songParserData.learnedTerms = new Map(parsed.learnedTerms || []);
+            songParserData.patternHistory = new Map(parsed.patternHistory || []);
+            songParserData.userCorrections = new Map(parsed.userCorrections || []);
+            songParserData.confidence = new Map(parsed.confidence || []);
+        }
+    } catch (e) {
+        console.warn('Failed to load parser data:', e);
+    }
+}
+
+// Сохранение данных обучения
+function saveParserData() {
+    try {
+        const toSave = {
+            learnedTerms: Array.from(songParserData.learnedTerms.entries()),
+            patternHistory: Array.from(songParserData.patternHistory.entries()),
+            userCorrections: Array.from(songParserData.userCorrections.entries()),
+            confidence: Array.from(songParserData.confidence.entries())
+        };
+        localStorage.setItem('songParserData', JSON.stringify(toSave));
+    } catch (e) {
+        console.warn('Failed to save parser data:', e);
+    }
+}
+
+// Адаптивный многоязычный словарь
+const ADAPTIVE_DICTIONARY = {
+    verse: {
+        primary: ['куплет', 'verse', 'строфа', 'запев', 'строка'],
+        variations: ['к', 'v', 'стих', 'verse', 'строфа', 'куп'],
+        patterns: [/^(\d+\s*)?(куплет|verse|строфа|запев|к|v)(\s*\d*)?/i]
+    },
+    chorus: {
+        primary: ['припев', 'chorus', 'рефрен', 'хор', 'хорус'],
+        variations: ['пр', 'п', 'c', 'ch', 'припев', 'chorus', 'рефрен'],
+        patterns: [/^(\d+\s*)?(припев|chorus|рефрен|хор|пр|п|c|ch)(\s*\d*)?/i]
+    },
+    bridge: {
+        primary: ['бридж', 'bridge', 'мостик', 'мост', 'переход', 'связка'],
+        variations: ['бр', 'b', 'br', 'мост', 'bridge', 'переход'],
+        patterns: [/^(\d+\s*)?(бридж|bridge|мостик|мост|переход|бр|b|br)(\s*\d*)?/i]
+    },
+    intro: {
+        primary: ['интро', 'intro', 'вступление', 'начало', 'открытие'],
+        variations: ['ин', 'i', 'вст', 'intro', 'начало'],
+        patterns: [/^(\d+\s*)?(интро|intro|вступление|начало|ин|i|вст)(\s*\d*)?/i]
+    },
+    outro: {
+        primary: ['аутро', 'outro', 'окончание', 'финал', 'концовка', 'завершение'],
+        variations: ['ау', 'o', 'out', 'финал', 'outro', 'конец'],
+        patterns: [/^(\d+\s*)?(аутро|outro|окончание|финал|концовка|ау|o|out)(\s*\d*)?/i]
+    },
+    solo: {
+        primary: ['соло', 'solo', 'инструментал', 'проигрыш', 'инстр'],
+        variations: ['с', 's', 'инстр', 'solo', 'проигрыш'],
+        patterns: [/^(\d+\s*)?(соло|solo|инструментал|проигрыш|с|s|инстр)(\s*\d*)?/i]
+    },
+    preChorus: {
+        primary: ['предприпев', 'pre-chorus', 'прехорус', 'подготовка'],
+        variations: ['пред', 'pre', 'подг', 'pre-chorus'],
+        patterns: [/^(\d+\s*)?(предприпев|pre-chorus|прехорус|пред|pre)(\s*\d*)?/i]
+    },
+    tag: {
+        primary: ['тег', 'tag', 'кода', 'повтор', 'эхо'],
+        variations: ['т', 'tag', 'кода', 'повт'],
+        patterns: [/^(\d+\s*)?(тег|tag|кода|повтор|т|повт)(\s*\d*)?/i]
+    },
+    interlude: {
+        primary: ['интерлюдия', 'interlude', 'пауза', 'промежуток'],
+        variations: ['инт', 'inter', 'пауза'],
+        patterns: [/^(\d+\s*)?(интерлюдия|interlude|пауза|инт|inter)(\s*\d*)?/i]
+    }
+};
+
+/** СТРАТЕГИЯ 1: Распознавание явных маркеров */
+function detectExplicitMarkers(line, context) {
+    const trimmed = line.trim();
+    if (!trimmed) return null;
+    
+    let bestMatch = null;
+    let highestConfidence = 0;
+    
+    for (const [blockType, data] of Object.entries(ADAPTIVE_DICTIONARY)) {
+        // Проверяем основные термины
+        for (const term of data.primary) {
+            const regex = new RegExp(`^(\\d+\\s*)?(${term})(\\s*\\d*)?\\s*[:.]?\\s*$`, 'i');
+            if (regex.test(trimmed)) {
+                const confidence = 0.9 + (term.length / 20); // Длинные термины надежнее
+                if (confidence > highestConfidence) {
+                    highestConfidence = confidence;
+                    bestMatch = { type: blockType, confidence, method: 'explicit', term };
+                }
+            }
+        }
+        
+        // Проверяем вариации
+        for (const variation of data.variations) {
+            const regex = new RegExp(`^(\\d+\\s*)?(${variation})(\\s*\\d*)?\\s*[:.]?\\s*$`, 'i');
+            if (regex.test(trimmed)) {
+                const confidence = 0.7 + (variation.length / 30);
+                if (confidence > highestConfidence) {
+                    highestConfidence = confidence;
+                    bestMatch = { type: blockType, confidence, method: 'variation', term: variation };
+                }
+            }
+        }
+        
+        // Проверяем паттерны
+        for (const pattern of data.patterns) {
+            if (pattern.test(trimmed)) {
+                const confidence = 0.8;
+                if (confidence > highestConfidence) {
+                    highestConfidence = confidence;
+                    bestMatch = { type: blockType, confidence, method: 'pattern', term: trimmed };
+                }
+            }
+        }
+    }
+    
+    // Проверяем изученные термины
+    for (const [learnedTerm, blockType] of songParserData.learnedTerms) {
+        const regex = new RegExp(`^(\\d+\\s*)?(${learnedTerm})(\\s*\\d*)?\\s*[:.]?\\s*$`, 'i');
+        if (regex.test(trimmed)) {
+            const confidence = 0.85; // Высокая уверенность в изученных терминах
+            if (confidence > highestConfidence) {
+                highestConfidence = confidence;
+                bestMatch = { type: blockType, confidence, method: 'learned', term: learnedTerm };
+            }
+        }
+    }
+    
+    return bestMatch;
+}
+
+/** СТРАТЕГИЯ 2: Распознавание структурных паттернов */
+function detectStructuralPatterns(lines, lineIndex, context) {
+    const line = lines[lineIndex];
+    const trimmed = line.trim();
+    
+    if (!trimmed) return null;
+    
+    const results = [];
+    
+    // Паттерн: короткая строка после пустой строки (часто заголовок)
+    if (trimmed.length < 30 && lineIndex > 0 && !lines[lineIndex - 1].trim()) {
+        results.push({ type: 'unknown', confidence: 0.4, method: 'structural_short' });
+    }
+    
+    // Паттерн: строка в верхнем регистре
+    if (trimmed === trimmed.toUpperCase() && trimmed.length > 2) {
+        results.push({ type: 'unknown', confidence: 0.5, method: 'structural_uppercase' });
+    }
+    
+    // Паттерн: строка с цифрами в начале
+    if (/^\d+/.test(trimmed)) {
+        results.push({ type: 'unknown', confidence: 0.3, method: 'structural_numbered' });
+    }
+    
+    // Паттерн: строка в скобках или кавычках
+    if (/^[\[\("].*[\]\)"]$/.test(trimmed)) {
+        results.push({ type: 'unknown', confidence: 0.6, method: 'structural_bracketed' });
+    }
+    
+    return results.length > 0 ? results.reduce((best, curr) => 
+        curr.confidence > best.confidence ? curr : best
+    ) : null;
+}
+
+/** СТРАТЕГИЯ 3: Семантический анализ */
+function detectSemanticMarkers(line, context) {
+    const trimmed = line.trim().toLowerCase();
+    
+    // Семантические подсказки
+    const semanticRules = [
+        { pattern: /повтор|снова|еще раз|x\d+/i, type: 'chorus', confidence: 0.6 },
+        { pattern: /быстро|медленно|тихо|громко/i, type: 'verse', confidence: 0.4 },
+        { pattern: /инструмент|гитара|пиано|барабаны/i, type: 'solo', confidence: 0.7 },
+        { pattern: /начало|старт|открыв/i, type: 'intro', confidence: 0.5 },
+        { pattern: /конец|финиш|закрыв|завершен/i, type: 'outro', confidence: 0.5 },
+        { pattern: /переход|к следующ|далее/i, type: 'bridge', confidence: 0.6 }
+    ];
+    
+    for (const rule of semanticRules) {
+        if (rule.pattern.test(trimmed)) {
+            return { type: rule.type, confidence: rule.confidence, method: 'semantic' };
+        }
+    }
+    
+    return null;
+}
+
+/** СТРАТЕГИЯ 4: Анализ музыкальных паттернов */
+function detectMusicalPatterns(lines, lineIndex, context) {
+    const line = lines[lineIndex];
+    
+    // Поиск аккордов в строке (признак инструментальной секции)
+    const chordPattern = /[A-H][#b]?(?:m|maj|dim|aug|sus|add)?(?:\d+)?/g;
+    const chords = line.match(chordPattern);
+    
+    if (chords && chords.length >= 3) {
+        // Если много аккордов и мало текста, вероятно это соло/проигрыш
+        const textLength = line.replace(chordPattern, '').trim().length;
+        if (textLength < 10) {
+            return { type: 'solo', confidence: 0.8, method: 'musical_chords' };
+        }
+    }
+    
+    // Поиск ритмических паттернов
+    if (/\b(бум|та|дум|па)\b/gi.test(line)) {
+        return { type: 'solo', confidence: 0.6, method: 'musical_rhythm' };
+    }
+    
+    return null;
+}
+
+/** ОСНОВНАЯ ФУНКЦИЯ: Интеллектуальное распознавание блоков */
+function intelligentBlockDetection(lines, lineIndex, context) {
+    const line = lines[lineIndex];
+    const strategies = [
+        () => detectExplicitMarkers(line, context),
+        () => detectStructuralPatterns(lines, lineIndex, context),
+        () => detectSemanticMarkers(line, context),
+        () => detectMusicalPatterns(lines, lineIndex, context)
+    ];
+    
+    const results = [];
+    
+    for (const strategy of strategies) {
+        const result = strategy();
+        if (result) {
+            results.push(result);
+        }
+    }
+    
+    if (results.length === 0) return null;
+    
+    // Выбираем результат с наивысшей уверенностью
+    const bestResult = results.reduce((best, current) => 
+        current.confidence > best.confidence ? current : best
+    );
+    
+    // Обучение: сохраняем успешные распознавания
+    if (bestResult.confidence > 0.7) {
+        const key = line.trim().toLowerCase();
+        const existing = songParserData.confidence.get(key) || 0;
+        songParserData.confidence.set(key, Math.max(existing, bestResult.confidence));
+        
+        if (bestResult.method === 'explicit' || bestResult.method === 'pattern') {
+            songParserData.patternHistory.set(key, bestResult.type);
+        }
+    }
+    
+    return bestResult;
+}
+
+/** РЕВОЛЮЦИОННАЯ ЗАМЕНА wrapSongBlocks */
 function wrapSongBlocks(lyrics) {
     if (!lyrics) return '';
-
-    const markers = [
-        "куплет", "припев", "бридж", "мостик", "мост", "проигрыш", "интро",
-        "вступление", "аутро", "окончание", "кода", "запев", "соло",
-        "предприпев", "прехорус",
-        "verse", "chorus", "bridge", "pre-chorus", "intro", "outro", "solo", "instrumental", "interlude", "tag", "vamp"
-    ];
-    const uniqueMarkers = [...new Set(markers.map(m => m.toLowerCase()))];
-    const markerPattern = `^\\s*(\\d+\\s+)?(${uniqueMarkers.join('|')})(\\s*\\d*)?\\s*[:.]?\\s*$`;
-    const markerRegex = new RegExp(markerPattern, 'i');
-
+    
+    // Инициализируем данные обучения
+    initializeParserData();
+    
     const lines = lyrics.split('\n');
     const blocks = [];
-    let currentBlock = { legend: '', content: [] };
-
+    let currentBlock = { legend: '', content: [], confidence: 0, type: null };
+    
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        const trimmedLine = line.trim();
+        const trimmed = line.trim();
         
-        if (markerRegex.test(trimmedLine)) {
-            // Если это структурный маркер
+        // Контекст для анализа
+        const context = {
+            prevLines: lines.slice(Math.max(0, i - 3), i),
+            nextLines: lines.slice(i + 1, Math.min(lines.length, i + 4)),
+            blockIndex: blocks.length,
+            lineIndex: i
+        };
+        
+        // Интеллектуальное распознавание
+        const detection = intelligentBlockDetection(lines, i, context);
+        
+        if (detection && detection.confidence > 0.3) {
+            // Найден новый блок
             if (currentBlock.content.length > 0) {
                 // Сохраняем предыдущий блок
                 blocks.push(currentBlock);
             }
+            
             // Начинаем новый блок
-            currentBlock = { 
-                legend: trimmedLine, 
-                content: [] 
+            currentBlock = {
+                legend: trimmed,
+                content: [],
+                confidence: detection.confidence,
+                type: detection.type,
+                method: detection.method
             };
+            
+            // Обучение: запоминаем успешное распознавание
+            if (detection.confidence > 0.7) {
+                songParserData.learnedTerms.set(trimmed.toLowerCase(), detection.type);
+            }
         } else {
             // Добавляем строку в текущий блок
             currentBlock.content.push(line);
@@ -156,23 +440,158 @@ function wrapSongBlocks(lyrics) {
     if (currentBlock.legend || currentBlock.content.length > 0) {
         blocks.push(currentBlock);
     }
-
-    // Формируем HTML с fieldset и legend (КРАСИВЫЕ встроенные блоки!)
-    return blocks.map(block => {
+    
+    // Пост-обработка: улучшение распознавания на основе контекста
+    blocks.forEach((block, index) => {
+        if (!block.type || block.confidence < 0.5) {
+            // Пытаемся угадать тип по позиции и контексту
+            if (index === 0 && !block.legend) {
+                block.type = 'intro';
+                block.legend = block.legend || 'Интро';
+            } else if (index === blocks.length - 1 && block.content.length < 3) {
+                block.type = 'outro';
+                block.legend = block.legend || 'Аутро';
+            } else if (!block.legend) {
+                // Пытаемся определить по содержимому
+                const content = block.content.join(' ').toLowerCase();
+                if (content.includes('припев') || content.includes('chorus')) {
+                    block.type = 'chorus';
+                    block.legend = 'Припев';
+                } else {
+                    block.type = 'verse';
+                    block.legend = `Куплет ${Math.floor(index / 2) + 1}`;
+                }
+            }
+        }
+    });
+    
+    // Сохраняем данные обучения
+    saveParserData();
+    
+    // Формируем HTML с улучшенной структурой
+    return blocks.map((block, index) => {
         const content = block.content.join('\n');
+        const confidenceClass = block.confidence > 0.8 ? 'high-confidence' : 
+                               block.confidence > 0.5 ? 'medium-confidence' : 'low-confidence';
+        
         if (block.legend) {
-            return `<fieldset class="song-block">
-<legend class="song-block-legend">${block.legend}</legend>
+            return `<fieldset class="song-block ${confidenceClass}" data-type="${block.type || 'unknown'}" data-confidence="${block.confidence.toFixed(2)}" data-method="${block.method || 'unknown'}">
+<legend class="song-block-legend" title="Уверенность: ${(block.confidence * 100).toFixed(0)}% (${block.method || 'unknown'})">${block.legend}</legend>
 <div class="song-block-content">${content}</div>
 </fieldset>`;
         } else {
-            // ВСЕГДА оборачиваем блок без заголовка (начало песни до первого маркера) в fieldset
-            return `<fieldset class="song-block">
+            return `<fieldset class="song-block ${confidenceClass}" data-type="${block.type || 'unknown'}" data-confidence="${block.confidence.toFixed(2)}">
 <div class="song-block-content">${content}</div>
 </fieldset>`;
         }
     }).join('\n');
 }
+
+/** Функция для ручной корректировки пользователем */
+function correctBlockType(blockElement, newType, newLabel) {
+    const originalText = blockElement.querySelector('.song-block-legend')?.textContent || '';
+    
+    // Сохраняем корректировку для обучения
+    songParserData.userCorrections.set(originalText.toLowerCase(), {
+        type: newType,
+        label: newLabel,
+        timestamp: Date.now()
+    });
+    
+    // Обновляем изученные термины
+    songParserData.learnedTerms.set(originalText.toLowerCase(), newType);
+    
+    saveParserData();
+    
+    console.log(`Обучение: "${originalText}" теперь распознается как "${newType}"`);
+}
+
+/** Экспорт функции корректировки для использования в UI */
+window.correctSongBlockType = correctBlockType;
+
+/** Функция демонстрации возможностей парсера */
+function demonstrateParser() {
+    console.log('🎵 ДЕМОНСТРАЦИЯ ИНТЕЛЛЕКТУАЛЬНОГО ПАРСЕРА БЛОКОВ ПЕСЕН 🎵');
+    console.log('============================================================');
+    
+    const testSongs = [
+        {
+            title: 'Тест русских маркеров',
+            lyrics: `Куплет 1
+Славлю Бога я всегда
+Припев
+Аллилуйя, аллилуйя
+Бридж
+Святой, святой, святой`
+        },
+        {
+            title: 'Тест английских маркеров',
+            lyrics: `Verse 1
+Amazing grace how sweet the sound
+Chorus
+How great is our God
+Bridge
+Holy, holy, holy`
+        },
+        {
+            title: 'Тест сокращений',
+            lyrics: `К1
+Первый куплет
+Пр
+Припев песни
+Бр
+Переходная часть`
+        },
+        {
+            title: 'Тест структурных паттернов',
+            lyrics: `ВСТУПЛЕНИЕ
+Инструментальная часть
+1
+Первая строфа
+[ПРИПЕВ]
+Основная мелодия`
+        }
+    ];
+    
+    testSongs.forEach((song, index) => {
+        console.log(`\n--- ТЕСТ ${index + 1}: ${song.title} ---`);
+        const result = wrapSongBlocks(song.lyrics);
+        console.log('Результат парсинга:', result);
+    });
+    
+    // Статистика обучения
+    console.log('\n--- СТАТИСТИКА ОБУЧЕНИЯ ---');
+    console.log('Изученные термины:', songParserData.learnedTerms.size);
+    console.log('Паттерны в истории:', songParserData.patternHistory.size);
+    console.log('Пользовательские корректировки:', songParserData.userCorrections.size);
+    console.log('Записи уверенности:', songParserData.confidence.size);
+    
+    if (songParserData.learnedTerms.size > 0) {
+        console.log('\nИзученные термины:');
+        for (const [term, type] of songParserData.learnedTerms) {
+            console.log(`  "${term}" → ${type}`);
+        }
+    }
+}
+
+/** Функция сброса данных обучения (для отладки) */
+function resetParserLearning() {
+    songParserData.learnedTerms.clear();
+    songParserData.patternHistory.clear();
+    songParserData.userCorrections.clear();
+    songParserData.confidence.clear();
+    
+    try {
+        localStorage.removeItem('songParserData');
+        console.log('✅ Данные обучения парсера сброшены');
+    } catch (e) {
+        console.warn('Ошибка сброса данных:', e);
+    }
+}
+
+/** Экспорт функций для использования в консоли */
+window.demonstrateParser = demonstrateParser;
+window.resetParserLearning = resetParserLearning;
 
 /** Выделение аккордов в уже обработанном тексте (устарело - заменено на wrapSongBlocks) */
 function highlightStructure(lyrics) {
@@ -427,6 +846,9 @@ export {
     highlightChords,
     highlightStructure,
     wrapSongBlocks,
+    correctBlockType,
+    demonstrateParser,
+    resetParserLearning,
     getRenderedSongText,
     extractYouTubeVideoId,
     isMobileView,
