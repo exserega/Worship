@@ -1137,15 +1137,18 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 /* --- Кнопка Копировать текст --- */
 #copy-text-button {
     position: absolute; /* Абсолютное позиционирование */
-    top: -2px;          /* Поднял на 4px вверх (2px - 4px = -2px) */
+    top: -4px;          /* Поднял еще на 2px вверх (-2px - 2px = -4px) */
     right: 1px;         /* Сдвинул на 1px вправо (2px - 1px = 1px) */
     z-index: 15;        /* Высокий z-index чтобы быть поверх всего */
     width: 28px;        /* Компактный размер */
     height: 28px;
     font-size: 0.8rem;  /* Компактная иконка */
-    /* Наследует стили .icon-button.simple */
+    /* Убираем границы - только значок */
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
     opacity: 0.8; /* Хорошо видимая */
-    transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    transition: opacity 0.2s ease, color 0.2s ease;
     display: none; /* По умолчанию скрыта, пока не выбрана песня */
 }
 #copy-text-button:hover {
@@ -1799,12 +1802,16 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
          /* Кнопка Копировать на мобильных */
      #copy-text-button {
-         top: -3px;      /* Поднял на 4px вверх (1px - 4px = -3px) */
+         top: -5px;      /* Поднял еще на 2px вверх (-3px - 2px = -5px) */
          right: 0px;     /* Сдвинул на 1px вправо (1px - 1px = 0px) */
          width: 26px;    /* Еще компактнее на мобильных */
          height: 26px;
          font-size: 0.75rem;
          opacity: 0.9;   /* Максимально видимая на мобильных */
+         /* Убираем границы на мобильных тоже */
+         background: transparent !important;
+         border: none !important;
+         box-shadow: none !important;
      }
      /* --- Конец мобильных стилей для новых кнопок --- */
 
