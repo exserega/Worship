@@ -208,15 +208,18 @@ function detectExplicitMarkers(line, context) {
     const trimmed = line.trim();
     if (!trimmed) return null;
     
+    // СТРОГАЯ проверка: строка должна быть ТОЛЬКО маркером или почти только маркером
+    if (trimmed.length > 25) return null; // Слишком длинная строка не может быть заголовком
+    
     let bestMatch = null;
     let highestConfidence = 0;
     
     for (const [blockType, data] of Object.entries(ADAPTIVE_DICTIONARY)) {
-        // Проверяем основные термины
+        // Проверяем основные термины - ТОЛЬКО точные совпадения
         for (const term of data.primary) {
             const regex = new RegExp(`^(\\d+\\s*)?(${term})(\\s*\\d*)?\\s*[:.]?\\s*$`, 'i');
             if (regex.test(trimmed)) {
-                const confidence = 0.9 + (term.length / 20); // Длинные термины надежнее
+                const confidence = 0.95; // Высокая уверенность для точных совпадений
                 if (confidence > highestConfidence) {
                     highestConfidence = confidence;
                     bestMatch = { type: blockType, confidence, method: 'explicit', term };
@@ -224,38 +227,31 @@ function detectExplicitMarkers(line, context) {
             }
         }
         
-        // Проверяем вариации
+        // Проверяем вариации - только короткие
         for (const variation of data.variations) {
-            const regex = new RegExp(`^(\\d+\\s*)?(${variation})(\\s*\\d*)?\\s*[:.]?\\s*$`, 'i');
-            if (regex.test(trimmed)) {
-                const confidence = 0.7 + (variation.length / 30);
-                if (confidence > highestConfidence) {
-                    highestConfidence = confidence;
-                    bestMatch = { type: blockType, confidence, method: 'variation', term: variation };
-                }
-            }
-        }
-        
-        // Проверяем паттерны
-        for (const pattern of data.patterns) {
-            if (pattern.test(trimmed)) {
-                const confidence = 0.8;
-                if (confidence > highestConfidence) {
-                    highestConfidence = confidence;
-                    bestMatch = { type: blockType, confidence, method: 'pattern', term: trimmed };
+            if (variation.length < 4) { // Только короткие сокращения
+                const regex = new RegExp(`^(\\d+\\s*)?(${variation})(\\s*\\d*)?\\s*[:.]?\\s*$`, 'i');
+                if (regex.test(trimmed)) {
+                    const confidence = 0.9;
+                    if (confidence > highestConfidence) {
+                        highestConfidence = confidence;
+                        bestMatch = { type: blockType, confidence, method: 'variation', term: variation };
+                    }
                 }
             }
         }
     }
     
-    // Проверяем изученные термины
+    // Проверяем изученные термины - только если они короткие
     for (const [learnedTerm, blockType] of songParserData.learnedTerms) {
-        const regex = new RegExp(`^(\\d+\\s*)?(${learnedTerm})(\\s*\\d*)?\\s*[:.]?\\s*$`, 'i');
-        if (regex.test(trimmed)) {
-            const confidence = 0.85; // Высокая уверенность в изученных терминах
-            if (confidence > highestConfidence) {
-                highestConfidence = confidence;
-                bestMatch = { type: blockType, confidence, method: 'learned', term: learnedTerm };
+        if (learnedTerm.length < 20) {
+            const regex = new RegExp(`^(\\d+\\s*)?(${learnedTerm})(\\s*\\d*)?\\s*[:.]?\\s*$`, 'i');
+            if (regex.test(trimmed)) {
+                const confidence = 0.92;
+                if (confidence > highestConfidence) {
+                    highestConfidence = confidence;
+                    bestMatch = { type: blockType, confidence, method: 'learned', term: learnedTerm };
+                }
             }
         }
     }
@@ -272,24 +268,18 @@ function detectStructuralPatterns(lines, lineIndex, context) {
     
     const results = [];
     
-    // Паттерн: короткая строка после пустой строки (часто заголовок)
-    if (trimmed.length < 30 && lineIndex > 0 && !lines[lineIndex - 1].trim()) {
-        results.push({ type: 'unknown', confidence: 0.4, method: 'structural_short' });
+    // ТОЛЬКО очень строгие паттерны!
+    
+    // Паттерн: строка в скобках или кавычках И короткая
+    if (/^[\[\("].*[\]\)"]$/.test(trimmed) && trimmed.length < 20) {
+        results.push({ type: 'unknown', confidence: 0.7, method: 'structural_bracketed' });
     }
     
-    // Паттерн: строка в верхнем регистре
-    if (trimmed === trimmed.toUpperCase() && trimmed.length > 2) {
-        results.push({ type: 'unknown', confidence: 0.5, method: 'structural_uppercase' });
-    }
-    
-    // Паттерн: строка с цифрами в начале
-    if (/^\d+/.test(trimmed)) {
-        results.push({ type: 'unknown', confidence: 0.3, method: 'structural_numbered' });
-    }
-    
-    // Паттерн: строка в скобках или кавычках
-    if (/^[\[\("].*[\]\)"]$/.test(trimmed)) {
-        results.push({ type: 'unknown', confidence: 0.6, method: 'structural_bracketed' });
+    // Паттерн: строка в верхнем регистре И очень короткая И изолированная
+    if (trimmed === trimmed.toUpperCase() && trimmed.length < 15 && trimmed.length > 2 &&
+        lineIndex > 0 && !lines[lineIndex - 1].trim() &&
+        lineIndex < lines.length - 1 && !lines[lineIndex + 1].trim()) {
+        results.push({ type: 'unknown', confidence: 0.6, method: 'structural_uppercase' });
     }
     
     return results.length > 0 ? results.reduce((best, curr) => 
@@ -299,48 +289,13 @@ function detectStructuralPatterns(lines, lineIndex, context) {
 
 /** СТРАТЕГИЯ 3: Семантический анализ */
 function detectSemanticMarkers(line, context) {
-    const trimmed = line.trim().toLowerCase();
-    
-    // Семантические подсказки
-    const semanticRules = [
-        { pattern: /повтор|снова|еще раз|x\d+/i, type: 'chorus', confidence: 0.6 },
-        { pattern: /быстро|медленно|тихо|громко/i, type: 'verse', confidence: 0.4 },
-        { pattern: /инструмент|гитара|пиано|барабаны/i, type: 'solo', confidence: 0.7 },
-        { pattern: /начало|старт|открыв/i, type: 'intro', confidence: 0.5 },
-        { pattern: /конец|финиш|закрыв|завершен/i, type: 'outro', confidence: 0.5 },
-        { pattern: /переход|к следующ|далее/i, type: 'bridge', confidence: 0.6 }
-    ];
-    
-    for (const rule of semanticRules) {
-        if (rule.pattern.test(trimmed)) {
-            return { type: rule.type, confidence: rule.confidence, method: 'semantic' };
-        }
-    }
-    
+    // ОТКЛЮЧЕНО для предотвращения ложных срабатываний
     return null;
 }
 
 /** СТРАТЕГИЯ 4: Анализ музыкальных паттернов */
 function detectMusicalPatterns(lines, lineIndex, context) {
-    const line = lines[lineIndex];
-    
-    // Поиск аккордов в строке (признак инструментальной секции)
-    const chordPattern = /[A-H][#b]?(?:m|maj|dim|aug|sus|add)?(?:\d+)?/g;
-    const chords = line.match(chordPattern);
-    
-    if (chords && chords.length >= 3) {
-        // Если много аккордов и мало текста, вероятно это соло/проигрыш
-        const textLength = line.replace(chordPattern, '').trim().length;
-        if (textLength < 10) {
-            return { type: 'solo', confidence: 0.8, method: 'musical_chords' };
-        }
-    }
-    
-    // Поиск ритмических паттернов
-    if (/\b(бум|та|дум|па)\b/gi.test(line)) {
-        return { type: 'solo', confidence: 0.6, method: 'musical_rhythm' };
-    }
-    
+    // ОТКЛЮЧЕНО для предотвращения ложных срабатываний
     return null;
 }
 
@@ -388,6 +343,12 @@ function intelligentBlockDetection(lines, lineIndex, context) {
 function wrapSongBlocks(lyrics) {
     if (!lyrics) return '';
     
+    // ВРЕМЕННО: сбрасываем данные обучения для исправления проблем
+    songParserData.learnedTerms.clear();
+    songParserData.patternHistory.clear();
+    songParserData.userCorrections.clear();
+    songParserData.confidence.clear();
+    
     // Инициализируем данные обучения
     initializeParserData();
     
@@ -410,7 +371,7 @@ function wrapSongBlocks(lyrics) {
         // Интеллектуальное распознавание
         const detection = intelligentBlockDetection(lines, i, context);
         
-        if (detection && detection.confidence > 0.3) {
+        if (detection && detection.confidence > 0.8) {
             // Найден новый блок
             if (currentBlock.content.length > 0) {
                 // Сохраняем предыдущий блок
