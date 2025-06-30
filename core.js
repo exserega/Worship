@@ -106,7 +106,16 @@ function processLyrics(lyrics) {
 function highlightChords(lyrics) {
     if (!lyrics) return '';
     try {
-        return lyrics.replace(chordRegex, '<span class="chord">$1</span>');
+        const result = lyrics.replace(chordRegex, '<span class="chord">$1</span>');
+        
+        // ОТЛАДКА: проверяем не появились ли артефакты после highlightChords
+        if (lyrics.includes('Пред-припев') && result.includes('Chorus"')) {
+            console.log('DEBUG: highlightChords испортил HTML для Пред-припев:');
+            console.log('  ДО:', lyrics.substring(0, 500));
+            console.log('  ПОСЛЕ:', result.substring(0, 500));
+        }
+        
+        return result;
     } catch (error) {
         console.error("Ошибка при выделении аккордов:", error, "Текст:", lyrics.substring(0, 100) + "...");
         return lyrics;
@@ -632,10 +641,25 @@ function wrapSongBlocks(lyrics) {
             const safeConfidenceClass = String(confidenceClass).replace(/[^a-zA-Z0-9-]/g, '');
             const safeTitle = `Уверенность: ${Math.round(safeConfidence * 100)}% (${cleanMethod})`;
             
-            return `<fieldset class="song-block ${safeConfidenceClass}" data-type="${cleanType}" data-confidence="${cleanConfidence}" data-method="${cleanMethod}">
+            const generatedHTML = `<fieldset class="song-block ${safeConfidenceClass}" data-type="${cleanType}" data-confidence="${cleanConfidence}" data-method="${cleanMethod}">
 <legend class="song-block-legend" title="${safeTitle}">${cleanLegend}</legend>
 <div class="song-block-content">${content}</div>
 </fieldset>`;
+
+            // ОТЛАДКА: логируем генерируемый HTML для Пред-припев
+            if (safeLegend.toLowerCase().includes('пред-припев')) {
+                console.log('DEBUG: Генерируемый HTML для Пред-припев:');
+                console.log('  safeConfidenceClass:', JSON.stringify(safeConfidenceClass));
+                console.log('  cleanType:', JSON.stringify(cleanType));
+                console.log('  cleanConfidence:', JSON.stringify(cleanConfidence));
+                console.log('  cleanMethod:', JSON.stringify(cleanMethod));
+                console.log('  cleanLegend:', JSON.stringify(cleanLegend));
+                console.log('  safeTitle:', JSON.stringify(safeTitle));
+                console.log('  content длина:', content.length);
+                console.log('  ИТОГОВЫЙ HTML:', JSON.stringify(generatedHTML));
+            }
+            
+            return generatedHTML;
         } else {
             const safeConfidenceClass = String(confidenceClass).replace(/[^a-zA-Z0-9-]/g, '');
             
@@ -766,6 +790,22 @@ function getRenderedSongText(originalLyrics, originalKey, targetKey) {
     const transposedLyrics = transposeLyrics(processedLyrics, transposition);
     const blocksWrappedLyrics = wrapSongBlocks(transposedLyrics);
     const finalHighlightedLyrics = highlightChords(blocksWrappedLyrics);
+    
+    // ОТЛАДКА: проверяем этапы обработки для Пред-припев
+    if (originalLyrics.includes('Пред-припев')) {
+        console.log('DEBUG: Этапы обработки Пред-припев:');
+        console.log('  1. processedLyrics содержит Chorus":', processedLyrics.includes('Chorus"'));
+        console.log('  2. transposedLyrics содержит Chorus":', transposedLyrics.includes('Chorus"'));
+        console.log('  3. blocksWrappedLyrics содержит Chorus":', blocksWrappedLyrics.includes('Chorus"'));
+        console.log('  4. finalHighlightedLyrics содержит Chorus":', finalHighlightedLyrics.includes('Chorus"'));
+        
+        if (finalHighlightedLyrics.includes('Chorus"')) {
+            console.log('  НАЙДЕН АРТЕФАКТ! Фрагмент с артефактом:');
+            const index = finalHighlightedLyrics.indexOf('Chorus"');
+            console.log('  ', finalHighlightedLyrics.substring(Math.max(0, index - 100), index + 100));
+        }
+    }
+    
     return finalHighlightedLyrics;
 }
 
