@@ -269,7 +269,7 @@ export function updateBPM(newBPM) {
 /** Обновление кнопки скрытия/показа аккордов */
 export function updateToggleChordsButton() {
     // Всегда используем музыкальную ноту
-    const icon = '<i class="fas fa-music"></i>';
+    const icon = '<i class="fas fa-guitar"></i>';
     const textShow = '<span class="button-text">Аккорды</span>';
     
     const currentTitle = state.areChordsVisible ? 'Скрыть аккорды' : 'Показать аккорды';
@@ -285,7 +285,7 @@ export function updateToggleChordsButton() {
 /** Обновление кнопки "только аккорды" */
 export function updateChordsOnlyButton() {
     // Используем иконку нот
-    const icon = '<i class="fas fa-music"></i>';
+    const icon = '<i class="fas fa-font"></i>';
     const textShow = state.isChordsOnlyMode ? 
         '<span class="button-text">Полный текст</span>' : 
         '<span class="button-text">Только аккорды</span>';

@@ -529,7 +529,8 @@ function setupEventListeners() {
         }
         
         // Клик по аккорду в тексте песни для быстрой смены тональности
-        if (e.target.closest('#song-content pre')) {
+        // НЕ работает в режиме "только аккорды"
+        if (e.target.closest('#song-content pre') && !state.isChordsOnlyMode) {
             const chordEl = e.target.closest('.chord');
             if (chordEl) {
                 ui.keySelect.value = chordEl.textContent;
