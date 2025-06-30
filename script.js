@@ -364,6 +364,26 @@ function setupEventListeners() {
         ui.updateToggleChordsButton();
     });
 
+    ui.chordsOnlyButton.addEventListener('click', () => {
+        if (!ui.songSelect.value) return;
+        
+        // Переключаем режим "только аккорды"
+        state.setIsChordsOnlyMode(!state.isChordsOnlyMode);
+        
+        // Применяем CSS класс для основного контента
+        ui.songContent.classList.toggle('chords-only-mode', state.isChordsOnlyMode);
+        
+        // Применяем CSS класс для презентации
+        const presentationContent = document.querySelector('.presentation-content');
+        if (presentationContent) {
+            presentationContent.classList.toggle('chords-only-mode', state.isChordsOnlyMode);
+        }
+        
+        // Обновляем обе кнопки
+        ui.updateChordsOnlyButton();
+        ui.updateToggleChordsButton();
+    });
+
 
 
     ui.favoriteButton.addEventListener('click', async () => {

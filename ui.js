@@ -37,6 +37,7 @@ export const playerContainer = document.getElementById('youtube-player-container
 export const playerSection = document.getElementById('youtube-player-section');
 export const themeToggleButton = document.getElementById('theme-toggle-button');
 export const toggleChordsButton = document.getElementById('toggle-chords-button');
+export const chordsOnlyButton = document.getElementById('chords-only-button');
 export const favoriteButton = document.getElementById('favorite-button');
 export const addToSetlistButton = document.getElementById('add-to-setlist-button');
 export const addToRepertoireButton = document.getElementById('add-to-repertoire-button');
@@ -222,6 +223,7 @@ export function displaySongDetails(songData, keyToSelect) {
     
     updateFontSize();
     songContent.classList.toggle('chords-hidden', !state.areChordsVisible);
+    songContent.classList.toggle('chords-only-mode', state.isChordsOnlyMode);
     
     // Скрываем блоки с только аккордами если аккорды скрыты
     toggleChordOnlyBlocks(!state.areChordsVisible);
@@ -249,7 +251,9 @@ export function displaySongDetails(songData, keyToSelect) {
     addToSetlistButton.disabled = false;
     addToRepertoireButton.disabled = false;
     toggleChordsButton.disabled = false;
+    chordsOnlyButton.disabled = false;
     updateToggleChordsButton();
+    updateChordsOnlyButton();
 }
 
 /** Обновление размера шрифта текста песни */
@@ -276,6 +280,24 @@ export function updateToggleChordsButton() {
     
     // Меняем цвет кнопки в зависимости от состояния
     toggleChordsButton.classList.toggle('chords-hidden-active', !state.areChordsVisible);
+}
+
+/** Обновление кнопки "только аккорды" */
+export function updateChordsOnlyButton() {
+    // Используем иконку нот
+    const icon = '<i class="fas fa-music"></i>';
+    const textShow = state.isChordsOnlyMode ? 
+        '<span class="button-text">Полный текст</span>' : 
+        '<span class="button-text">Только аккорды</span>';
+    
+    const currentTitle = state.isChordsOnlyMode ? 'Показать полный текст' : 'Показать только аккорды';
+
+    chordsOnlyButton.innerHTML = icon + (isMobileView() ? '' : textShow);
+    chordsOnlyButton.title = currentTitle;
+    chordsOnlyButton.disabled = !songSelect || !songSelect.value;
+    
+    // Меняем цвет кнопки в зависимости от состояния
+    chordsOnlyButton.classList.toggle('chords-only-active', state.isChordsOnlyMode);
 }
 
 /** Обновление кнопки разделения текста */
@@ -558,6 +580,7 @@ export function displayCurrentPresentationSong() {
     presentationContent.innerHTML = songHtml;
     presentationContent.classList.toggle('split-columns', state.isPresentationSplit);
     presentationContent.classList.toggle('chords-hidden', !state.areChordsVisible);
+    presentationContent.classList.toggle('chords-only-mode', state.isChordsOnlyMode);
     
     // Применяем скрытие блоков с только аккордами в режиме презентации
     toggleChordOnlyBlocks(!state.areChordsVisible);

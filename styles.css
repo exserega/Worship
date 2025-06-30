@@ -1099,6 +1099,30 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
     line-height: 1.1; /* Чуть больше для читаемости */
 }
 
+/* Режим "только аккорды" - скрываем весь текст кроме аккордов */
+#song-content.chords-only-mode,
+.presentation-content.chords-only-mode {
+    line-height: 2.5; /* Увеличиваем междустрочный интервал для аккордов */
+}
+
+#song-content.chords-only-mode .song-block-content,
+.presentation-content.chords-only-mode .song-block-content {
+    font-size: 0; /* Скрываем весь текст делая размер шрифта 0 */
+    line-height: 0;
+}
+
+#song-content.chords-only-mode .chord,
+.presentation-content.chords-only-mode .chord {
+    font-size: var(--lyrics-font-size); /* Восстанавливаем размер шрифта для аккордов */
+    line-height: 2.5; /* Устанавливаем междустрочный интервал */
+    display: inline-block;
+    background-color: var(--container-background-color); /* Фон как у контейнера */
+    padding: 2px 6px; /* Паддинг для лучшей видимости */
+    border-radius: 4px;
+    margin: 0 2px; /* Небольшие отступы между аккордами */
+    border: 1px solid var(--border-color); /* Легкая рамка */
+}
+
 
 
 /* --- Кнопка Скрыть/Показать аккорды --- */
@@ -1136,6 +1160,30 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
     background-color: var(--primary-color) !important;
     color: var(--button-text-color) !important;
     border-color: var(--primary-color) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Кнопка Только аккорды --- */
+#chords-only-button {
+    /* Наследует .icon-button и .icon-button.simple */
+    padding: 0 10px; /* Паддинг для текста и иконки */
+    width: auto; /* Авто-ширина по контенту */
+    height: 38px; /* Такая же высота, как у соседей */
+    font-size: 0.85rem;
+    margin-left: 5px; /* Небольшой отступ слева */
+    position: relative; /* Для позиционирования псевдоэлемента */
+}
+#chords-only-button i {
+    margin-right: 6px; /* Отступ иконки от текста */
+    font-size: 0.9em;
+    position: relative;
+}
+
+/* Активное состояние кнопки "только аккорды" */
+#chords-only-button.chords-only-active {
+    background-color: var(--accent-color) !important;
+    color: var(--button-text-color) !important;
+    border-color: var(--accent-color) !important;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -1925,6 +1973,30 @@ body[data-theme="light"] .repertoire-view-button.active {
         background-color: var(--primary-color) !important;
         color: var(--button-text-color) !important;
         border-color: var(--primary-color) !important;
+    }
+    
+    /* Кнопка "только аккорды" на мобильных */
+    #chords-only-button {
+        width: 36px; /* Фиксированная ширина как у других иконок */
+        height: 36px;
+        padding: 0;
+        margin: 0;
+        margin-left: 3px; /* Небольшой отступ от предыдущей кнопки */
+    }
+    #chords-only-button .button-text {
+        display: none; /* Скрываем текст */
+    }
+    #chords-only-button i {
+        margin-right: 0; /* Убираем отступ иконки */
+        font-size: 0.9rem;
+        position: relative;
+    }
+    
+    /* Активное состояние кнопки "только аккорды" на мобильных */
+    #chords-only-button.chords-only-active {
+        background-color: var(--accent-color) !important;
+        color: var(--button-text-color) !important;
+        border-color: var(--accent-color) !important;
     }
          /* Кнопка Копировать на мобильных */
      #copy-text-button {
