@@ -406,6 +406,13 @@ function detectExplicitMarkers(line, context) {
         }
     }
     
+    // ОТЛАДКА: логируем результат для Пред-припев
+    if (trimmed.toLowerCase().includes('пред-припев')) {
+        console.log('DEBUG: detectExplicitMarkers для Пред-припев:');
+        console.log('  trimmed:', JSON.stringify(trimmed));
+        console.log('  bestMatch:', bestMatch);
+    }
+    
     return bestMatch;
 }
 
@@ -540,6 +547,14 @@ function wrapSongBlocks(lyrics) {
                 method: detection.method
             };
             
+            // ОТЛАДКА: логируем создание блоков Пред-припев
+            if (trimmed.toLowerCase().includes('пред-припев')) {
+                console.log('DEBUG: Создание блока Пред-припев:');
+                console.log('  trimmed:', JSON.stringify(trimmed));
+                console.log('  detection:', detection);
+                console.log('  currentBlock:', currentBlock);
+            }
+            
             // Обучение: запоминаем успешное распознавание
             if (detection.confidence > 0.7) {
                 songParserData.learnedTerms.set(trimmed.toLowerCase(), detection.type);
@@ -602,11 +617,14 @@ function wrapSongBlocks(lyrics) {
         
         // ОТЛАДКА: логируем проблемные блоки
         if (safeLegend.toLowerCase().includes('пред-припев')) {
-            console.log('DEBUG: Пред-припев блок:', {
-                original: block,
-                safe: { safeType, safeMethod, safeConfidence, safeLegend },
-                clean: { cleanType, cleanMethod, cleanConfidence, cleanLegend }
-            });
+            console.log('DEBUG: Пред-припев блок ДЕТАЛЬНО:');
+            console.log('  original.legend:', JSON.stringify(block.legend));
+            console.log('  original.type:', JSON.stringify(block.type));
+            console.log('  original.method:', JSON.stringify(block.method));
+            console.log('  original.confidence:', block.confidence);
+            console.log('  safeLegend:', JSON.stringify(safeLegend));
+            console.log('  cleanLegend:', JSON.stringify(cleanLegend));
+            console.log('  Весь блок:', block);
         }
         
         if (block.legend) {
