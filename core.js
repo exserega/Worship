@@ -945,17 +945,20 @@ function distributeSongBlocksToColumns(processedHTML) {
         return processedHTML; // Нет смысла делить одну песню
     }
     
-    // ПОСЛЕДОВАТЕЛЬНОЕ распределение: первый блок в левую колонку, второй в правую, третий опять в левую и т.д.
+    // ВЕРТИКАЛЬНОЕ распределение: сначала заполняем первую колонку до половины, потом вторую
     const column1 = [];
     const column2 = [];
     
+    // Вычисляем середину для разделения
+    const halfPoint = Math.ceil(blocks.length / 2);
+    
     blocks.forEach((block, index) => {
         const html = block.outerHTML;
-        if (index % 2 === 0) {
-            // Четные индексы (0, 2, 4...) идут в левую колонку
+        if (index < halfPoint) {
+            // Первая половина блоков идет в левую колонку
             column1.push(html);
         } else {
-            // Нечетные индексы (1, 3, 5...) идут в правую колонку
+            // Вторая половина блоков идет в правую колонку
             column2.push(html);
         }
     });
