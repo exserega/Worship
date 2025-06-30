@@ -794,12 +794,12 @@ export function toggleChordOnlyBlocks(shouldHide) {
         }
     });
     
-    // Обрабатываем пустые строки после скрытия/показа аккордов
-    if (shouldHide) {
-        removeEmptyLinesAfterChordHiding();
-    } else {
-        restoreOriginalHTML();
-    }
+    // ВРЕМЕННО ОТКЛЮЧЕНО: Обработка пустых строк
+    // if (shouldHide) {
+    //     removeEmptyLinesAfterChordHiding();
+    // } else {
+    //     restoreOriginalHTML();
+    // }
 }
 
 /** Функция для проверки, содержит ли блок только аккорды */
@@ -856,20 +856,34 @@ function removeEmptyLinesAfterChordHiding() {
     }
 }
 
-/** Обрабатывает текстовое содержимое элемента, удаляя пустые строки */
+/** Обрабатывает DOM, удаляя пустые строки из текстовых узлов */
 function processElementTextContent(element) {
-    // Получаем видимый текст после скрытия аккордов
-    const visibleText = element.textContent || element.innerText || '';
+    // Получаем все текстовые узлы в элементе
+    const walker = document.createTreeWalker(
+        element,
+        NodeFilter.SHOW_TEXT,
+        null,
+        false
+    );
     
-    // Очищаем от пустых строк
-    const cleanedText = visibleText
-        .split('\n')
-        .filter(line => line.trim() !== '')
-        .join('\n')
-        .trim();
+    const textNodes = [];
+    let node;
+    while (node = walker.nextNode()) {
+        textNodes.push(node);
+    }
     
-    // Сохраняем обратно как простой текст
-    element.textContent = cleanedText;
+    // Обрабатываем каждый текстовый узел
+    textNodes.forEach(textNode => {
+        if (textNode.nodeValue) {
+            // Удаляем пустые строки из текстового узла
+            const cleanedText = textNode.nodeValue
+                .replace(/\n\s*\n+/g, '\n') // Убираем множественные переносы
+                .replace(/^\s*\n+/, '') // Убираем переносы в начале
+                .replace(/\n+\s*$/, ''); // Убираем переносы в конце
+            
+            textNode.nodeValue = cleanedText;
+        }
+    });
 }
 
 /** Восстанавливает оригинальный HTML при показе аккордов */

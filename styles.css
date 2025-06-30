@@ -1088,6 +1088,17 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
     display: none !important;
 }
 
+/* Сжимаем пустые строки при скрытии аккордов */
+#song-content.chords-hidden pre,
+.presentation-content.chords-hidden pre {
+    line-height: 1.0; /* Максимально сжимаем междустрочный интервал */
+}
+
+#song-content.chords-hidden .song-block-content,
+.presentation-content.chords-hidden .song-block-content {
+    line-height: 1.1; /* Чуть больше для читаемости */
+}
+
 
 
 /* --- Кнопка Скрыть/Показать аккорды --- */
