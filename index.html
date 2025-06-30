@@ -91,13 +91,15 @@
     </section>
 
     <fieldset id="song-content">
-        <legend id="song-title">Выберите песню</legend>
+        <legend id="song-title">
+            <span class="song-title-text">Выберите песню</span>
+            <button id="edit-song-button" class="icon-button simple legend-button" title="Редактировать песню" style="display: none;">
+                <i class="fas fa-edit"></i>
+            </button>
+        </legend>
         <div class="song-controls">
             <button id="copy-text-button" class="icon-button simple" title="Копировать текст песни" style="display: none;">
                 <i class="far fa-copy"></i>
-            </button>
-            <button id="edit-song-button" class="icon-button simple" title="Редактировать песню" style="display: none;">
-                <i class="fas fa-edit"></i>
             </button>
         </div>
         <pre id="song-display"></pre>

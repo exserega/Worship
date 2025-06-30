@@ -213,7 +213,32 @@ body[data-theme="light"] .theme-icon.moon {
     transition: color 0.3s ease;
     text-align: center; /* Выравнивание по центру */
     margin: 0; /* Убираем лишние отступы */
+    display: flex; /* Flexbox для размещения кнопки */
+    align-items: center; /* Центрируем по вертикали */
+    justify-content: center; /* Центрируем по горизонтали */
+    gap: 10px; /* Отступ между названием и кнопкой */
 }
+
+.song-title-text {
+    /* Стили для текста названия песни */
+    flex: 1; /* Занимает доступное пространство */
+    text-align: center; /* Центрируем текст */
+}
+
+.legend-button {
+    /* Специальные стили для кнопки в legend */
+    width: 28px !important; /* Компактный размер */
+    height: 28px !important;
+    font-size: 0.8rem !important; /* Маленькая иконка */
+    flex-shrink: 0; /* Не сжимается */
+    opacity: 0.8; /* Полупрозрачная */
+    transition: opacity 0.2s ease;
+}
+
+.legend-button:hover {
+    opacity: 1; /* Полностью видимая при наведении */
+}
+
 /* Заголовки секций в панелях (h3) */
 .list-section h3, #repertoire-panel .panel-header {
      text-align: center;

@@ -166,8 +166,9 @@ export function displaySongDetails(songData, keyToSelect) {
     if (!songData) {
         // Обновляем legend и pre, сохраняя fieldset структуру
         const songTitle = songContent.querySelector('#song-title');
+        const songTitleText = songContent.querySelector('.song-title-text');
         const songPre = songContent.querySelector('#song-display');
-        if (songTitle) songTitle.textContent = 'Выберите песню';
+        if (songTitleText) songTitleText.textContent = 'Выберите песню';
         if (songPre) songPre.textContent = '';
         
         playerContainer.innerHTML = '';
@@ -223,13 +224,14 @@ export function displaySongDetails(songData, keyToSelect) {
     
     // Обновляем legend и pre, сохраняя fieldset структуру
     const songTitle = songContent.querySelector('#song-title');
+    const songTitleText = songContent.querySelector('.song-title-text');
     const songPre = songContent.querySelector('#song-display');
     const copyBtn = songContent.querySelector('#copy-text-button');
     const editBtn = songContent.querySelector('#edit-song-button');
     
     // Убираем из заголовка всё что идет после скобок (строчки для поиска)
     const cleanTitle = title.includes('(') ? title.split('(')[0].trim() : title;
-    if (songTitle) songTitle.textContent = cleanTitle;
+    if (songTitleText) songTitleText.textContent = cleanTitle;
     if (songPre) songPre.innerHTML = finalHighlightedLyrics;
     if (copyBtn) {
         copyBtn.style.display = 'block';
