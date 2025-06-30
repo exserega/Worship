@@ -75,6 +75,15 @@ export const repertoireViewKeyBtn = document.getElementById('repertoire-view-key
 export const repertoireViewSheetBtn = document.getElementById('repertoire-view-sheet');
 export const repertoireViewAllBtn = document.getElementById('repertoire-view-all');
 
+// Song Editor elements
+export const editSongButton = document.getElementById('edit-song-button');
+export const songEditor = document.getElementById('song-editor');
+export const songEditTextarea = document.getElementById('song-edit-textarea');
+export const saveEditButton = document.getElementById('save-edit-button');
+export const cancelEditButton = document.getElementById('cancel-edit-button');
+export const revertToOriginalButton = document.getElementById('revert-to-original-button');
+export const editStatusInfo = document.getElementById('edit-status-info');
+
 
 // --- UI GENERAL ---
 
@@ -157,7 +166,7 @@ export function displaySongDetails(songData, keyToSelect) {
     if (!songData) {
         // Обновляем legend и pre, сохраняя fieldset структуру
         const songTitle = songContent.querySelector('#song-title');
-        const songPre = songContent.querySelector('pre');
+        const songPre = songContent.querySelector('#song-display');
         if (songTitle) songTitle.textContent = 'Выберите песню';
         if (songPre) songPre.textContent = '';
         
@@ -174,12 +183,17 @@ export function displaySongDetails(songData, keyToSelect) {
         toggleChordsButton.disabled = true;
         songContent.classList.remove('chords-hidden');
         const copyBtn = songContent.querySelector('#copy-text-button');
+        const editBtn = songContent.querySelector('#edit-song-button');
         if (copyBtn) copyBtn.style.display = 'none';
+        if (editBtn) editBtn.style.display = 'none';
         return;
     }
 
     const title = songData.name || 'Без названия';
-    const originalLyrics = songData['Текст и аккорды'] || '';
+    // 🔥 ПРИОРИТЕТ: Используем отредактированный текст, если есть
+    const originalLyrics = songData.hasWebEdits 
+        ? (songData['Текст и аккорды (edited)'] || '') 
+        : (songData['Текст и аккорды'] || '');
     const originalKeyFromSheet = songData['Оригинальная тональность'] || "C";
     const srcUrl = songData.Holychords || '#';
     const bpm = songData.BPM || 'N/A';
@@ -209,8 +223,9 @@ export function displaySongDetails(songData, keyToSelect) {
     
     // Обновляем legend и pre, сохраняя fieldset структуру
     const songTitle = songContent.querySelector('#song-title');
-    const songPre = songContent.querySelector('pre');
+    const songPre = songContent.querySelector('#song-display');
     const copyBtn = songContent.querySelector('#copy-text-button');
+    const editBtn = songContent.querySelector('#edit-song-button');
     
     // Убираем из заголовка всё что идет после скобок (строчки для поиска)
     const cleanTitle = title.includes('(') ? title.split('(')[0].trim() : title;
@@ -220,6 +235,12 @@ export function displaySongDetails(songData, keyToSelect) {
         copyBtn.style.display = 'block';
         positionCopyButton(); // Позиционируем кнопку относительно #song-content
     }
+    if (editBtn) {
+        editBtn.style.display = 'block';
+    }
+    
+    // Обновляем статус редактирования
+    updateEditStatus(songData);
     
     updateFontSize();
     songContent.classList.toggle('chords-hidden', !state.areChordsVisible);
@@ -853,7 +874,7 @@ let originalPresentationContentHTML = null;
 /** Удаляет пустые строки после скрытия аккордов */
 function removeEmptyLinesAfterChordHiding() {
     // Сохраняем оригинальный HTML основного контента
-    const mainPre = songContent.querySelector('pre');
+    const mainPre = songContent.querySelector('#song-display');
     if (mainPre && !originalMainContentHTML) {
         originalMainContentHTML = mainPre.innerHTML;
     }
@@ -912,7 +933,7 @@ function processElementTextContent(element) {
 /** Восстанавливает оригинальный HTML при показе аккордов */
 function restoreOriginalHTML() {
     // Восстанавливаем основной контент
-    const mainPre = songContent.querySelector('pre');
+    const mainPre = songContent.querySelector('#song-display');
     if (mainPre && originalMainContentHTML) {
         mainPre.innerHTML = originalMainContentHTML;
         originalMainContentHTML = null;
@@ -924,6 +945,84 @@ function restoreOriginalHTML() {
         presentationPre.innerHTML = originalPresentationContentHTML;
         originalPresentationContentHTML = null;
     }
+}
+
+// --- SONG EDITOR FUNCTIONS ---
+
+/** Обновляет статус редактирования песни */
+export function updateEditStatus(songData) {
+    if (!songData || !editStatusInfo) return;
+    
+    if (songData.hasWebEdits) {
+        const editDate = songData.lastEditedInApp?.toDate ? 
+            songData.lastEditedInApp.toDate().toLocaleDateString() : 
+            'недавно';
+        editStatusInfo.textContent = `✏️ Отредактировано ${editDate}`;
+        editStatusInfo.style.color = 'var(--accent-color)';
+        if (revertToOriginalButton) revertToOriginalButton.style.display = 'inline-block';
+    } else {
+        editStatusInfo.textContent = '📄 Оригинал из Google Таблицы';
+        editStatusInfo.style.color = 'var(--label-color)';
+        if (revertToOriginalButton) revertToOriginalButton.style.display = 'none';
+    }
+}
+
+/** Открывает редактор песни */
+export function openSongEditor(songData) {
+    if (!songData || !songEditor || !songEditTextarea) return;
+    
+    // Получаем текущий текст (отредактированный или оригинальный)
+    const currentText = songData.hasWebEdits 
+        ? (songData['Текст и аккорды (edited)'] || '') 
+        : (songData['Текст и аккорды'] || '');
+    
+    // Если это структурированные данные из Firebase, преобразуем в текст
+    const textToEdit = Array.isArray(currentText) 
+        ? convertStructuredToText(currentText)
+        : currentText;
+    
+    songEditTextarea.value = textToEdit;
+    
+    // Показываем редактор, скрываем отображение
+    songEditor.style.display = 'block';
+    document.querySelector('#song-display').style.display = 'none';
+    
+    // Фокус на textarea
+    setTimeout(() => songEditTextarea.focus(), 100);
+    
+    console.log('📝 Редактор открыт для песни:', songData.name);
+}
+
+/** Закрывает редактор песни */
+export function closeSongEditor() {
+    if (!songEditor) return;
+    
+    songEditor.style.display = 'none';
+    document.querySelector('#song-display').style.display = 'block';
+    
+    console.log('❌ Редактор закрыт');
+}
+
+/** Конвертирует структурированные данные Firebase в текст для редактирования */
+function convertStructuredToText(structuredData) {
+    if (!Array.isArray(structuredData)) return '';
+    
+    return structuredData.map(item => {
+        if (item.chords && item.lyrics) {
+            return item.chords + '\n' + item.lyrics;
+        } else if (item.lyrics) {
+            return item.lyrics;
+        } else if (item.chords) {
+            return item.chords;
+        }
+        return '';
+    }).join('\n');
+}
+
+/** Получает текущую выбранную песню */
+export function getCurrentSongData() {
+    const songId = songSelect.value;
+    return songId ? state.allSongs.find(s => s.id === songId) : null;
 }
 
 

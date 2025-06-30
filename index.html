@@ -92,10 +92,32 @@
 
     <fieldset id="song-content">
         <legend id="song-title">Выберите песню</legend>
-        <button id="copy-text-button" class="icon-button simple" title="Копировать текст песни" style="display: none;">
-            <i class="far fa-copy"></i>
-        </button>
-        <pre></pre>
+        <div class="song-controls">
+            <button id="copy-text-button" class="icon-button simple" title="Копировать текст песни" style="display: none;">
+                <i class="far fa-copy"></i>
+            </button>
+            <button id="edit-song-button" class="icon-button simple" title="Редактировать песню" style="display: none;">
+                <i class="fas fa-edit"></i>
+            </button>
+        </div>
+        <pre id="song-display"></pre>
+        <div id="song-editor" class="song-editor" style="display: none;">
+            <div class="editor-info">
+                <span id="edit-status-info"></span>
+            </div>
+            <textarea id="song-edit-textarea" class="song-edit-textarea" placeholder="Введите текст песни с аккордами..."></textarea>
+            <div class="editor-controls">
+                <button id="save-edit-button" class="editor-button save">
+                    <i class="fas fa-save"></i> Сохранить
+                </button>
+                <button id="cancel-edit-button" class="editor-button cancel">
+                    <i class="fas fa-times"></i> Отменить
+                </button>
+                <button id="revert-to-original-button" class="editor-button revert" style="display: none;">
+                    <i class="fas fa-undo"></i> Вернуть оригинал
+                </button>
+            </div>
+        </div>
     </fieldset>
 
     <div class="control-buttons">

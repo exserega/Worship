@@ -290,7 +290,7 @@ function setupEventListeners() {
                 finalHtml = core.distributeSongBlocksToColumns(finalHtml);
             }
             
-            const preElement = ui.songContent.querySelector('pre');
+            const preElement = ui.songContent.querySelector('#song-display');
             const h2Element = ui.songContent.querySelector('h2');
             if (preElement) preElement.innerHTML = finalHtml;
             if (h2Element) h2Element.textContent = `${title} — ${newKey}`;
@@ -326,7 +326,7 @@ function setupEventListeners() {
     });
 
     ui.splitTextButton.addEventListener('click', () => {
-        const lyricsElement = ui.songContent.querySelector('pre');
+        const lyricsElement = ui.songContent.querySelector('#song-display');
         if (lyricsElement && lyricsElement.textContent?.trim()) {
             // Переключаем класс двухколоночного режима
             ui.songContent.classList.toggle('split-columns');
@@ -521,6 +521,80 @@ function setupEventListeners() {
     // --- Сет-листы ---
     ui.createSetlistButton.addEventListener('click', handleCreateSetlist);
 
+    // --- Редактор песен ---
+    ui.editSongButton.addEventListener('click', () => {
+        const songData = ui.getCurrentSongData();
+        if (songData) {
+            ui.openSongEditor(songData);
+        }
+    });
+
+    ui.saveEditButton.addEventListener('click', async () => {
+        const songData = ui.getCurrentSongData();
+        const newContent = ui.songEditTextarea.value.trim();
+        
+        if (!songData || !newContent) {
+            alert('Выберите песню и введите текст');
+            return;
+        }
+        
+        try {
+            await api.saveSongEdit(songData.id, newContent);
+            
+            // Обновляем данные песни в локальном состоянии
+            songData['Текст и аккорды (edited)'] = newContent;
+            songData.hasWebEdits = true;
+            songData.lastEditedInApp = new Date();
+            
+            // Перерендериваем песню
+            const currentKey = ui.keySelect.value;
+            ui.displaySongDetails(songData, currentKey);
+            ui.closeSongEditor();
+            
+            alert('✅ Песня успешно сохранена!');
+        } catch (error) {
+            console.error('Ошибка сохранения:', error);
+            alert('❌ Ошибка сохранения: ' + error.message);
+        }
+    });
+
+    ui.cancelEditButton.addEventListener('click', () => {
+        ui.closeSongEditor();
+    });
+
+    ui.revertToOriginalButton.addEventListener('click', async () => {
+        const songData = ui.getCurrentSongData();
+        
+        if (!songData) {
+            alert('Выберите песню');
+            return;
+        }
+        
+        if (!confirm(`Вы уверены, что хотите вернуть песню "${songData.name}" к оригинальному тексту из Google Таблицы? Все ваши изменения будут потеряны.`)) {
+            return;
+        }
+        
+        try {
+            await api.revertToOriginal(songData.id);
+            
+            // Обновляем данные песни в локальном состоянии
+            delete songData['Текст и аккорды (edited)'];
+            songData.hasWebEdits = false;
+            delete songData.lastEditedInApp;
+            delete songData.editedBy;
+            
+            // Перерендериваем песню
+            const currentKey = ui.keySelect.value;
+            ui.displaySongDetails(songData, currentKey);
+            ui.closeSongEditor();
+            
+            alert('🔄 Песня возвращена к оригиналу');
+        } catch (error) {
+            console.error('Ошибка отката:', error);
+            alert('❌ Ошибка отката: ' + error.message);
+        }
+    });
+
     // --- Централизованная обработка кликов ---
     document.addEventListener('click', (e) => {
         // Очистка результатов поиска при клике вне поля поиска
@@ -530,7 +604,7 @@ function setupEventListeners() {
         
         // Клик по аккорду в тексте песни для быстрой смены тональности
         // НЕ работает в режиме "только аккорды"
-        if (e.target.closest('#song-content pre') && !state.isChordsOnlyMode) {
+        if (e.target.closest('#song-content #song-display') && !state.isChordsOnlyMode) {
             const chordEl = e.target.closest('.chord');
             if (chordEl) {
                 ui.keySelect.value = chordEl.textContent;
@@ -540,7 +614,7 @@ function setupEventListeners() {
         
         // Кнопка копирования текста
         if(e.target.closest('#copy-text-button')) {
-            const preElement = ui.songContent.querySelector('pre');
+            const preElement = ui.songContent.querySelector('#song-display');
             if (preElement) {
                 navigator.clipboard.writeText(preElement.innerText).then(() => {
                     const copyButton = e.target.closest('#copy-text-button');

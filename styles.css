@@ -1237,6 +1237,127 @@ body[data-theme="light"] #copy-text-button.copied {
      color: white !important;
 }
 
+/* --- SONG EDITOR STYLES --- */
+
+.song-controls {
+    position: absolute;
+    top: -15px;
+    right: 10px;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.song-editor {
+    background: var(--container-background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.editor-info {
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.song-edit-textarea {
+    width: 100%;
+    min-height: 400px;
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--background-color);
+    color: var(--text-color);
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.song-edit-textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 20%, transparent);
+}
+
+.editor-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.editor-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.editor-button:hover {
+    transform: translateY(-1px);
+}
+
+.editor-button.save {
+    background: var(--accent-color);
+    color: white;
+}
+
+.editor-button.save:hover {
+    background: color-mix(in srgb, var(--accent-color) 85%, black);
+}
+
+.editor-button.cancel {
+    background: var(--border-color);
+    color: var(--text-color);
+}
+
+.editor-button.cancel:hover {
+    background: color-mix(in srgb, var(--border-color) 80%, black);
+}
+
+.editor-button.revert {
+    background: #e74c3c;
+    color: white;
+}
+
+.editor-button.revert:hover {
+    background: #c0392b;
+}
+
+/* Мобильные стили для редактора */
+@media (max-width: 768px) {
+    .song-controls {
+        position: static;
+        margin-bottom: 10px;
+        justify-content: flex-end;
+    }
+    
+    .song-edit-textarea {
+        min-height: 300px;
+        font-size: 16px; /* Предотвращает зум на iOS */
+    }
+    
+    .editor-controls {
+        flex-direction: column;
+    }
+    
+    .editor-button {
+        justify-content: center;
+        padding: 12px 16px;
+    }
+}
+
 
 /* Стили для маркеров структуры песни (Куплет, Припев и т.д.) */
 .song-structure {
