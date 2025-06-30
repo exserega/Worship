@@ -1136,9 +1136,9 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 
 /* --- Кнопка Копировать текст --- */
 #copy-text-button {
-    position: absolute; /* Абсолютное позиционирование */
-    top: -12px;         /* Поднял еще на 4px вверх (-8px - 4px = -12px) */
-    right: 1px;         /* Сдвинул на 1px вправо (2px - 1px = 1px) */
+    position: fixed;    /* ФИКСИРОВАННОЕ позиционирование относительно экрана */
+    top: auto;          /* Будем вычислять позицию динамически через JS */
+    right: auto;        /* Будем вычислять позицию динамически через JS */
     z-index: 9999;      /* МАКСИМАЛЬНЫЙ z-index чтобы быть поверх всего */
     width: 28px;        /* Компактный размер */
     height: 28px;
@@ -1922,13 +1922,11 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
          /* Кнопка Копировать на мобильных */
      #copy-text-button {
-         top: -13px;     /* Поднял еще на 4px вверх (-9px - 4px = -13px) */
-         right: 0px;     /* Сдвинул на 1px вправо (1px - 1px = 0px) */
+         /* Позиция будет устанавливаться через JS и на мобильных */
          width: 26px;    /* Еще компактнее на мобильных */
          height: 26px;
          font-size: 0.75rem;
          opacity: 0.9;   /* Максимально видимая на мобильных */
-         z-index: 9999;  /* МАКСИМАЛЬНЫЙ z-index на мобильных тоже */
          /* Убираем границы на мобильных тоже */
          background: transparent !important;
          border: none !important;
