@@ -1140,18 +1140,18 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 }
 #toggle-chords-button i {
     margin-right: 6px; /* Отступ иконки от текста */
-    font-size: 0.9em;
+    font-size: 1em; /* Увеличиваем для единообразия с иконкой T */
     position: relative;
 }
 
-/* Перечеркивание ВСЕЙ КНОПКИ от угла до угла */
+/* Перечеркивание кнопки скрытия аккордов - НЕ от угла до угла */
 #toggle-chords-button::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 25%; /* Начинаем не с самого верха */
+    left: 10%; /* Начинаем не с самого левого края */
+    width: 80%; /* Не на всю ширину */
+    height: 50%; /* Не на всю высоту */
     background: linear-gradient(to top right, transparent 48.5%, currentColor 48.5%, currentColor 51.5%, transparent 51.5%);
     z-index: 1;
     pointer-events: none;
@@ -1177,8 +1177,8 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 }
 #chords-only-button .text-icon {
     margin-right: 6px; /* Отступ иконки от текста */
-    font-size: 0.9em;
-    font-weight: 600;
+    font-size: 1em; /* Увеличиваем до размера иконки гитары */
+    font-weight: 700; /* Делаем чуть жирнее для лучшей видимости */
     position: relative;
 }
 
@@ -1186,10 +1186,10 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 #chords-only-button::after {
     content: '';
     position: absolute;
-    top: 30%; /* Начинаем не с самого верха */
-    left: 15%; /* Начинаем не с самого левого края */
-    width: 70%; /* Не на всю ширину */
-    height: 40%; /* Не на всю высоту */
+    top: 25%; /* Синхронизируем с кнопкой скрытия аккордов */
+    left: 10%; /* Синхронизируем с кнопкой скрытия аккордов */
+    width: 80%; /* Синхронизируем с кнопкой скрытия аккордов */
+    height: 50%; /* Синхронизируем с кнопкой скрытия аккордов */
     background: linear-gradient(to top right, transparent 48.5%, currentColor 48.5%, currentColor 51.5%, transparent 51.5%);
     z-index: 1;
     pointer-events: none;
@@ -1967,18 +1967,18 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
      #toggle-chords-button i {
         margin-right: 0; /* Убираем отступ иконки */
-        font-size: 0.9rem;
+        font-size: 1rem; /* Синхронизируем размер с десктопом */
         position: relative;
     }
     
-    /* Перечеркивание всей кнопки на мобильных */
+    /* Перечеркивание кнопки скрытия аккордов на мобильных */
     #toggle-chords-button::after {
         content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        top: 25%; /* Синхронизируем с десктопом */
+        left: 10%; /* Синхронизируем с десктопом */
+        width: 80%; /* Синхронизируем с десктопом */
+        height: 50%; /* Синхронизируем с десктопом */
         background: linear-gradient(to top right, transparent 48.5%, currentColor 48.5%, currentColor 51.5%, transparent 51.5%);
         z-index: 1;
         pointer-events: none;
@@ -2004,8 +2004,8 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     #chords-only-button .text-icon {
         margin-right: 0; /* Убираем отступ иконки */
-        font-size: 0.9rem;
-        font-weight: 600;
+        font-size: 1rem; /* Синхронизируем размер с десктопом */
+        font-weight: 700; /* Синхронизируем вес с десктопом */
         position: relative;
     }
     
@@ -2013,10 +2013,10 @@ body[data-theme="light"] .repertoire-view-button.active {
     #chords-only-button::after {
         content: '';
         position: absolute;
-        top: 30%; /* Начинаем не с самого верха */
-        left: 15%; /* Начинаем не с самого левого края */
-        width: 70%; /* Не на всю ширину */
-        height: 40%; /* Не на всю высоту */
+        top: 25%; /* Синхронизируем с десктопом и кнопкой скрытия аккордов */
+        left: 10%; /* Синхронизируем с десктопом и кнопкой скрытия аккордов */
+        width: 80%; /* Синхронизируем с десктопом и кнопкой скрытия аккордов */
+        height: 50%; /* Синхронизируем с десктопом и кнопкой скрытия аккордов */
         background: linear-gradient(to top right, transparent 48.5%, currentColor 48.5%, currentColor 51.5%, transparent 51.5%);
         z-index: 1;
         pointer-events: none;
