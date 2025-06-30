@@ -1021,9 +1021,9 @@ export function getCurrentSongData() {
     const songSelect = document.getElementById('song-select');
     if (!songSelect || !songSelect.value) return null;
     
-    // Находим песню в глобальном состоянии
+    // Находим песню в состоянии приложения
     const songId = songSelect.value;
-    return window.allSongs ? window.allSongs.find(s => s.id === songId) : null;
+    return state.allSongs.find(s => s.id === songId) || null;
 }
 
 

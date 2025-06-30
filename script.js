@@ -568,9 +568,14 @@ function setupEventListeners() {
 
     // --- Редактор песен ---
     ui.editSongButton.addEventListener('click', () => {
+        console.log('Кнопка редактирования нажата');
         const songData = ui.getCurrentSongData();
+        console.log('Данные песни:', songData);
         if (songData) {
+            console.log('Открываем редактор для песни:', songData.name);
             ui.openSongEditor(songData);
+        } else {
+            console.log('Данные песни не найдены');
         }
     });
 
@@ -592,7 +597,7 @@ function setupEventListeners() {
             songData.lastEditedInApp = new Date();
             
             // Обновляем отображение песни
-            displaySongDetails(songData);
+            ui.displaySongDetails(songData);
             
             // Закрываем редактор
             ui.closeSongEditor();
@@ -646,7 +651,7 @@ function setupEventListeners() {
             delete songData.editedBy;
             
             // Обновляем отображение
-            displaySongDetails(songData);
+            ui.displaySongDetails(songData);
             
             // Закрываем редактор
             ui.closeSongEditor();
