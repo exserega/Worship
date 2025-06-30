@@ -930,45 +930,54 @@ function getMetronomeState() {
     };
 }
 
-/** ОТКЛЮЧЕНО: Сохраняем строгий порядок блоков как в оригинальном тексте */
+/** Правильное распределение блоков по колонкам С СОХРАНЕНИЕМ ПОРЯДКА */
 function distributeSongBlocksToColumns(processedHTML) {
-    // ПРОСТОЕ РЕШЕНИЕ: возвращаем HTML как есть, без перестановок
-    return processedHTML;
-    
-    // СТАРАЯ ЛОГИКА ЗАКОММЕНТИРОВАНА - она нарушала порядок блоков
-    /*
     if (!processedHTML) return processedHTML;
     
     // Создаем временный элемент для парсинга HTML
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = processedHTML;
     
-    // Теперь все должно быть уже в блоках, просто находим все fieldset элементы
+    // Находим все fieldset элементы (блоки песни)
     const blocks = Array.from(tempDiv.querySelectorAll('.song-block'));
     
     if (blocks.length <= 1) {
-        return processedHTML; // Нет смысла делить
+        return processedHTML; // Нет смысла делить одну песню
     }
     
-    // Простое последовательное распределение по колонкам
+    // ПОСЛЕДОВАТЕЛЬНОЕ распределение: первый блок в левую колонку, второй в правую, третий опять в левую и т.д.
     const column1 = [];
     const column2 = [];
     
     blocks.forEach((block, index) => {
         const html = block.outerHTML;
         if (index % 2 === 0) {
+            // Четные индексы (0, 2, 4...) идут в левую колонку
             column1.push(html);
         } else {
+            // Нечетные индексы (1, 3, 5...) идут в правую колонку
             column2.push(html);
         }
     });
     
+    // Также собираем весь текст, который НЕ в блоках (если есть)
+    const nonBlockContent = Array.from(tempDiv.childNodes).filter(node => {
+        return node.nodeType === Node.TEXT_NODE || 
+               (node.nodeType === Node.ELEMENT_NODE && !node.classList.contains('song-block'));
+    });
+    
+    let additionalContent = '';
+    if (nonBlockContent.length > 0) {
+        additionalContent = nonBlockContent.map(node => 
+            node.nodeType === Node.TEXT_NODE ? node.textContent : node.outerHTML
+        ).join('');
+    }
+    
     // Создаем HTML для двух колонок
-    const column1HTML = `<div class="column-1">${column1.join('\n')}</div>`;
+    const column1HTML = `<div class="column-1">${additionalContent}${column1.join('\n')}</div>`;
     const column2HTML = `<div class="column-2">${column2.join('\n')}</div>`;
     
     return column1HTML + column2HTML;
-    */
 }
 
 export {
