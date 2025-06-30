@@ -682,13 +682,31 @@ function wrapSongBlocks(lyrics) {
         if (result.includes('Chorus"')) {
             console.log('  НАЙДЕН ИСТОЧНИК АРТЕФАКТА в wrapSongBlocks!');
             const index = result.indexOf('Chorus"');
-            console.log('  Фрагмент с артефактом:', result.substring(Math.max(0, index - 100), index + 100));
+            console.log('  Позиция артефакта:', index);
+            console.log('  Длина результата:', result.length);
+            console.log('  Фрагмент с артефактом (расширенный):', result.substring(Math.max(0, index - 200), index + 200));
+            
+            // Найдем все вхождения 'Chorus"'
+            let searchIndex = 0;
+            const allIndexes = [];
+            while (searchIndex < result.length) {
+                const foundIndex = result.indexOf('Chorus"', searchIndex);
+                if (foundIndex === -1) break;
+                allIndexes.push(foundIndex);
+                searchIndex = foundIndex + 1;
+            }
+            console.log('  Все позиции "Chorus"":', allIndexes);
             
             // Проверим каждый блок отдельно
             htmlBlocks.forEach((blockHTML, i) => {
                 if (blockHTML.includes('Chorus"')) {
                     console.log(`  БЛОК ${i} содержит артефакт:`, blocks[i]);
                     console.log(`  HTML блока ${i}:`, blockHTML);
+                    
+                    // Найдем позицию артефакта в этом блоке
+                    const blockIndex = blockHTML.indexOf('Chorus"');
+                    console.log(`  Позиция в блоке ${i}:`, blockIndex);
+                    console.log(`  Фрагмент блока с артефактом:`, blockHTML.substring(Math.max(0, blockIndex - 50), blockIndex + 50));
                 }
             });
         }
