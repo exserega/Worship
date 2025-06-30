@@ -794,7 +794,7 @@ export function positionCopyButton() {
     
     // Позиционируем кнопку в правом верхнем углу контейнера с отступом
     copyBtn.style.left = `${rect.right - 30}px`; // 30px слева от правого края
-    copyBtn.style.top = `${rect.top - 12}px`;    // 12px выше верхнего края
+    copyBtn.style.top = `${rect.top}px`;         // На уровне верхнего края (было -12px)
 }
 
 // Обновляем позицию при изменении размера окна и прокрутке

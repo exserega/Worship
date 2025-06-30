@@ -1237,14 +1237,14 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
     width: 28px;        /* Компактный размер */
     height: 28px;
     font-size: 0.8rem;  /* Компактная иконка */
-    /* Убираем границы - только значок */
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
+    /* Добавляем границу */
+    background: var(--container-background-color) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
     opacity: 0.8; /* Хорошо видимая */
-    transition: opacity 0.2s ease, color 0.2s ease;
+    transition: opacity 0.2s ease, color 0.2s ease, border-color 0.2s ease;
     display: none; /* По умолчанию скрыта, пока не выбрана песня */
-    transform: translate(1px, 22px); /* Сдвигаем кнопку на 1px вправо и 22px вниз */
+    transform: translate(1px, 34px); /* Сдвигаем кнопку на 1px вправо и 34px вниз (было 22px) */
 }
 #copy-text-button:hover {
     opacity: 1; /* Полностью видимая при наведении */
@@ -2181,10 +2181,10 @@ body[data-theme="light"] .repertoire-view-button.active {
          height: 26px;
          font-size: 0.75rem;
          opacity: 0.9;   /* Максимально видимая на мобильных */
-         /* Убираем границы на мобильных тоже */
-         background: transparent !important;
-         border: none !important;
-         box-shadow: none !important;
+         /* Добавляем границу на мобильных */
+         background: var(--container-background-color) !important;
+         border: 1px solid var(--border-color) !important;
+         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
      }
      /* --- Конец мобильных стилей для новых кнопок --- */
 
