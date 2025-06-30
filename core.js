@@ -246,6 +246,21 @@ function detectExplicitMarkers(line, context) {
     // СТРОГАЯ проверка: строка должна быть ТОЛЬКО маркером или почти только маркером
     if (trimmed.length > 40) return null; // Увеличиваем лимит для сложных случаев
     
+    // ДОПОЛНИТЕЛЬНАЯ ЗАЩИТА: если строка содержит много текста, это не заголовок
+    const words = trimmed.split(/\s+/);
+    if (words.length > 6) return null; // Заголовки обычно короткие
+    
+    // ЗАЩИТА ОТ ОБЫЧНОГО ТЕКСТА: если есть знаки препинания в середине, это не заголовок
+    if (/[,;!?]\s+\w/.test(trimmed)) return null;
+    
+    // ВРЕМЕННАЯ ОТЛАДКА для проблемных строк
+    if (trimmed.includes('Пусть звучит') || trimmed.includes('Петь всей')) {
+        console.log('ОТЛАДКА проблемной строки:', trimmed);
+        console.log('  Длина:', trimmed.length);
+        console.log('  Слов:', words.length);
+        console.log('  Знаки препинания:', /[,;!?]\s+\w/.test(trimmed));
+    }
+    
     let bestMatch = null;
     let highestConfidence = 0;
     
@@ -393,21 +408,8 @@ function detectExplicitMarkers(line, context) {
             }
         }
         
-        // Проверяем изученные термины - только если они короткие
-        for (const [learnedTerm, blockType] of songParserData.learnedTerms) {
-            if (learnedTerm.length < 30) {
-                // Экранируем специальные символы в изученном термине для регулярного выражения
-                const escapedLearnedTerm = learnedTerm.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-                const regex = new RegExp(`^(\\d+\\s*)?(${escapedLearnedTerm})(\\s*\\d*)?\\s*[:.]?\\s*$`, 'i');
-                if (regex.test(trimmed)) {
-                    const confidence = 0.92;
-                    if (confidence > highestConfidence) {
-                        highestConfidence = confidence;
-                        bestMatch = { type: blockType, confidence, method: 'learned', term: learnedTerm };
-                    }
-                }
-            }
-        }
+        // ОТКЛЮЧЕНО: изученные термины создают ложные срабатывания
+        // Используем только явные маркеры из словаря
     }
     
     
@@ -434,12 +436,13 @@ function detectStructuralPatterns(lines, lineIndex, context) {
         results.push({ type: 'unknown', confidence: 0.7, method: 'structural_bracketed' });
     }
     
+    // ОТКЛЮЧЕНО: слишком много ложных срабатываний
     // Паттерн: строка в верхнем регистре И очень короткая И изолированная
-    if (trimmed === trimmed.toUpperCase() && trimmed.length < 15 && trimmed.length > 2 &&
-        lineIndex > 0 && !lines[lineIndex - 1].trim() &&
-        lineIndex < lines.length - 1 && !lines[lineIndex + 1].trim()) {
-        results.push({ type: 'unknown', confidence: 0.6, method: 'structural_uppercase' });
-    }
+    // if (trimmed === trimmed.toUpperCase() && trimmed.length < 15 && trimmed.length > 2 &&
+    //     lineIndex > 0 && !lines[lineIndex - 1].trim() &&
+    //     lineIndex < lines.length - 1 && !lines[lineIndex + 1].trim()) {
+    //     results.push({ type: 'unknown', confidence: 0.6, method: 'structural_uppercase' });
+    // }
     
     return results.length > 0 ? results.reduce((best, curr) => 
         curr.confidence > best.confidence ? curr : best
@@ -502,11 +505,18 @@ function intelligentBlockDetection(lines, lineIndex, context) {
 function wrapSongBlocks(lyrics) {
     if (!lyrics) return '';
     
-    // ВРЕМЕННО: сбрасываем данные обучения для исправления проблем
+    // ОЧИЩАЕМ данные обучения для исправления проблем с ложными срабатываниями
     songParserData.learnedTerms.clear();
     songParserData.patternHistory.clear();
     songParserData.userCorrections.clear();
     songParserData.confidence.clear();
+    
+    // Также очищаем localStorage
+    try {
+        localStorage.removeItem('songParserData');
+    } catch (e) {
+        console.warn('Could not clear localStorage:', e);
+    }
     
     // Инициализируем данные обучения
     initializeParserData();
@@ -530,7 +540,7 @@ function wrapSongBlocks(lyrics) {
         // Интеллектуальное распознавание
         const detection = intelligentBlockDetection(lines, i, context);
         
-        if (detection && detection.confidence > 0.8) {
+        if (detection && detection.confidence > 0.92) {
             // Найден новый блок
             if (currentBlock.content.length > 0) {
                 // Сохраняем предыдущий блок
@@ -548,10 +558,10 @@ function wrapSongBlocks(lyrics) {
             
             
             
-            // Обучение: запоминаем успешное распознавание
-            if (detection.confidence > 0.7) {
-                songParserData.learnedTerms.set(trimmed.toLowerCase(), detection.type);
-            }
+            // ОТКЛЮЧЕНО: не изучаем новые термины для предотвращения ложных срабатываний
+            // if (detection.confidence > 0.7) {
+            //     songParserData.learnedTerms.set(trimmed.toLowerCase(), detection.type);
+            // }
         } else {
             // Добавляем строку в текущий блок
             currentBlock.content.push(line);
