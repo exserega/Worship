@@ -253,13 +253,7 @@ function detectExplicitMarkers(line, context) {
     // ЗАЩИТА ОТ ОБЫЧНОГО ТЕКСТА: если есть знаки препинания в середине, это не заголовок
     if (/[,;!?]\s+\w/.test(trimmed)) return null;
     
-    // ВРЕМЕННАЯ ОТЛАДКА для проблемных строк
-    if (trimmed.includes('Пусть звучит') || trimmed.includes('Петь всей')) {
-        console.log('ОТЛАДКА проблемной строки:', trimmed);
-        console.log('  Длина:', trimmed.length);
-        console.log('  Слов:', words.length);
-        console.log('  Знаки препинания:', /[,;!?]\s+\w/.test(trimmed));
-    }
+
     
     let bestMatch = null;
     let highestConfidence = 0;
@@ -936,8 +930,13 @@ function getMetronomeState() {
     };
 }
 
-/** Упрощенное распределение блоков по двум колонкам с сохранением порядка */
+/** ОТКЛЮЧЕНО: Сохраняем строгий порядок блоков как в оригинальном тексте */
 function distributeSongBlocksToColumns(processedHTML) {
+    // ПРОСТОЕ РЕШЕНИЕ: возвращаем HTML как есть, без перестановок
+    return processedHTML;
+    
+    // СТАРАЯ ЛОГИКА ЗАКОММЕНТИРОВАНА - она нарушала порядок блоков
+    /*
     if (!processedHTML) return processedHTML;
     
     // Создаем временный элемент для парсинга HTML
@@ -951,64 +950,25 @@ function distributeSongBlocksToColumns(processedHTML) {
         return processedHTML; // Нет смысла делить
     }
     
-    // Оцениваем "вес" каждого блока для умного распределения
-    const blocksWithWeight = blocks.map((block, originalIndex) => {
-        const content = block.textContent || '';
-        const lines = content.split('\n').filter(line => line.trim()).length;
-        const hasLegend = block.querySelector('.song-block-legend') !== null;
-        
-        // Базовый вес = количество строк + бонус за legend (заголовок блока)
-        const weight = lines + (hasLegend ? 1 : 0);
-        
-        return {
-            element: block,
-            html: block.outerHTML,
-            weight: weight,
-            originalIndex: originalIndex // Сохраняем исходный порядок
-        };
-    });
-    
-    // СОХРАНЯЕМ ПОРЯДОК! Распределяем последовательно с учетом веса
+    // Простое последовательное распределение по колонкам
     const column1 = [];
     const column2 = [];
-    let weight1 = 0;
-    let weight2 = 0;
     
-    blocksWithWeight.forEach(item => {
-        // Добавляем в колонку с меньшим весом, НО сохраняем порядок
-        if (weight1 <= weight2) {
-            column1.push(item.html);
-            weight1 += item.weight;
+    blocks.forEach((block, index) => {
+        const html = block.outerHTML;
+        if (index % 2 === 0) {
+            column1.push(html);
         } else {
-            column2.push(item.html);
-            weight2 += item.weight;
+            column2.push(html);
         }
     });
-    
-    // Если дисбаланс слишком большой, используем простое чередование
-    const weightDiff = Math.abs(weight1 - weight2);
-    const totalWeight = weight1 + weight2;
-    
-    if (totalWeight > 0 && weightDiff > totalWeight * 0.4) {
-        // Простое чередование с сохранением порядка
-        column1.length = 0;
-        column2.length = 0;
-        
-        blocks.forEach((block, index) => {
-            const html = block.outerHTML;
-            if (index % 2 === 0) {
-                column1.push(html);
-            } else {
-                column2.push(html);
-            }
-        });
-    }
     
     // Создаем HTML для двух колонок
     const column1HTML = `<div class="column-1">${column1.join('\n')}</div>`;
     const column2HTML = `<div class="column-2">${column2.join('\n')}</div>`;
     
     return column1HTML + column2HTML;
+    */
 }
 
 export {
