@@ -1292,6 +1292,7 @@ body[data-theme="light"] #copy-text-button.copied {
 .song-edit-textarea {
     width: 100%;
     min-height: 400px;
+    max-height: 70vh; /* Ограничиваем максимальную высоту */
     padding: 15px;
     border: 1px solid var(--border-color);
     border-radius: 6px;
@@ -1302,6 +1303,40 @@ body[data-theme="light"] #copy-text-button.copied {
     line-height: 1.5;
     resize: vertical;
     box-sizing: border-box;
+    
+    /* Улучшенная прокрутка */
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    
+    /* Поддержка свайпов на мобильных */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    
+    /* Кастомный скроллбар */
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) var(--border-color);
+}
+
+/* Кастомный скроллбар для WebKit браузеров */
+.song-edit-textarea::-webkit-scrollbar {
+    width: 8px;
+}
+
+.song-edit-textarea::-webkit-scrollbar-track {
+    background: var(--border-color);
+    border-radius: 4px;
+    margin: 2px 0;
+}
+
+.song-edit-textarea::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.song-edit-textarea::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, var(--primary-color) 80%, black);
 }
 
 .song-edit-textarea:focus {
@@ -2561,5 +2596,117 @@ body[data-theme="light"] .repertoire-view-button.active {
     #presentation-content.split-columns .column-1,
     #presentation-content.split-columns .column-2 {
         gap: 8px;
+    }
+}
+
+/* Мобильные стили для редактора */
+@media (max-width: 768px) {
+    .song-controls {
+        position: static;
+        margin-bottom: 10px;
+        justify-content: flex-end;
+    }
+    
+    .song-editor {
+        margin-top: 8px;
+        padding: 12px;
+    }
+    
+    .song-edit-textarea {
+        min-height: 300px;
+        max-height: 60vh; /* Меньше на мобильных */
+        font-size: 16px; /* Предотвращает зум на iOS */
+        padding: 12px;
+        
+        /* Улучшенная поддержка свайпов на мобильных */
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        
+        /* Кастомный скроллбар для мобильных */
+        scrollbar-width: thin;
+        scrollbar-color: var(--primary-color) var(--border-color);
+    }
+    
+    /* Кастомный скроллбар для мобильных WebKit */
+    .song-edit-textarea::-webkit-scrollbar {
+        width: 6px; /* Тоньше на мобильных */
+    }
+    
+    .song-edit-textarea::-webkit-scrollbar-track {
+        background: var(--border-color);
+        border-radius: 3px;
+        margin: 1px 0;
+    }
+    
+    .song-edit-textarea::-webkit-scrollbar-thumb {
+        background: var(--primary-color);
+        border-radius: 3px;
+    }
+    
+    .editor-controls {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .editor-button {
+        justify-content: center;
+        padding: 12px 16px;
+        font-size: 1rem; /* Увеличиваем для лучшего касания */
+    }
+}
+
+/* Дополнительные стили для очень маленьких экранов */
+@media (max-width: 480px) {
+    .song-editor {
+        margin-top: 5px;
+        padding: 8px;
+    }
+    
+    .song-edit-textarea {
+        min-height: 250px;
+        max-height: 50vh; /* Еще меньше на очень маленьких экранах */
+        font-size: 16px; /* Предотвращает зум на iOS */
+        padding: 10px;
+        line-height: 1.4; /* Немного уменьшаем для экономии места */
+        
+        /* Максимальная поддержка свайпов */
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        scroll-behavior: smooth;
+    }
+    
+    /* Еще более тонкий скроллбар для очень маленьких экранов */
+    .song-edit-textarea::-webkit-scrollbar {
+        width: 4px;
+    }
+    
+    .song-edit-textarea::-webkit-scrollbar-track {
+        background: var(--border-color);
+        border-radius: 2px;
+        margin: 1px 0;
+    }
+    
+    .song-edit-textarea::-webkit-scrollbar-thumb {
+        background: var(--primary-color);
+        border-radius: 2px;
+    }
+    
+    .editor-info {
+        font-size: 0.8rem;
+        margin-bottom: 8px;
+        gap: 8px;
+    }
+    
+    .editor-controls {
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 12px;
+    }
+    
+    .editor-button {
+        justify-content: center;
+        padding: 10px 14px;
+        font-size: 0.9rem;
+        min-height: 44px; /* Минимальная высота для касания */
     }
 }
