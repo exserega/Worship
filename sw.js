@@ -1,5 +1,5 @@
 // Имя для нашего кэша (памяти)
-const CACHE_NAME = 'agape-worship-cache-v3'; // v3, чтобы кэш обновился
+const CACHE_NAME = 'agape-worship-cache-v4'; // v4, исправлены ошибки fetch
 
 // Список файлов, которые нужно сохранить для работы оффлайн (С ИСПРАВЛЕННЫМИ ПУТЯМИ)
 const URLS_TO_CACHE = [
@@ -8,25 +8,40 @@ const URLS_TO_CACHE = [
   './script.js',
   './styles.css',
   './manifest.json',
+  './api.js',
+  './ui.js',
+  './core.js',
+  './state.js',
+  './constants.js',
+  './firebase-config.js',
   './images/Icon-192.png', // Добавим иконки для PWA
   './images/Icon-512.png',
   // Внешние ресурсы, их пути не меняются
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css',
   'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js',
   'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js',
-  'https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js',
-  'https://firebasestorage.googleapis.com/v0/b/song-archive-389a6.firebasestorage.app/o/metronome-85688%20(mp3cut.net).mp3?alt=media&token=97b66349-7568-43eb-80c3-c2278ff38c10'
+  'https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js'
+  // Аудио файл метронома убран из кэша - токен может быть недействительным
 ];
 
 // Событие 'install' (установка): открываем кэш и добавляем в него все наши файлы
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => {
+      .then(async (cache) => {
         console.log('Service Worker: Кэшируем основные файлы приложения');
-        return cache.addAll(URLS_TO_CACHE);
-      })
-      .then(() => {
+        
+        // Кэшируем файлы по одному, пропуская те, которые не удается загрузить
+        const cachePromises = URLS_TO_CACHE.map(async (url) => {
+          try {
+            await cache.add(url);
+            console.log(`Service Worker: Успешно кэширован ${url}`);
+          } catch (error) {
+            console.warn(`Service Worker: Не удалось кэшировать ${url}:`, error);
+          }
+        });
+        
+        await Promise.all(cachePromises);
         return self.skipWaiting();
       })
   );
@@ -59,7 +74,14 @@ self.addEventListener('fetch', (event) => {
           return response;
         }
         // Если в кэше ничего нет, идем в интернет
-        return fetch(event.request);
+        return fetch(event.request).catch((error) => {
+          console.warn('Service Worker: Ошибка fetch для', event.request.url, error);
+          // Возвращаем fallback-ответ для критически важных ресурсов
+          if (event.request.url.includes('index.html') || event.request.url.endsWith('/')) {
+            return caches.match('./index.html');
+          }
+          throw error;
+        });
       })
   );
 });

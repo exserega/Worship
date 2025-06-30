@@ -516,8 +516,15 @@ function setupEventListeners() {
             const preElement = ui.songContent.querySelector('pre');
             if (preElement) {
                 navigator.clipboard.writeText(preElement.innerText).then(() => {
-                    e.target.closest('#copy-text-button').innerHTML = '<i class="fas fa-check"></i>';
-                    setTimeout(() => e.target.closest('#copy-text-button').innerHTML = '<i class="far fa-copy"></i>', 1500);
+                    const copyButton = e.target.closest('#copy-text-button');
+                    if (copyButton) {
+                        copyButton.innerHTML = '<i class="fas fa-check"></i>';
+                        setTimeout(() => {
+                            if (copyButton) {
+                                copyButton.innerHTML = '<i class="far fa-copy"></i>';
+                            }
+                        }, 1500);
+                    }
                 });
             }
         }
