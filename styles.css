@@ -1150,7 +1150,7 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
     opacity: 0.8; /* Хорошо видимая */
     transition: opacity 0.2s ease, color 0.2s ease;
     display: none; /* По умолчанию скрыта, пока не выбрана песня */
-    transform: translateY(8px); /* Опускаем кнопку на 8px */
+    transform: translateY(20px); /* Опускаем кнопку на 20px (8+12) */
 }
 #copy-text-button:hover {
     opacity: 1; /* Полностью видимая при наведении */
