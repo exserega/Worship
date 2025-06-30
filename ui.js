@@ -222,6 +222,9 @@ export function displaySongDetails(songData, keyToSelect) {
     
     updateFontSize();
     songContent.classList.toggle('chords-hidden', !state.areChordsVisible);
+    
+    // Скрываем блоки с только аккордами если аккорды скрыты
+    toggleChordOnlyBlocks(!state.areChordsVisible);
 
     const vId = extractYouTubeVideoId(ytLink);
     if (vId) {
@@ -554,6 +557,10 @@ export function displayCurrentPresentationSong() {
     `;
     presentationContent.innerHTML = songHtml;
     presentationContent.classList.toggle('split-columns', state.isPresentationSplit);
+    presentationContent.classList.toggle('chords-hidden', !state.areChordsVisible);
+    
+    // Применяем скрытие блоков с только аккордами в режиме презентации
+    toggleChordOnlyBlocks(!state.areChordsVisible);
 
     presCounter.textContent = `${state.currentPresentationIndex + 1} / ${state.presentationSongs.length}`;
     presPrevBtn.disabled = (state.currentPresentationIndex === 0);
@@ -746,4 +753,65 @@ export function positionCopyButton() {
 
 // Обновляем позицию при изменении размера окна и прокрутке
 window.addEventListener('resize', positionCopyButton);
-window.addEventListener('scroll', positionCopyButton); 
+window.addEventListener('scroll', positionCopyButton);
+
+// --- ФУНКЦИИ ДЛЯ РАБОТЫ С БЛОКАМИ СОДЕРЖАЩИМИ ТОЛЬКО АККОРДЫ ---
+
+/** Функция для скрытия/показа блоков содержащих только аккорды */
+export function toggleChordOnlyBlocks(shouldHide) {
+    // Находим все блоки песни в основном контенте
+    const songBlocks = songContent.querySelectorAll('.song-block');
+    
+    songBlocks.forEach(block => {
+        if (shouldHide) {
+            // Проверяем, содержит ли блок только аккорды
+            if (isChordOnlyBlock(block)) {
+                block.style.display = 'none';
+                block.classList.add('chord-only-hidden');
+            }
+        } else {
+            // Показываем все ранее скрытые блоки с только аккордами
+            if (block.classList.contains('chord-only-hidden')) {
+                block.style.display = '';
+                block.classList.remove('chord-only-hidden');
+            }
+        }
+    });
+    
+    // Также обрабатываем блоки в режиме презентации
+    const presentationBlocks = document.querySelectorAll('.presentation-content .song-block');
+    presentationBlocks.forEach(block => {
+        if (shouldHide) {
+            if (isChordOnlyBlock(block)) {
+                block.style.display = 'none';
+                block.classList.add('chord-only-hidden');
+            }
+        } else {
+            if (block.classList.contains('chord-only-hidden')) {
+                block.style.display = '';
+                block.classList.remove('chord-only-hidden');
+            }
+        }
+    });
+}
+
+/** Функция для проверки, содержит ли блок только аккорды */
+function isChordOnlyBlock(block) {
+    const content = block.querySelector('.song-block-content');
+    if (!content) return false;
+    
+    // Клонируем контент для анализа
+    const contentClone = content.cloneNode(true);
+    
+    // Убираем все элементы с классом chord
+    const chordElements = contentClone.querySelectorAll('.chord');
+    chordElements.forEach(chord => chord.remove());
+    
+    // Проверяем, остался ли какой-то значимый текст
+    const remainingText = contentClone.textContent.trim();
+    
+    // Если остался только пробелы, переносы строк и знаки препинания - считаем блок содержащим только аккорды
+    const onlyWhitespaceAndPunctuation = /^[\s\n\r\t.,;:!?\-()[\]{}|/\\]*$/;
+    
+    return remainingText === '' || onlyWhitespaceAndPunctuation.test(remainingText);
+} 

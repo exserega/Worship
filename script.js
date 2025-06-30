@@ -259,6 +259,8 @@ function setupSwipeToClose() {
     });
 }
 
+
+
 // --- EVENT LISTENER SETUP ---
 function setupEventListeners() {
     // --- Основные элементы управления ---
@@ -355,6 +357,10 @@ function setupEventListeners() {
         if (!ui.songSelect.value) return;
         state.setAreChordsVisible(!state.areChordsVisible);
         ui.songContent.classList.toggle('chords-hidden', !state.areChordsVisible);
+        
+        // Скрываем/показываем блоки с только аккордами
+        ui.toggleChordOnlyBlocks(!state.areChordsVisible);
+        
         ui.updateToggleChordsButton();
     });
 
