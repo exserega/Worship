@@ -498,7 +498,7 @@ body[data-theme="light"] #holychords-button:hover { color: #fff; }
     font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; /* ВОЗВРАЩАЕМ исходный шрифт */
     white-space: pre; /* pre для точного позиционирования */
     word-wrap: normal; /* отключаем word-wrap */
-    line-height: 1.5; 
+    line-height: 1.3; /* Уменьшили с 1.5 до 1.3 для стандартизации межстрочных интервалов */
     font-size: var(--lyrics-font-size, 1rem); 
     color: var(--text-color); 
     margin: 0; 
@@ -602,7 +602,7 @@ body[data-theme="light"] .presentation-notes i.fas {
 .presentation-song pre {
     font-size: clamp(12px, 2.9vw, 17px);
     font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; /* ВОЗВРАЩАЕМ исходный шрифт */
-    line-height: 1.45;
+    line-height: 1.3; /* Стандартизируем с основным текстом */
     white-space: pre; /* pre для точного позиционирования */
     word-wrap: normal; /* отключаем word-wrap */
     color: var(--text-color);
@@ -1967,7 +1967,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     #song-content pre {
         /* МОБИЛЬНЫЕ ОТСТУПЫ И РАЗМЕРЫ */
         font-size: var(--lyrics-font-size); /* ИСПОЛЬЗУЕМ ПЕРЕМЕННУЮ */
-        line-height: 1.5; /* Оптимальная читаемость */
+        line-height: 1.3; /* Стандартизируем с основным текстом */
         padding-top: 2px; /* МИНИМАЛЬНЫЙ отступ с 6px 0 */
         
         /* ВСЕ ОСТАЛЬНЫЕ СВОЙСТВА С ТОЧНЫМ ПОЗИЦИОНИРОВАНИЕМ */
@@ -2107,7 +2107,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     .presentation-song pre {
          font-size: clamp(11px, 2.8vw, 15px) !important;
-         line-height: 1.4 !important;
+         line-height: 1.3 !important; /* Стандартизируем со всеми остальными */
          margin-top: 0 !important;
     }
     /* --- Конец стилей презентации на мобильных --- */
