@@ -731,8 +731,8 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
     left: 0 !important;
     right: auto !important;
     transform: translateX(-100%) !important;
-    border-right: 2px solid var(--primary-color);
-    border-left: none;
+    border-right: 2px solid var(--primary-color) !important;
+    border-left: none !important;
 }
 
 #setlists-panel.open,
@@ -745,8 +745,8 @@ body[data-theme="light"] #presentation-content.split-columns .presentation-song 
     right: 0 !important;
     left: auto !important;
     transform: translateX(100%) !important;
-    border-left: 2px solid var(--primary-color);
-    border-right: none;
+    border-left: 2px solid var(--primary-color) !important;
+    border-right: none !important;
 }
 
 #repertoire-panel.open {
@@ -2386,10 +2386,9 @@ body[data-theme="light"] .repertoire-view-button.active {
         border: 1px solid var(--border-color) !important;
     }
     
-    /* ВСЕ ПАНЕЛИ НА МОБИЛЬНЫХ ВЫЕЗЖАЮТ СЛЕВА */
+    /* ВСЕ ПАНЕЛИ НА МОБИЛЬНЫХ ВЫЕЗЖАЮТ СЛЕВА, КРОМЕ РЕПЕРТУАРА */
     #setlists-panel,
-    #my-list-panel,
-    #repertoire-panel {
+    #my-list-panel {
         left: 0 !important;
         right: auto !important;
         transform: translateX(-100%) !important;
@@ -2397,8 +2396,20 @@ body[data-theme="light"] .repertoire-view-button.active {
         border-left: none !important;
     }
     
+    /* ПАНЕЛЬ РЕПЕРТУАРА ВЫЕЗЖАЕТ СПРАВА НА МОБИЛЬНЫХ */
+    #repertoire-panel {
+        right: 0 !important;
+        left: auto !important;
+        transform: translateX(100%) !important;
+        border-left: 2px solid var(--primary-color) !important;
+        border-right: none !important;
+    }
+    
     #setlists-panel.open,
-    #my-list-panel.open,
+    #my-list-panel.open {
+        transform: translateX(0) !important;
+    }
+    
     #repertoire-panel.open {
         transform: translateX(0) !important;
     }
@@ -2407,12 +2418,24 @@ body[data-theme="light"] .repertoire-view-button.active {
     .side-panel-close-btn {
         position: absolute !important;
         top: 8px !important;
-        right: 8px !important;
-        left: auto !important;
         width: 28px !important;
         height: 28px !important;
         z-index: 10 !important;
     }
+    
+    /* Кнопки закрытия для левых панелей (справа) */
+    #setlists-panel .side-panel-close-btn,
+    #my-list-panel .side-panel-close-btn {
+        right: 8px !important;
+        left: auto !important;
+    }
+    
+    /* Кнопка закрытия для правой панели (слева) */
+    #repertoire-panel .side-panel-close-btn {
+        left: 8px !important;
+        right: auto !important;
+    }
+    
     .list-container { 
         max-height: none; /* Убираем ограничение высоты на мобильных */
         overflow-x: hidden; /* Запрещаем горизонтальную прокрутку */
