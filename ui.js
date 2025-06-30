@@ -794,7 +794,12 @@ export function toggleChordOnlyBlocks(shouldHide) {
         }
     });
     
-    // display: none для аккордов автоматически убирает пустые строки
+    // Обрабатываем пустые строки после скрытия/показа аккордов
+    if (shouldHide) {
+        removeEmptyLinesAfterChordHiding();
+    } else {
+        restoreOriginalHTML();
+    }
 }
 
 /** Функция для проверки, содержит ли блок только аккорды */
@@ -817,5 +822,73 @@ function isChordOnlyBlock(block) {
     
     return remainingText === '' || onlyWhitespaceAndPunctuation.test(remainingText);
 }
+
+// Переменные для хранения оригинального HTML
+let originalMainContentHTML = null;
+let originalPresentationContentHTML = null;
+
+/** Удаляет пустые строки после скрытия аккордов */
+function removeEmptyLinesAfterChordHiding() {
+    // Сохраняем оригинальный HTML основного контента
+    const mainPre = songContent.querySelector('pre');
+    if (mainPre && !originalMainContentHTML) {
+        originalMainContentHTML = mainPre.innerHTML;
+    }
+    
+    // Сохраняем оригинальный HTML презентации
+    const presentationPre = document.querySelector('.presentation-content pre');
+    if (presentationPre && !originalPresentationContentHTML) {
+        originalPresentationContentHTML = presentationPre.innerHTML;
+    }
+    
+    // Обрабатываем основной контент
+    if (mainPre) {
+        setTimeout(() => {
+            processElementTextContent(mainPre);
+        }, 150); // Еще больше времени для CSS
+    }
+    
+    // Обрабатываем презентацию
+    if (presentationPre) {
+        setTimeout(() => {
+            processElementTextContent(presentationPre);
+        }, 150);
+    }
+}
+
+/** Обрабатывает текстовое содержимое элемента, удаляя пустые строки */
+function processElementTextContent(element) {
+    // Получаем видимый текст после скрытия аккордов
+    const visibleText = element.textContent || element.innerText || '';
+    
+    // Очищаем от пустых строк
+    const cleanedText = visibleText
+        .split('\n')
+        .filter(line => line.trim() !== '')
+        .join('\n')
+        .trim();
+    
+    // Сохраняем обратно как простой текст
+    element.textContent = cleanedText;
+}
+
+/** Восстанавливает оригинальный HTML при показе аккордов */
+function restoreOriginalHTML() {
+    // Восстанавливаем основной контент
+    const mainPre = songContent.querySelector('pre');
+    if (mainPre && originalMainContentHTML) {
+        mainPre.innerHTML = originalMainContentHTML;
+        originalMainContentHTML = null;
+    }
+    
+    // Восстанавливаем презентацию
+    const presentationPre = document.querySelector('.presentation-content pre');
+    if (presentationPre && originalPresentationContentHTML) {
+        presentationPre.innerHTML = originalPresentationContentHTML;
+        originalPresentationContentHTML = null;
+    }
+}
+
+
 
  
