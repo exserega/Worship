@@ -259,7 +259,52 @@ function setupSwipeToClose() {
     });
 }
 
+// --- Утилиты ---
 
+/** Показывает уведомление пользователю */
+function showNotification(message, type = 'info') {
+    // Создаем элемент уведомления
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    
+    // Стили для уведомления
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--container-background-color);
+        color: var(--text-color);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 12px 20px;
+        font-size: 0.9rem;
+        z-index: 10000;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        max-width: 300px;
+        word-wrap: break-word;
+    `;
+    
+    // Добавляем в DOM
+    document.body.appendChild(notification);
+    
+    // Показываем с анимацией
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Скрываем через 3 секунды
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}
 
 // --- EVENT LISTENER SETUP ---
 function setupEventListeners() {
@@ -546,15 +591,18 @@ function setupEventListeners() {
             songData.hasWebEdits = true;
             songData.lastEditedInApp = new Date();
             
-            // Перерендериваем песню
-            const currentKey = ui.keySelect.value;
-            ui.displaySongDetails(songData, currentKey);
+            // Обновляем отображение песни
+            displaySongDetails(songData);
+            
+            // Закрываем редактор
             ui.closeSongEditor();
             
-            alert('✅ Песня успешно сохранена!');
+            // Показываем уведомление
+            showNotification('✅ Песня успешно сохранена!', 'success');
+            
         } catch (error) {
             console.error('Ошибка сохранения:', error);
-            alert('❌ Ошибка сохранения: ' + error.message);
+            alert('Ошибка при сохранении: ' + error.message);
         }
     });
 
@@ -562,36 +610,52 @@ function setupEventListeners() {
         ui.closeSongEditor();
     });
 
+    ui.closeEditorButton.addEventListener('click', () => {
+        ui.closeSongEditor();
+    });
+
+    // Закрытие редактора при клике на оверлей
+    ui.songEditorOverlay.addEventListener('click', (e) => {
+        if (e.target === ui.songEditorOverlay) {
+            ui.closeSongEditor();
+        }
+    });
+
+    // Закрытие редактора по клавише Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && ui.songEditorOverlay.classList.contains('visible')) {
+            ui.closeSongEditor();
+        }
+    });
+
     ui.revertToOriginalButton.addEventListener('click', async () => {
         const songData = ui.getCurrentSongData();
+        if (!songData) return;
         
-        if (!songData) {
-            alert('Выберите песню');
-            return;
-        }
-        
-        if (!confirm(`Вы уверены, что хотите вернуть песню "${songData.name}" к оригинальному тексту из Google Таблицы? Все ваши изменения будут потеряны.`)) {
+        if (!confirm('Вы уверены, что хотите вернуть оригинальный текст из Google Таблицы? Все ваши изменения будут потеряны.')) {
             return;
         }
         
         try {
             await api.revertToOriginal(songData.id);
             
-            // Обновляем данные песни в локальном состоянии
+            // Обновляем данные песни
             delete songData['Текст и аккорды (edited)'];
             songData.hasWebEdits = false;
             delete songData.lastEditedInApp;
             delete songData.editedBy;
             
-            // Перерендериваем песню
-            const currentKey = ui.keySelect.value;
-            ui.displaySongDetails(songData, currentKey);
+            // Обновляем отображение
+            displaySongDetails(songData);
+            
+            // Закрываем редактор
             ui.closeSongEditor();
             
-            alert('🔄 Песня возвращена к оригиналу');
+            showNotification('🔄 Песня возвращена к оригиналу', 'info');
+            
         } catch (error) {
             console.error('Ошибка отката:', error);
-            alert('❌ Ошибка отката: ' + error.message);
+            alert('Ошибка при возврате к оригиналу: ' + error.message);
         }
     });
 

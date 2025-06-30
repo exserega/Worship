@@ -1264,44 +1264,123 @@ body[data-theme="light"] #copy-text-button.copied {
 
 /* --- SONG EDITOR STYLES --- */
 
-.song-controls {
-    position: absolute;
-    top: -15px;
-    right: 10px;
-    display: flex;
-    gap: 8px;
-    z-index: 10;
+/* Модальное окно редактора */
+.song-editor-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(2px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000; /* Выше всех остальных элементов */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
 }
 
-.song-editor {
+.song-editor-overlay.visible {
+    display: flex;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.song-editor-modal {
     background: var(--container-background-color);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 15px;
-    margin-top: 10px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 800px;
+    height: 90%;
+    max-height: 700px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.song-editor-overlay.visible .song-editor-modal {
+    transform: scale(1);
+}
+
+/* Заголовок редактора */
+.song-editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px 15px 25px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--container-background-color);
+    flex-shrink: 0;
+}
+
+.song-editor-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+#close-editor-button {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+#close-editor-button:hover {
+    background: var(--hover-color);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+/* Основной контент редактора */
+.song-editor-content {
+    flex: 1;
+    padding: 20px 25px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .editor-info {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     font-size: 0.9rem;
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: space-between;
+    gap: 15px;
+    flex-shrink: 0;
 }
 
+#edit-status-info {
+    color: var(--label-color);
+    flex: 1;
+}
+
+/* Textarea для редактирования */
 .song-edit-textarea {
+    flex: 1;
     width: 100%;
-    min-height: 400px;
-    max-height: 70vh; /* Ограничиваем максимальную высоту */
+    min-height: 0; /* Убираем минимальную высоту */
     padding: 15px;
     border: 1px solid var(--border-color);
-    border-radius: 6px;
+    border-radius: 8px;
     background: var(--background-color);
     color: var(--text-color);
     font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
     font-size: 14px;
     line-height: 1.5;
-    resize: vertical;
+    resize: none; /* Отключаем resize */
     box-sizing: border-box;
     
     /* Улучшенная прокрутка */
@@ -1345,23 +1424,31 @@ body[data-theme="light"] #copy-text-button.copied {
     box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 20%, transparent);
 }
 
+/* Футер с кнопками */
+.song-editor-footer {
+    padding: 20px 25px;
+    border-top: 1px solid var(--border-color);
+    background: var(--container-background-color);
+    flex-shrink: 0;
+}
+
 .editor-controls {
     display: flex;
-    gap: 10px;
-    margin-top: 15px;
-    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: flex-end;
 }
 
 .editor-button {
-    padding: 8px 16px;
+    padding: 10px 20px;
     border: none;
     border-radius: 6px;
     font-size: 0.9rem;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     transition: all 0.2s ease;
+    font-weight: 500;
 }
 
 .editor-button:hover {
@@ -2607,40 +2694,31 @@ body[data-theme="light"] .repertoire-view-button.active {
         justify-content: flex-end;
     }
     
-    .song-editor {
-        margin-top: 8px;
-        padding: 12px;
+    .song-editor-modal {
+        width: 95%;
+        height: 95%;
+        max-height: none;
+        border-radius: 8px;
+    }
+    
+    .song-editor-header {
+        padding: 15px 20px 10px 20px;
+    }
+    
+    .song-editor-header h3 {
+        font-size: 1.1rem;
+    }
+    
+    .song-editor-content {
+        padding: 15px 20px;
     }
     
     .song-edit-textarea {
-        min-height: 300px;
-        max-height: 60vh; /* Меньше на мобильных */
         font-size: 16px; /* Предотвращает зум на iOS */
-        padding: 12px;
-        
-        /* Улучшенная поддержка свайпов на мобильных */
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior: contain;
-        
-        /* Кастомный скроллбар для мобильных */
-        scrollbar-width: thin;
-        scrollbar-color: var(--primary-color) var(--border-color);
     }
     
-    /* Кастомный скроллбар для мобильных WebKit */
-    .song-edit-textarea::-webkit-scrollbar {
-        width: 6px; /* Тоньше на мобильных */
-    }
-    
-    .song-edit-textarea::-webkit-scrollbar-track {
-        background: var(--border-color);
-        border-radius: 3px;
-        margin: 1px 0;
-    }
-    
-    .song-edit-textarea::-webkit-scrollbar-thumb {
-        background: var(--primary-color);
-        border-radius: 3px;
+    .song-editor-footer {
+        padding: 15px 20px;
     }
     
     .editor-controls {
@@ -2651,62 +2729,56 @@ body[data-theme="light"] .repertoire-view-button.active {
     .editor-button {
         justify-content: center;
         padding: 12px 16px;
-        font-size: 1rem; /* Увеличиваем для лучшего касания */
+        font-size: 1rem;
     }
 }
 
 /* Дополнительные стили для очень маленьких экранов */
 @media (max-width: 480px) {
-    .song-editor {
-        margin-top: 5px;
-        padding: 8px;
+    .song-editor-modal {
+        width: 98%;
+        height: 98%;
+        border-radius: 6px;
     }
     
-    .song-edit-textarea {
-        min-height: 250px;
-        max-height: 50vh; /* Еще меньше на очень маленьких экранах */
-        font-size: 16px; /* Предотвращает зум на iOS */
-        padding: 10px;
-        line-height: 1.4; /* Немного уменьшаем для экономии места */
-        
-        /* Максимальная поддержка свайпов */
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior: contain;
-        scroll-behavior: smooth;
+    .song-editor-header {
+        padding: 12px 15px 8px 15px;
     }
     
-    /* Еще более тонкий скроллбар для очень маленьких экранов */
-    .song-edit-textarea::-webkit-scrollbar {
-        width: 4px;
+    .song-editor-header h3 {
+        font-size: 1rem;
     }
     
-    .song-edit-textarea::-webkit-scrollbar-track {
-        background: var(--border-color);
-        border-radius: 2px;
-        margin: 1px 0;
-    }
-    
-    .song-edit-textarea::-webkit-scrollbar-thumb {
-        background: var(--primary-color);
-        border-radius: 2px;
+    .song-editor-content {
+        padding: 12px 15px;
     }
     
     .editor-info {
-        font-size: 0.8rem;
-        margin-bottom: 8px;
-        gap: 8px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+    
+    .song-edit-textarea {
+        font-size: 16px;
+        padding: 12px;
+        line-height: 1.4;
+    }
+    
+    .song-editor-footer {
+        padding: 12px 15px;
     }
     
     .editor-controls {
         flex-direction: column;
         gap: 6px;
-        margin-top: 12px;
     }
     
     .editor-button {
         justify-content: center;
         padding: 10px 14px;
         font-size: 0.9rem;
-        min-height: 44px; /* Минимальная высота для касания */
+        min-height: 44px;
     }
 }

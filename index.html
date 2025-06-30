@@ -103,24 +103,44 @@
             </button>
         </div>
         <pre id="song-display"></pre>
-        <div id="song-editor" class="song-editor" style="display: none;">
-            <div class="editor-info">
-                <span id="edit-status-info"></span>
+    </fieldset>
+
+    <!-- Модальное окно редактора -->
+    <div id="song-editor-overlay" class="song-editor-overlay">
+        <div class="song-editor-modal">
+            <div class="song-editor-header">
+                <h3 id="song-editor-title">Редактирование песни</h3>
+                <button id="close-editor-button" class="icon-button simple" title="Закрыть редактор">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <textarea id="song-edit-textarea" class="song-edit-textarea" placeholder="Введите текст песни с аккордами..."></textarea>
-            <div class="editor-controls">
-                <button id="save-edit-button" class="editor-button save">
-                    <i class="fas fa-save"></i> Сохранить
-                </button>
-                <button id="cancel-edit-button" class="editor-button cancel">
-                    <i class="fas fa-times"></i> Отменить
-                </button>
-                <button id="revert-to-original-button" class="editor-button revert" style="display: none;">
-                    <i class="fas fa-undo"></i> Вернуть оригинал
-                </button>
+            
+            <div class="song-editor-content">
+                <div class="editor-info">
+                    <span id="edit-status-info">📄 Оригинал из Google Таблицы</span>
+                    <button id="revert-to-original-button" class="editor-button revert" style="display: none;">
+                        <i class="fas fa-undo"></i>
+                        Вернуть оригинал
+                    </button>
+                </div>
+                
+                <textarea id="song-edit-textarea" class="song-edit-textarea" placeholder="Введите текст песни с аккордами..."></textarea>
+            </div>
+            
+            <div class="song-editor-footer">
+                <div class="editor-controls">
+                    <button id="save-edit-button" class="editor-button save">
+                        <i class="fas fa-save"></i>
+                        Сохранить
+                    </button>
+                    <button id="cancel-edit-button" class="editor-button cancel">
+                        <i class="fas fa-times"></i>
+                        Отменить
+                    </button>
+                </div>
             </div>
         </div>
-    </fieldset>
+    </div>
 
     <div class="control-buttons">
         <button id="favorite-button" aria-label="Добавить в Мой список">❤️ Мой список</button>
