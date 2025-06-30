@@ -1376,6 +1376,11 @@ body[data-theme="light"] .song-block.low-confidence .song-block-legend {
     opacity: 0.7;
 }
 
+.song-block[data-type="preChorus"] .song-block-legend::before {
+    content: "🔀 ";
+    opacity: 0.7;
+}
+
 /* Подсказка при наведении на блок */
 .song-block[data-confidence][data-method] .song-block-legend:hover::after {
     content: "Уверенность: " attr(data-confidence) "% (" attr(data-method) ")";

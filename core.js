@@ -690,6 +690,26 @@ function wrapSongBlocks(lyrics) {
         }
     });
     
+    // ОТЛАДКА: проверяем блоки ПЕРЕД join()
+    if (lyrics.includes('Пред-припев')) {
+        console.log('DEBUG: Проверка ПЕРЕД join():');
+        htmlBlocks.forEach((block, i) => {
+            if (block.includes('preChorus')) {
+                console.log(`  Блок ${i} длина:`, block.length);
+                console.log(`  Блок ${i} содержит Chorus":`, block.includes('Chorus"'));
+                if (block.includes('Chorus"')) {
+                    const chorIndex = block.indexOf('Chorus"');
+                    console.log(`  Позиция Chorus" в блоке ${i}:`, chorIndex);
+                    // Попробуем найти где начинается проблема
+                    const beforeChorus = block.substring(Math.max(0, chorIndex - 20), chorIndex);
+                    const afterChorus = block.substring(chorIndex, chorIndex + 20);
+                    console.log(`  До Chorus":`, JSON.stringify(beforeChorus));
+                    console.log(`  После Chorus":`, JSON.stringify(afterChorus));
+                }
+            }
+        });
+    }
+    
     const result = htmlBlocks.join('\n');
     
     // ОТЛАДКА: проверяем что происходит в wrapSongBlocks
