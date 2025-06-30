@@ -607,7 +607,8 @@ function wrapSongBlocks(lyrics) {
     saveParserData();
     
     // Формируем HTML с улучшенной структурой
-    return blocks.map((block, index) => {
+    
+    const htmlBlocks = blocks.map((block, index) => {
         const content = block.content.join('\n');
         const confidenceClass = block.confidence > 0.8 ? 'high-confidence' : 
                                block.confidence > 0.5 ? 'medium-confidence' : 'low-confidence';
