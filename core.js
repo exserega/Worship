@@ -360,7 +360,9 @@ function detectExplicitMarkers(line, context) {
         for (const [blockType, data] of Object.entries(ADAPTIVE_DICTIONARY)) {
             // Проверяем основные термины - ТОЛЬКО точные совпадения
             for (const term of data.primary) {
-                const regex = new RegExp(`^(\\d+\\s*)?(${term})(\\s*\\d*)?\\s*[:.]?\\s*$`, 'i');
+                // Экранируем специальные символы в термине для регулярного выражения
+                const escapedTerm = term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                const regex = new RegExp(`^(\\d+\\s*)?(${escapedTerm})(\\s*\\d*)?\\s*[:.]?\\s*$`, 'i');
                 if (regex.test(trimmed)) {
                     const confidence = 0.95; // Высокая уверенность для точных совпадений
                     if (confidence > highestConfidence) {
@@ -373,7 +375,9 @@ function detectExplicitMarkers(line, context) {
             // Проверяем вариации - только короткие
             for (const variation of data.variations) {
                 if (variation.length < 4) { // Только короткие сокращения
-                    const regex = new RegExp(`^(\\d+\\s*)?(${variation})(\\s*\\d*)?\\s*[:.]?\\s*$`, 'i');
+                    // Экранируем специальные символы в вариации для регулярного выражения
+                    const escapedVariation = variation.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                    const regex = new RegExp(`^(\\d+\\s*)?(${escapedVariation})(\\s*\\d*)?\\s*[:.]?\\s*$`, 'i');
                     if (regex.test(trimmed)) {
                         const confidence = 0.9;
                         if (confidence > highestConfidence) {
@@ -388,7 +392,9 @@ function detectExplicitMarkers(line, context) {
         // Проверяем изученные термины - только если они короткие
         for (const [learnedTerm, blockType] of songParserData.learnedTerms) {
             if (learnedTerm.length < 30) {
-                const regex = new RegExp(`^(\\d+\\s*)?(${learnedTerm})(\\s*\\d*)?\\s*[:.]?\\s*$`, 'i');
+                // Экранируем специальные символы в изученном термине для регулярного выражения
+                const escapedLearnedTerm = learnedTerm.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                const regex = new RegExp(`^(\\d+\\s*)?(${escapedLearnedTerm})(\\s*\\d*)?\\s*[:.]?\\s*$`, 'i');
                 if (regex.test(trimmed)) {
                     const confidence = 0.92;
                     if (confidence > highestConfidence) {
