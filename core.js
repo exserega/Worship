@@ -110,7 +110,7 @@ function highlightChords(lyrics) {
         
         // ОТЛАДКА: проверяем не появились ли артефакты после highlightChords
         if (lyrics.includes('Пред-припев') && result.includes('Chorus"')) {
-            console.log('DEBUG: highlightChords испортил HTML для Пред-припев:');
+
             console.log('  ДО:', lyrics.substring(0, 500));
             console.log('  ПОСЛЕ:', result.substring(0, 500));
         }
@@ -195,7 +195,7 @@ const ADAPTIVE_DICTIONARY = {
         variations: ['с', 's'],
         patterns: [/^(\d+\s*)?(соло|solo|инструментал|проигрыш|с|s|инстр)(\s*\d*)?/i]
     },
-    preChorus: {
+    pre: {
         primary: ['предприпев', 'pre-chorus', 'прехорус', 'подготовка', 'пред припев', 'пред-припев'],
         variations: ['пред', 'pre'],
         patterns: [/^(\d+\s*)?(предприпев|pre-chorus|прехорус|пред\s*припев|пред-припев|пред|pre)(\s*\d*)?/i]
@@ -268,7 +268,7 @@ function detectExplicitMarkers(line, context) {
                 if (['интро', 'intro'].includes(base)) return 'intro';
                 if (['аутро', 'outro'].includes(base)) return 'outro';
                 if (['вставка'].includes(base)) return 'intro';
-                if (['предприпев', 'pre-chorus', 'пред припев', 'пред-припев'].includes(base)) return 'preChorus';
+                if (['предприпев', 'pre-chorus', 'пред припев', 'пред-припев'].includes(base)) return 'pre';
                 return 'unknown';
             },
             confidence: 0.95
@@ -286,7 +286,7 @@ function detectExplicitMarkers(line, context) {
                 if (['интро', 'intro'].includes(base)) return 'intro';
                 if (['аутро', 'outro'].includes(base)) return 'outro';
                 if (['вставка'].includes(base)) return 'intro';
-                if (['предприпев', 'pre-chorus', 'пред припев', 'пред-припев'].includes(base)) return 'preChorus';
+                if (['предприпев', 'pre-chorus', 'пред припев', 'пред-припев'].includes(base)) return 'pre';
                 return 'unknown';
             },
             confidence: 0.95
@@ -304,7 +304,7 @@ function detectExplicitMarkers(line, context) {
                 if (['интро', 'intro'].includes(base)) return 'intro';
                 if (['аутро', 'outro'].includes(base)) return 'outro';
                 if (['вставка'].includes(base)) return 'intro';
-                if (['предприпев', 'pre-chorus', 'пред припев', 'пред-припев'].includes(base)) return 'preChorus';
+                if (['предприпев', 'pre-chorus', 'пред припев', 'пред-припев'].includes(base)) return 'pre';
                 return 'unknown';
             },
             confidence: 0.95
@@ -322,7 +322,7 @@ function detectExplicitMarkers(line, context) {
                 if (['интро', 'intro'].includes(base)) return 'intro';
                 if (['аутро', 'outro'].includes(base)) return 'outro';
                 if (['вставка'].includes(base)) return 'intro';
-                if (['предприпев', 'pre-chorus', 'пред припев', 'пред-припев'].includes(base)) return 'preChorus';
+                if (['предприпев', 'pre-chorus', 'пред припев', 'пред-припев'].includes(base)) return 'pre';
                 return 'unknown';
             },
             confidence: 0.95
@@ -340,7 +340,7 @@ function detectExplicitMarkers(line, context) {
                 if (['интро', 'intro'].includes(base)) return 'intro';
                 if (['аутро', 'outro'].includes(base)) return 'outro';
                 if (['вставки'].includes(base)) return 'intro';
-                if (['предприпева', 'pre-chorus'].includes(base)) return 'preChorus';
+                if (['предприпева', 'pre-chorus'].includes(base)) return 'pre';
                 return 'unknown';
             },
             confidence: 0.95
@@ -417,7 +417,7 @@ function detectExplicitMarkers(line, context) {
     
     // ОТЛАДКА: логируем результат для Пред-припев
     if (trimmed.toLowerCase().includes('пред-припев')) {
-        console.log('DEBUG: detectExplicitMarkers для Пред-припев:');
+
         console.log('  trimmed:', JSON.stringify(trimmed));
         console.log('  bestMatch:', bestMatch);
     }
@@ -558,7 +558,7 @@ function wrapSongBlocks(lyrics) {
             
             // ОТЛАДКА: логируем создание блоков Пред-припев
             if (trimmed.toLowerCase().includes('пред-припев')) {
-                console.log('DEBUG: Создание блока Пред-припев:');
+
                 console.log('  trimmed:', JSON.stringify(trimmed));
                 console.log('  detection:', detection);
                 console.log('  currentBlock:', currentBlock);
@@ -627,7 +627,7 @@ function wrapSongBlocks(lyrics) {
         
         // ОТЛАДКА: проверяем очистку для Пред-припев
         if (safeLegend.toLowerCase().includes('пред-припев')) {
-            console.log('DEBUG: Очистка данных для Пред-припев:');
+
             console.log('  safeType:', JSON.stringify(safeType));
             console.log('  cleanType:', JSON.stringify(cleanType));
             console.log('  cleanType длина:', cleanType.length);
@@ -638,7 +638,7 @@ function wrapSongBlocks(lyrics) {
         
         // ОТЛАДКА: логируем проблемные блоки
         if (safeLegend.toLowerCase().includes('пред-припев')) {
-            console.log('DEBUG: Пред-припев блок ДЕТАЛЬНО:');
+
             console.log('  original.legend:', JSON.stringify(block.legend));
             console.log('  original.type:', JSON.stringify(block.type));
             console.log('  original.method:', JSON.stringify(block.method));
@@ -660,7 +660,7 @@ function wrapSongBlocks(lyrics) {
             
             // ДОПОЛНИТЕЛЬНАЯ ОТЛАДКА: проверяем что попадает в HTML атрибуты
             if (safeLegend.toLowerCase().includes('пред-припев')) {
-                console.log('DEBUG: Проверка HTML атрибутов для Пред-припев:');
+
                 console.log('  Строка data-type="${cleanType}":', `data-type="${cleanType}"`);
                 console.log('  Длина этой части:', `data-type="${cleanType}"`.length);
                 console.log('  Полный fieldset тег:', `<fieldset class="song-block ${safeConfidenceClass}" data-type="${cleanType}" data-confidence="${cleanConfidence}" data-method="${cleanMethod}">`);
@@ -669,7 +669,7 @@ function wrapSongBlocks(lyrics) {
 
             // ОТЛАДКА: логируем генерируемый HTML для Пред-припев
             if (safeLegend.toLowerCase().includes('пред-припев')) {
-                console.log('DEBUG: Генерируемый HTML для Пред-припев:');
+
                 console.log('  safeConfidenceClass:', JSON.stringify(safeConfidenceClass));
                 console.log('  cleanType:', JSON.stringify(cleanType));
                 console.log('  cleanConfidence:', JSON.stringify(cleanConfidence));
@@ -692,9 +692,9 @@ function wrapSongBlocks(lyrics) {
     
     // ОТЛАДКА: проверяем блоки ПЕРЕД join()
     if (lyrics.includes('Пред-припев')) {
-        console.log('DEBUG: Проверка ПЕРЕД join():');
+
         htmlBlocks.forEach((block, i) => {
-            if (block.includes('preChorus')) {
+            if (block.includes('pre')) {
                 console.log(`  Блок ${i} длина:`, block.length);
                 console.log(`  Блок ${i} содержит Chorus":`, block.includes('Chorus"'));
                 if (block.includes('Chorus"')) {
@@ -714,7 +714,7 @@ function wrapSongBlocks(lyrics) {
     
     // ОТЛАДКА: проверяем что происходит в wrapSongBlocks
     if (lyrics.includes('Пред-припев')) {
-        console.log('DEBUG: wrapSongBlocks для Пред-припев:');
+
         console.log('  Входящий lyrics содержит Chorus":', lyrics.includes('Chorus"'));
         console.log('  Количество блоков:', blocks.length);
         console.log('  Результат содержит Chorus":', result.includes('Chorus"'));
@@ -878,7 +878,7 @@ function getRenderedSongText(originalLyrics, originalKey, targetKey) {
     
     // ОТЛАДКА: проверяем этапы обработки для Пред-припев
     if (originalLyrics.includes('Пред-припев')) {
-        console.log('DEBUG: Этапы обработки Пред-припев:');
+
         console.log('  1. processedLyrics содержит Chorus":', processedLyrics.includes('Chorus"'));
         console.log('  2. transposedLyrics содержит Chorus":', transposedLyrics.includes('Chorus"'));
         console.log('  3. blocksWrappedLyrics содержит Chorus":', blocksWrappedLyrics.includes('Chorus"'));

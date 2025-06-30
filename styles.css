@@ -1376,7 +1376,7 @@ body[data-theme="light"] .song-block.low-confidence .song-block-legend {
     opacity: 0.7;
 }
 
-.song-block[data-type="preChorus"] .song-block-legend::before {
+.song-block[data-type="pre"] .song-block-legend::before {
     content: "🔀 ";
     opacity: 0.7;
 }
