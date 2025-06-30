@@ -793,6 +793,8 @@ export function toggleChordOnlyBlocks(shouldHide) {
             }
         }
     });
+    
+    // display: none для аккордов автоматически убирает пустые строки
 }
 
 /** Функция для проверки, содержит ли блок только аккорды */
@@ -814,4 +816,6 @@ function isChordOnlyBlock(block) {
     const onlyWhitespaceAndPunctuation = /^[\s\n\r\t.,;:!?\-()[\]{}|/\\]*$/;
     
     return remainingText === '' || onlyWhitespaceAndPunctuation.test(remainingText);
-} 
+}
+
+ 

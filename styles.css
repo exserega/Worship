@@ -1084,17 +1084,11 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 /* --- Логика скрытия аккордов --- */
 #song-content.chords-hidden .chord,
 .presentation-content.chords-hidden .chord {
-    /* Скрываем аккорды без создания пробелов */
-    position: absolute;
-    left: -9999px;
-    width: 0;
-    height: 0;
-    overflow: hidden;
-    font-size: 0;
-    line-height: 0;
-    margin: 0;
-    padding: 0;
+    /* Полностью скрываем аккорды из потока документа */
+    display: none !important;
 }
+
+
 
 /* --- Кнопка Скрыть/Показать аккорды --- */
 #toggle-chords-button {
