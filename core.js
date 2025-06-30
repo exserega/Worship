@@ -625,6 +625,17 @@ function wrapSongBlocks(lyrics) {
         const cleanConfidence = safeConfidence.toFixed(2);
         const cleanLegend = safeLegend.replace(/[<>"'&]/g, '').replace(/"/g, '').replace(/data-/g, '');
         
+        // ОТЛАДКА: проверяем очистку для Пред-припев
+        if (safeLegend.toLowerCase().includes('пред-припев')) {
+            console.log('DEBUG: Очистка данных для Пред-припев:');
+            console.log('  safeType:', JSON.stringify(safeType));
+            console.log('  cleanType:', JSON.stringify(cleanType));
+            console.log('  cleanType длина:', cleanType.length);
+            console.log('  safeMethod:', JSON.stringify(safeMethod));
+            console.log('  cleanMethod:', JSON.stringify(cleanMethod));
+            console.log('  cleanMethod длина:', cleanMethod.length);
+        }
+        
         // ОТЛАДКА: логируем проблемные блоки
         if (safeLegend.toLowerCase().includes('пред-припев')) {
             console.log('DEBUG: Пред-припев блок ДЕТАЛЬНО:');
@@ -646,6 +657,15 @@ function wrapSongBlocks(lyrics) {
 <legend class="song-block-legend" title="${safeTitle}">${cleanLegend}</legend>
 <div class="song-block-content">${content}</div>
 </fieldset>`;
+            
+            // ДОПОЛНИТЕЛЬНАЯ ОТЛАДКА: проверяем что попадает в HTML атрибуты
+            if (safeLegend.toLowerCase().includes('пред-припев')) {
+                console.log('DEBUG: Проверка HTML атрибутов для Пред-припев:');
+                console.log('  Строка data-type="${cleanType}":', `data-type="${cleanType}"`);
+                console.log('  Длина этой части:', `data-type="${cleanType}"`.length);
+                console.log('  Полный fieldset тег:', `<fieldset class="song-block ${safeConfidenceClass}" data-type="${cleanType}" data-confidence="${cleanConfidence}" data-method="${cleanMethod}">`);
+                console.log('  Длина всего fieldset тега:', `<fieldset class="song-block ${safeConfidenceClass}" data-type="${cleanType}" data-confidence="${cleanConfidence}" data-method="${cleanMethod}">`.length);
+            }
 
             // ОТЛАДКА: логируем генерируемый HTML для Пред-припев
             if (safeLegend.toLowerCase().includes('пред-припев')) {
