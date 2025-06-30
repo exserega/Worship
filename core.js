@@ -667,7 +667,33 @@ function wrapSongBlocks(lyrics) {
 <div class="song-block-content">${content}</div>
 </fieldset>`;
         }
-    }).join('\n');
+    });
+    
+    const result = htmlBlocks.join('\n');
+    
+    // ОТЛАДКА: проверяем что происходит в wrapSongBlocks
+    if (lyrics.includes('Пред-припев')) {
+        console.log('DEBUG: wrapSongBlocks для Пред-припев:');
+        console.log('  Входящий lyrics содержит Chorus":', lyrics.includes('Chorus"'));
+        console.log('  Количество блоков:', blocks.length);
+        console.log('  Результат содержит Chorus":', result.includes('Chorus"'));
+        
+        if (result.includes('Chorus"')) {
+            console.log('  НАЙДЕН ИСТОЧНИК АРТЕФАКТА в wrapSongBlocks!');
+            const index = result.indexOf('Chorus"');
+            console.log('  Фрагмент с артефактом:', result.substring(Math.max(0, index - 100), index + 100));
+            
+            // Проверим каждый блок отдельно
+            htmlBlocks.forEach((blockHTML, i) => {
+                if (blockHTML.includes('Chorus"')) {
+                    console.log(`  БЛОК ${i} содержит артефакт:`, blocks[i]);
+                    console.log(`  HTML блока ${i}:`, blockHTML);
+                }
+            });
+        }
+    }
+    
+    return result;
 }
 
 /** Функция для ручной корректировки пользователем */
