@@ -588,19 +588,40 @@ function wrapSongBlocks(lyrics) {
         const confidenceClass = block.confidence > 0.8 ? 'high-confidence' : 
                                block.confidence > 0.5 ? 'medium-confidence' : 'low-confidence';
         
+        // ДОПОЛНИТЕЛЬНАЯ ЗАЩИТА: проверяем и очищаем все данные блока
+        const safeType = String(block.type || 'unknown');
+        const safeMethod = String(block.method || 'unknown');
+        const safeConfidence = typeof block.confidence === 'number' ? block.confidence : 0;
+        const safeLegend = String(block.legend || '');
+        
         // Очищаем данные от спецсимволов для HTML-атрибутов
-        const cleanType = (block.type || 'unknown').replace(/[^a-zA-Z0-9]/g, '');
-        const cleanMethod = (block.method || 'unknown').replace(/[^a-zA-Z0-9_]/g, '');
-        const cleanConfidence = block.confidence.toFixed(2);
-        const cleanLegend = block.legend ? block.legend.replace(/[<>"'&]/g, '') : '';
+        const cleanType = safeType.replace(/[^a-zA-Z0-9]/g, '');
+        const cleanMethod = safeMethod.replace(/[^a-zA-Z0-9_]/g, '');
+        const cleanConfidence = safeConfidence.toFixed(2);
+        const cleanLegend = safeLegend.replace(/[<>"'&]/g, '').replace(/"/g, '').replace(/data-/g, '');
+        
+        // ОТЛАДКА: логируем проблемные блоки
+        if (safeLegend.toLowerCase().includes('пред-припев')) {
+            console.log('DEBUG: Пред-припев блок:', {
+                original: block,
+                safe: { safeType, safeMethod, safeConfidence, safeLegend },
+                clean: { cleanType, cleanMethod, cleanConfidence, cleanLegend }
+            });
+        }
         
         if (block.legend) {
-            return `<fieldset class="song-block ${confidenceClass}" data-type="${cleanType}" data-confidence="${cleanConfidence}" data-method="${cleanMethod}">
-<legend class="song-block-legend" title="Уверенность: ${(block.confidence * 100).toFixed(0)}% (${cleanMethod})">${cleanLegend}</legend>
+            // ДОПОЛНИТЕЛЬНАЯ ЗАЩИТА: проверяем что все переменные безопасны
+            const safeConfidenceClass = String(confidenceClass).replace(/[^a-zA-Z0-9-]/g, '');
+            const safeTitle = `Уверенность: ${Math.round(safeConfidence * 100)}% (${cleanMethod})`;
+            
+            return `<fieldset class="song-block ${safeConfidenceClass}" data-type="${cleanType}" data-confidence="${cleanConfidence}" data-method="${cleanMethod}">
+<legend class="song-block-legend" title="${safeTitle}">${cleanLegend}</legend>
 <div class="song-block-content">${content}</div>
 </fieldset>`;
         } else {
-            return `<fieldset class="song-block ${confidenceClass}" data-type="${cleanType}" data-confidence="${cleanConfidence}">
+            const safeConfidenceClass = String(confidenceClass).replace(/[^a-zA-Z0-9-]/g, '');
+            
+            return `<fieldset class="song-block ${safeConfidenceClass}" data-type="${cleanType}" data-confidence="${cleanConfidence}">
 <div class="song-block-content">${content}</div>
 </fieldset>`;
         }
