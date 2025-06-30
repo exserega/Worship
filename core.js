@@ -108,12 +108,7 @@ function highlightChords(lyrics) {
     try {
         const result = lyrics.replace(chordRegex, '<span class="chord">$1</span>');
         
-        // ОТЛАДКА: проверяем не появились ли артефакты после highlightChords
-        if (lyrics.includes('Пред-припев') && result.includes('Chorus"')) {
-
-            console.log('  ДО:', lyrics.substring(0, 500));
-            console.log('  ПОСЛЕ:', result.substring(0, 500));
-        }
+        
         
         return result;
     } catch (error) {
@@ -415,12 +410,7 @@ function detectExplicitMarkers(line, context) {
         }
     }
     
-    // ОТЛАДКА: логируем результат для Пред-припев
-    if (trimmed.toLowerCase().includes('пред-припев')) {
-
-        console.log('  trimmed:', JSON.stringify(trimmed));
-        console.log('  bestMatch:', bestMatch);
-    }
+    
     
     return bestMatch;
 }
@@ -556,13 +546,7 @@ function wrapSongBlocks(lyrics) {
                 method: detection.method
             };
             
-            // ОТЛАДКА: логируем создание блоков Пред-припев
-            if (trimmed.toLowerCase().includes('пред-припев')) {
-
-                console.log('  trimmed:', JSON.stringify(trimmed));
-                console.log('  detection:', detection);
-                console.log('  currentBlock:', currentBlock);
-            }
+            
             
             // Обучение: запоминаем успешное распознавание
             if (detection.confidence > 0.7) {
@@ -625,28 +609,9 @@ function wrapSongBlocks(lyrics) {
         const cleanConfidence = safeConfidence.toFixed(2);
         const cleanLegend = safeLegend.replace(/[<>"'&]/g, '').replace(/"/g, '').replace(/data-/g, '');
         
-        // ОТЛАДКА: проверяем очистку для Пред-припев
-        if (safeLegend.toLowerCase().includes('пред-припев')) {
-
-            console.log('  safeType:', JSON.stringify(safeType));
-            console.log('  cleanType:', JSON.stringify(cleanType));
-            console.log('  cleanType длина:', cleanType.length);
-            console.log('  safeMethod:', JSON.stringify(safeMethod));
-            console.log('  cleanMethod:', JSON.stringify(cleanMethod));
-            console.log('  cleanMethod длина:', cleanMethod.length);
-        }
         
-        // ОТЛАДКА: логируем проблемные блоки
-        if (safeLegend.toLowerCase().includes('пред-припев')) {
-
-            console.log('  original.legend:', JSON.stringify(block.legend));
-            console.log('  original.type:', JSON.stringify(block.type));
-            console.log('  original.method:', JSON.stringify(block.method));
-            console.log('  original.confidence:', block.confidence);
-            console.log('  safeLegend:', JSON.stringify(safeLegend));
-            console.log('  cleanLegend:', JSON.stringify(cleanLegend));
-            console.log('  Весь блок:', block);
-        }
+        
+        
         
         if (block.legend) {
             // ДОПОЛНИТЕЛЬНАЯ ЗАЩИТА: проверяем что все переменные безопасны
@@ -658,27 +623,9 @@ function wrapSongBlocks(lyrics) {
 <div class="song-block-content">${content}</div>
 </fieldset>`;
             
-            // ДОПОЛНИТЕЛЬНАЯ ОТЛАДКА: проверяем что попадает в HTML атрибуты
-            if (safeLegend.toLowerCase().includes('пред-припев')) {
+            
 
-                console.log('  Строка data-type="${cleanType}":', `data-type="${cleanType}"`);
-                console.log('  Длина этой части:', `data-type="${cleanType}"`.length);
-                console.log('  Полный fieldset тег:', `<fieldset class="song-block ${safeConfidenceClass}" data-type="${cleanType}" data-confidence="${cleanConfidence}" data-method="${cleanMethod}">`);
-                console.log('  Длина всего fieldset тега:', `<fieldset class="song-block ${safeConfidenceClass}" data-type="${cleanType}" data-confidence="${cleanConfidence}" data-method="${cleanMethod}">`.length);
-            }
 
-            // ОТЛАДКА: логируем генерируемый HTML для Пред-припев
-            if (safeLegend.toLowerCase().includes('пред-припев')) {
-
-                console.log('  safeConfidenceClass:', JSON.stringify(safeConfidenceClass));
-                console.log('  cleanType:', JSON.stringify(cleanType));
-                console.log('  cleanConfidence:', JSON.stringify(cleanConfidence));
-                console.log('  cleanMethod:', JSON.stringify(cleanMethod));
-                console.log('  cleanLegend:', JSON.stringify(cleanLegend));
-                console.log('  safeTitle:', JSON.stringify(safeTitle));
-                console.log('  content длина:', content.length);
-                console.log('  ИТОГОВЫЙ HTML:', JSON.stringify(generatedHTML));
-            }
             
             return generatedHTML;
         } else {
@@ -690,67 +637,11 @@ function wrapSongBlocks(lyrics) {
         }
     });
     
-    // ОТЛАДКА: проверяем блоки ПЕРЕД join()
-    if (lyrics.includes('Пред-припев')) {
 
-        htmlBlocks.forEach((block, i) => {
-            if (block.includes('pre')) {
-                console.log(`  Блок ${i} длина:`, block.length);
-                console.log(`  Блок ${i} содержит Chorus":`, block.includes('Chorus"'));
-                if (block.includes('Chorus"')) {
-                    const chorIndex = block.indexOf('Chorus"');
-                    console.log(`  Позиция Chorus" в блоке ${i}:`, chorIndex);
-                    // Попробуем найти где начинается проблема
-                    const beforeChorus = block.substring(Math.max(0, chorIndex - 20), chorIndex);
-                    const afterChorus = block.substring(chorIndex, chorIndex + 20);
-                    console.log(`  До Chorus":`, JSON.stringify(beforeChorus));
-                    console.log(`  После Chorus":`, JSON.stringify(afterChorus));
-                }
-            }
-        });
-    }
     
     const result = htmlBlocks.join('\n');
     
-    // ОТЛАДКА: проверяем что происходит в wrapSongBlocks
-    if (lyrics.includes('Пред-припев')) {
 
-        console.log('  Входящий lyrics содержит Chorus":', lyrics.includes('Chorus"'));
-        console.log('  Количество блоков:', blocks.length);
-        console.log('  Результат содержит Chorus":', result.includes('Chorus"'));
-        
-        if (result.includes('Chorus"')) {
-            console.log('  НАЙДЕН ИСТОЧНИК АРТЕФАКТА в wrapSongBlocks!');
-            const index = result.indexOf('Chorus"');
-            console.log('  Позиция артефакта:', index);
-            console.log('  Длина результата:', result.length);
-            console.log('  Фрагмент с артефактом (расширенный):', result.substring(Math.max(0, index - 200), index + 200));
-            
-            // Найдем все вхождения 'Chorus"'
-            let searchIndex = 0;
-            const allIndexes = [];
-            while (searchIndex < result.length) {
-                const foundIndex = result.indexOf('Chorus"', searchIndex);
-                if (foundIndex === -1) break;
-                allIndexes.push(foundIndex);
-                searchIndex = foundIndex + 1;
-            }
-            console.log('  Все позиции "Chorus"":', allIndexes);
-            
-            // Проверим каждый блок отдельно
-            htmlBlocks.forEach((blockHTML, i) => {
-                if (blockHTML.includes('Chorus"')) {
-                    console.log(`  БЛОК ${i} содержит артефакт:`, blocks[i]);
-                    console.log(`  HTML блока ${i}:`, blockHTML);
-                    
-                    // Найдем позицию артефакта в этом блоке
-                    const blockIndex = blockHTML.indexOf('Chorus"');
-                    console.log(`  Позиция в блоке ${i}:`, blockIndex);
-                    console.log(`  Фрагмент блока с артефактом:`, blockHTML.substring(Math.max(0, blockIndex - 50), blockIndex + 50));
-                }
-            });
-        }
-    }
     
     return result;
 }
@@ -876,20 +767,7 @@ function getRenderedSongText(originalLyrics, originalKey, targetKey) {
     const blocksWrappedLyrics = wrapSongBlocks(transposedLyrics);
     const finalHighlightedLyrics = highlightChords(blocksWrappedLyrics);
     
-    // ОТЛАДКА: проверяем этапы обработки для Пред-припев
-    if (originalLyrics.includes('Пред-припев')) {
 
-        console.log('  1. processedLyrics содержит Chorus":', processedLyrics.includes('Chorus"'));
-        console.log('  2. transposedLyrics содержит Chorus":', transposedLyrics.includes('Chorus"'));
-        console.log('  3. blocksWrappedLyrics содержит Chorus":', blocksWrappedLyrics.includes('Chorus"'));
-        console.log('  4. finalHighlightedLyrics содержит Chorus":', finalHighlightedLyrics.includes('Chorus"'));
-        
-        if (finalHighlightedLyrics.includes('Chorus"')) {
-            console.log('  НАЙДЕН АРТЕФАКТ! Фрагмент с артефактом:');
-            const index = finalHighlightedLyrics.indexOf('Chorus"');
-            console.log('  ', finalHighlightedLyrics.substring(Math.max(0, index - 100), index + 100));
-        }
-    }
     
     return finalHighlightedLyrics;
 }
