@@ -247,9 +247,27 @@ function detectExplicitMarkers(line, context) {
     
     // НОВЫЕ РАСШИРЕННЫЕ ПАТТЕРНЫ для сложных случаев
     const extendedPatterns = [
-        // Паттерн: "Припев x2:", "Вставка x2:", "Куплет: x2" и т.д.
+        // Паттерн: "Припев x2:", "Вставка x2:", "Куплет: x2", "Куплет2: x2" и т.д.
         {
-            regex: /^(припев|chorus|мост|bridge|куплет|verse|бридж|соло|solo|интро|intro|аутро|outro|вставка|предприпев|pre-chorus|пред\s*припев|пред-припев)\s*[:.]?\s*[xх×]\s*(\d+)\s*[:.]?\s*$/i,
+            regex: /^(припев|chorus|мост|bridge|куплет|verse|бридж|соло|solo|интро|intro|аутро|outro|вставка|предприпев|pre-chorus|пред\s*припев|пред-припев)(\d+)?\s*[:.]?\s*[xх×]\s*(\d+)\s*[:.]?\s*$/i,
+            getType: (match) => {
+                const base = match[1].toLowerCase().replace(/\s+/g, ' ');
+                if (['припев', 'chorus'].includes(base)) return 'chorus';
+                if (['мост', 'bridge', 'бридж'].includes(base)) return 'bridge';
+                if (['куплет', 'verse'].includes(base)) return 'verse';
+                if (['соло', 'solo'].includes(base)) return 'solo';
+                if (['интро', 'intro'].includes(base)) return 'intro';
+                if (['аутро', 'outro'].includes(base)) return 'outro';
+                if (['вставка'].includes(base)) return 'intro';
+                if (['предприпев', 'pre-chorus', 'пред припев', 'пред-припев'].includes(base)) return 'preChorus';
+                return 'unknown';
+            },
+            confidence: 0.95
+        },
+        
+        // Паттерн: "Припев (повтор)", "Куплет (повтор)", "Мост (повтор)" и т.д.
+        {
+            regex: /^(припев|chorus|мост|bridge|куплет|verse|бридж|соло|solo|интро|intro|аутро|outro|вставка|предприпев|pre-chorus|пред\s*припев|пред-припев)(\d+)?\s*\(\s*(повтор|repeat|снова|again)\s*\)\s*[:.]?\s*$/i,
             getType: (match) => {
                 const base = match[1].toLowerCase().replace(/\s+/g, ' ');
                 if (['припев', 'chorus'].includes(base)) return 'chorus';
@@ -564,13 +582,19 @@ function wrapSongBlocks(lyrics) {
         const confidenceClass = block.confidence > 0.8 ? 'high-confidence' : 
                                block.confidence > 0.5 ? 'medium-confidence' : 'low-confidence';
         
+        // Очищаем данные от спецсимволов для HTML-атрибутов
+        const cleanType = (block.type || 'unknown').replace(/[^a-zA-Z0-9]/g, '');
+        const cleanMethod = (block.method || 'unknown').replace(/[^a-zA-Z0-9_]/g, '');
+        const cleanConfidence = block.confidence.toFixed(2);
+        const cleanLegend = block.legend ? block.legend.replace(/[<>"'&]/g, '') : '';
+        
         if (block.legend) {
-            return `<fieldset class="song-block ${confidenceClass}" data-type="${block.type || 'unknown'}" data-confidence="${block.confidence.toFixed(2)}" data-method="${block.method || 'unknown'}">
-<legend class="song-block-legend" title="Уверенность: ${(block.confidence * 100).toFixed(0)}% (${block.method || 'unknown'})">${block.legend}</legend>
+            return `<fieldset class="song-block ${confidenceClass}" data-type="${cleanType}" data-confidence="${cleanConfidence}" data-method="${cleanMethod}">
+<legend class="song-block-legend" title="Уверенность: ${(block.confidence * 100).toFixed(0)}% (${cleanMethod})">${cleanLegend}</legend>
 <div class="song-block-content">${content}</div>
 </fieldset>`;
         } else {
-            return `<fieldset class="song-block ${confidenceClass}" data-type="${block.type || 'unknown'}" data-confidence="${block.confidence.toFixed(2)}">
+            return `<fieldset class="song-block ${confidenceClass}" data-type="${cleanType}" data-confidence="${cleanConfidence}">
 <div class="song-block-content">${content}</div>
 </fieldset>`;
         }
