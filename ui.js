@@ -284,8 +284,8 @@ export function updateToggleChordsButton() {
 
 /** Обновление кнопки "только аккорды" */
 export function updateChordsOnlyButton() {
-    // Используем иконку нот
-    const icon = '<i class="fas fa-font"></i>';
+    // Используем букву T
+    const icon = '<span class="text-icon">T</span>';
     const textShow = state.isChordsOnlyMode ? 
         '<span class="button-text">Полный текст</span>' : 
         '<span class="button-text">Только аккорды</span>';
