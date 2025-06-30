@@ -203,10 +203,41 @@ const ADAPTIVE_DICTIONARY = {
     }
 };
 
+/** ЗАЩИТА ОТ АККОРДОВ: Проверяем, является ли строка аккордом */
+function isChordLine(line) {
+    const trimmed = line.trim();
+    
+    // Список популярных аккордов
+    const commonChords = [
+        'C', 'D', 'E', 'F', 'G', 'A', 'B', 'H',
+        'Cm', 'Dm', 'Em', 'Fm', 'Gm', 'Am', 'Bm', 'Hm',
+        'C7', 'D7', 'E7', 'F7', 'G7', 'A7', 'B7', 'H7',
+        'Cmaj7', 'Dmaj7', 'Emaj7', 'Fmaj7', 'Gmaj7', 'Amaj7', 'Bmaj7',
+        'Csus4', 'Dsus4', 'Esus4', 'Fsus4', 'Gsus4', 'Asus4', 'Bsus4',
+        'C#', 'D#', 'F#', 'G#', 'A#', 'C#m', 'D#m', 'F#m', 'G#m', 'A#m'
+    ];
+    
+    // Проверяем точное совпадение с аккордом
+    if (commonChords.includes(trimmed)) return true;
+    
+    // Проверяем паттерн аккордов с модификаторами
+    const chordPattern = /^[A-H][#b]?(m|maj|min|dim|aug|sus[24]?|add[0-9]|[0-9]+)?(\s*\/\s*[A-H][#b]?)?$/;
+    if (chordPattern.test(trimmed)) return true;
+    
+    // Проверяем строку из нескольких аккордов
+    const words = trimmed.split(/\s+/);
+    if (words.length <= 6 && words.every(word => chordPattern.test(word))) return true;
+    
+    return false;
+}
+
 /** СТРАТЕГИЯ 1: Распознавание явных маркеров */
 function detectExplicitMarkers(line, context) {
     const trimmed = line.trim();
     if (!trimmed) return null;
+    
+    // ЗАЩИТА ОТ АККОРДОВ - если это аккорд, не обрабатываем
+    if (isChordLine(trimmed)) return null;
     
     // СТРОГАЯ проверка: строка должна быть ТОЛЬКО маркером или почти только маркером
     if (trimmed.length > 40) return null; // Увеличиваем лимит для сложных случаев
@@ -216,11 +247,11 @@ function detectExplicitMarkers(line, context) {
     
     // НОВЫЕ РАСШИРЕННЫЕ ПАТТЕРНЫ для сложных случаев
     const extendedPatterns = [
-        // Паттерн: "Припев x3", "Припев x2", "Мост x2" и т.д.
+        // Паттерн: "Припев x2:", "Вставка x2:", "Куплет: x2" и т.д.
         {
-            regex: /^(припев|chorus|мост|bridge|куплет|verse|бридж|соло|solo|интро|intro|аутро|outro|вставка|предприпев|pre-chorus|пред\s*припев|пред-припев)\s*[xх×]\s*(\d+)$/i,
+            regex: /^(припев|chorus|мост|bridge|куплет|verse|бридж|соло|solo|интро|intro|аутро|outro|вставка|предприпев|pre-chorus|пред\s*припев|пред-припев)\s*[:.]?\s*[xх×]\s*(\d+)\s*[:.]?\s*$/i,
             getType: (match) => {
-                const base = match[1].toLowerCase();
+                const base = match[1].toLowerCase().replace(/\s+/g, ' ');
                 if (['припев', 'chorus'].includes(base)) return 'chorus';
                 if (['мост', 'bridge', 'бридж'].includes(base)) return 'bridge';
                 if (['куплет', 'verse'].includes(base)) return 'verse';
@@ -228,17 +259,17 @@ function detectExplicitMarkers(line, context) {
                 if (['интро', 'intro'].includes(base)) return 'intro';
                 if (['аутро', 'outro'].includes(base)) return 'outro';
                 if (['вставка'].includes(base)) return 'intro';
-                if (['предприпев', 'pre-chorus', 'пред припев', 'пред-припев'].includes(base.replace(/\s+/g, ' '))) return 'preChorus';
+                if (['предприпев', 'pre-chorus', 'пред припев', 'пред-припев'].includes(base)) return 'preChorus';
                 return 'unknown';
             },
             confidence: 0.95
         },
         
-        // Паттерн: "Припев 2 вариант", "3 вариант моста", "2 вариант моста" и т.д.
+        // Паттерн: "1 Мост: x2", "2 Куплет: x3" и т.д.
         {
-            regex: /^(\d+\s*)?(припев|chorus|мост|bridge|куплет|verse|бридж|соло|solo|интро|intro|аутро|outro|вставка|предприпев|pre-chorus|пред\s*припев|пред-припев)\s+(\d+\s*)?(вариант|variant)$/i,
+            regex: /^(\d+)\s+(мост|bridge|куплет|verse|припев|chorus|бридж|соло|solo|интро|intro|аутро|outro|вставка|предприпев|pre-chorus|пред\s*припев|пред-припев)\s*[:.]?\s*[xх×]?\s*(\d+)?\s*[:.]?\s*$/i,
             getType: (match) => {
-                const base = match[2].toLowerCase();
+                const base = match[2].toLowerCase().replace(/\s+/g, ' ');
                 if (['припев', 'chorus'].includes(base)) return 'chorus';
                 if (['мост', 'bridge', 'бридж'].includes(base)) return 'bridge';
                 if (['куплет', 'verse'].includes(base)) return 'verse';
@@ -246,15 +277,33 @@ function detectExplicitMarkers(line, context) {
                 if (['интро', 'intro'].includes(base)) return 'intro';
                 if (['аутро', 'outro'].includes(base)) return 'outro';
                 if (['вставка'].includes(base)) return 'intro';
-                if (['предприпев', 'pre-chorus', 'пред припев', 'пред-припев'].includes(base.replace(/\s+/g, ' '))) return 'preChorus';
+                if (['предприпев', 'pre-chorus', 'пред припев', 'пред-припев'].includes(base)) return 'preChorus';
                 return 'unknown';
             },
             confidence: 0.95
         },
         
-        // Паттерн: "2 вариант припева", "3 вариант моста" и т.д.
+        // Паттерн: "Припев 2 вариант", "2 вариант моста:" и т.д.
         {
-            regex: /^(\d+\s*)?(вариант|variant)\s+(припева|chorus|моста|bridge|куплета|verse|бриджа|соло|solo|интро|intro|аутро|outro|вставки|предприпева|pre-chorus)$/i,
+            regex: /^(\d+\s*)?(припев|chorus|мост|bridge|куплет|verse|бридж|соло|solo|интро|intro|аутро|outro|вставка|предприпев|pre-chorus|пред\s*припев|пред-припев)\s+(\d+\s*)?(вариант|variant)\s*[:.]?\s*$/i,
+            getType: (match) => {
+                const base = match[2].toLowerCase().replace(/\s+/g, ' ');
+                if (['припев', 'chorus'].includes(base)) return 'chorus';
+                if (['мост', 'bridge', 'бридж'].includes(base)) return 'bridge';
+                if (['куплет', 'verse'].includes(base)) return 'verse';
+                if (['соло', 'solo'].includes(base)) return 'solo';
+                if (['интро', 'intro'].includes(base)) return 'intro';
+                if (['аутро', 'outro'].includes(base)) return 'outro';
+                if (['вставка'].includes(base)) return 'intro';
+                if (['предприпев', 'pre-chorus', 'пред припев', 'пред-припев'].includes(base)) return 'preChorus';
+                return 'unknown';
+            },
+            confidence: 0.95
+        },
+        
+        // Паттерн: "2 вариант моста:", "3 вариант припева" и т.д.
+        {
+            regex: /^(\d+\s*)?(вариант|variant)\s+(моста|bridge|припева|chorus|куплета|verse|бриджа|соло|solo|интро|intro|аутро|outro|вставки|предприпева|pre-chorus)\s*[:.]?\s*$/i,
             getType: (match) => {
                 const base = match[3].toLowerCase();
                 if (['припева', 'chorus'].includes(base)) return 'chorus';
@@ -342,6 +391,9 @@ function detectStructuralPatterns(lines, lineIndex, context) {
     const trimmed = line.trim();
     
     if (!trimmed) return null;
+    
+    // ЗАЩИТА ОТ АККОРДОВ - если это аккорд, не обрабатываем
+    if (isChordLine(trimmed)) return null;
     
     const results = [];
     
