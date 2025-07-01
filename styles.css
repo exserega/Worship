@@ -1230,24 +1230,24 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active { backg
 
 /* --- Кнопка Копировать текст --- */
 #copy-text-button {
-    position: fixed;    /* ФИКСИРОВАННОЕ позиционирование относительно экрана */
-    top: auto;          /* Будем вычислять позицию динамически через JS */
-    right: auto;        /* Будем вычислять позицию динамически через JS */
-    z-index: 9999;      /* МАКСИМАЛЬНЫЙ z-index чтобы быть поверх всего */
-    width: 28px;        /* Компактный размер */
+    position: absolute;    /* АБСОЛЮТНОЕ позиционирование внутри контейнера */
+    top: 8px;              /* Отступ сверху */
+    right: 8px;            /* Отступ справа */
+    z-index: 10;           /* Поверх содержимого песни */
+    width: 28px;           /* Компактный размер */
     height: 28px;
-    font-size: 0.8rem;  /* Компактная иконка */
+    font-size: 0.8rem;     /* Компактная иконка */
     /* Добавляем границу */
     background: var(--container-background-color) !important;
     border: 1px solid var(--border-color) !important;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-    opacity: 0.8; /* Хорошо видимая */
+    opacity: 0.8;          /* Хорошо видимая */
     transition: opacity 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-    display: none; /* По умолчанию скрыта, пока не выбрана песня */
-    transform: translate(1px, 30px); /* Сдвигаем кнопку на 1px вправо и 30px вниз (было 34px) */
+    display: none;         /* По умолчанию скрыта, пока не выбрана песня */
+    transform: none;       /* Убираем transform */
 }
 #copy-text-button:hover {
-    opacity: 1; /* Полностью видимая при наведении */
+    opacity: 1;            /* Полностью видимая при наведении */
 }
 /* Стиль для состояния "Скопировано" */
 #copy-text-button.copied {
@@ -2298,7 +2298,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
          /* Кнопка Копировать на мобильных */
      #copy-text-button {
-         /* Позиция будет устанавливаться через JS и на мобильных */
+         /* Абсолютное позиционирование внутри контейнера песни */
          width: 26px;    /* Еще компактнее на мобильных */
          height: 26px;
          font-size: 0.75rem;
