@@ -1,5 +1,4 @@
-// Agape Worship App - state/metronomeState.js
-// Состояние метронома
+// Agape Worship App - State: Metronome State Module
 
 // --- METRONOME STATE ---
 export let audioContext;
@@ -8,7 +7,7 @@ export let metronomeInterval = null;
 export let isMetronomeActive = false;
 export let currentBeat = 0;
 
-// Functions to update metronome state
+// Functions to update state
 export function setAudioContext(context) { audioContext = context; }
 export function setAudioBuffer(buffer) { audioBuffer = buffer; }
 export function setMetronomeInterval(interval) { metronomeInterval = interval; }

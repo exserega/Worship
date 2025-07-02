@@ -21,7 +21,6 @@ export function setCurrentVocalistName(name) { currentVocalistName = name; }
 export function setCurrentFontSize(size) { currentFontSize = size; }
 export function setAreChordsVisible(visible) {
     areChordsVisible = visible;
-    isPresentationSplit = visible;
 }
 export function setIsChordsOnlyMode(onlyMode) {
     isChordsOnlyMode = onlyMode;

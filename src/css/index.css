@@ -1,6 +1,10 @@
 /* ======================================== */
-/* Agape Worship App - Modular CSS         */
+/* Agape Worship App - Main CSS */
 /* ======================================== */
+
+/* Import all CSS modules */
+@import './variables.css';
+@import './base.css';
 
 /* Import base styles */
 @import './base/variables.css';
