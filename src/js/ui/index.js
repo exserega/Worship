@@ -1,15 +1,19 @@
-// Agape Worship App - ui/index.js
-// Основной модуль UI, объединяющий все подмодули
+// Agape Worship App - UI modules index.js
 
-// Экспортируем все из подмодулей
-export * from './dom.js';
-export * from './themes.js';
-export * from './panels.js';
-export * from './components/songDisplay.js';
-export * from './components/presentation.js';
-export * from './components/chordBlocks.js';
-export * from './components/songEditor.js';
-export * from './components/search.js';
-export * from './components/repertoire.js';
-export * from './components/lists.js';
-export * from './components/utils.js'; 
+// Re-export all DOM references
+export * from './domReferences.js';
+
+// Re-export general UI functions
+export * from './general.js';
+
+// Re-export song display functions
+export * from './songDisplay.js';
+
+// Re-export chord blocks functions
+export * from './chordBlocks.js';
+
+// Re-export utils functions
+export * from './utils.js';
+
+// Re-export song editor functions
+export * from './songEditor.js'; 
