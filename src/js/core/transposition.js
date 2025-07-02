@@ -110,4 +110,4 @@ export function highlightChords(lyrics) {
         console.error("Ошибка при выделении аккордов:", error, "Текст:", lyrics.substring(0, 100) + "...");
         return lyrics;
     }
-} 
+}

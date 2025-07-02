@@ -2,18 +2,20 @@
 // Основной модуль core, объединяющий все подмодули
 
 // Импортируем все функции из подмодулей
-import { getTransposition, transposeLyrics, processLyrics, highlightChords } from './transposition.js';
+export { 
+    getTransposition, 
+    transposeLyrics, 
+    processLyrics, 
+    highlightChords 
+} from './transposition.js';
 
 export { 
     setupAudioContext, 
     resumeAudioContext, 
+    loadAudioFile,
+    playClick,
     toggleMetronome, 
-    getMetronomeState,
-    audioContext, 
-    audioBuffer, 
-    metronomeInterval, 
-    isMetronomeActive, 
-    currentBeat 
+    getMetronomeState
 } from './metronome.js';
 
 export { 
