@@ -1,18 +1,15 @@
-// Agape Worship App - api/repertoire.js
-// API для работы с репертуаром вокалистов
+// Agape Worship App - API: Repertoire Module
 
-import { db } from '../../config/firebase.js';
+import { db } from '../../../firebase-config.js';
 import {
-    collection, getDocs, query, onSnapshot, updateDoc, deleteDoc, setDoc, doc, where, serverTimestamp
+    collection, getDocs, onSnapshot, query, updateDoc, deleteDoc, setDoc, doc, serverTimestamp, where
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import * as state from '../state/index.js';
+import * as state from '../../../state.js';
 
 const vocalistsCollection = collection(db, "vocalists");
 
-// --- VOCALISTS & REPERTOIRE ---
-
 /** Загрузка списка вокалистов */
-export async function loadVocalists() {
+async function loadVocalists() {
     console.log("Загрузка списка вокалистов...");
     const querySnapshot = await getDocs(vocalistsCollection);
     const vocalists = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -21,7 +18,7 @@ export async function loadVocalists() {
 }
 
 /** Загрузка репертуара вокалиста с использованием callback для обновления UI */
-export function loadRepertoire(vocalistId, onRepertoireUpdate) {
+function loadRepertoire(vocalistId, onRepertoireUpdate) {
     if (state.currentRepertoireUnsubscribe) {
         state.currentRepertoireUnsubscribe();
     }
@@ -51,7 +48,7 @@ export function loadRepertoire(vocalistId, onRepertoireUpdate) {
  * @param {string} preferredKey - Выбранная тональность.
  * @returns {Promise<{status: string, key: string}>}
  */
-export async function addToRepertoire(vocalistId, song, preferredKey) {
+async function addToRepertoire(vocalistId, song, preferredKey) {
     const repertoireCol = collection(db, 'vocalists', vocalistId, 'repertoire');
     const q = query(repertoireCol, where("name", "==", song.name));
 
@@ -82,8 +79,15 @@ export async function addToRepertoire(vocalistId, song, preferredKey) {
 }
 
 /** Удаление песни из репертуара вокалиста */
-export async function removeFromRepertoire(vocalistId, repertoireDocId) {
+async function removeFromRepertoire(vocalistId, repertoireDocId) {
     if (!vocalistId || !repertoireDocId) return;
     const docRef = doc(db, 'vocalists', vocalistId, 'repertoire', repertoireDocId);
     await deleteDoc(docRef);
-} 
+}
+
+export {
+    loadVocalists,
+    loadRepertoire,
+    addToRepertoire,
+    removeFromRepertoire
+}; 

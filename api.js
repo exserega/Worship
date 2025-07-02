@@ -1,5 +1,9 @@
 // Agape Worship App - api.js
 
+// Import from new modular API structure
+import * as api from './src/js/api/index.js';
+
+// Legacy imports for backward compatibility
 import { db } from './firebase-config.js';
 import {
     collection, addDoc, query, onSnapshot, updateDoc, deleteDoc, setDoc, doc,
@@ -14,73 +18,16 @@ const vocalistsCollection = collection(db, "vocalists");
 // --- SONGS ---
 
 /** Загрузка данных со ВСЕХ песен из Firestore */
-async function loadAllSongsFromFirestore() {
-    console.log("Загрузка всех песен из Firestore...");
-    const querySnapshot = await getDocs(songsCollection);
-    let newAllSongs = [];
-    let newSongsBySheet = {};
-
-    querySnapshot.forEach(doc => {
-        const songData = doc.data();
-        const songId = doc.id;
-        const song = { id: songId, name: songId, ...songData };
-        newAllSongs.push(song);
-
-        const sheetName = song.sheet;
-        if (sheetName) {
-            if (!newSongsBySheet[sheetName]) {
-                newSongsBySheet[sheetName] = [];
-            }
-            newSongsBySheet[sheetName].push(song);
-        } else {
-            console.warn(`Песня "${song.name}" (${songId}) не имеет поля 'sheet' (категории).`);
-        }
-    });
-
-    newAllSongs.sort((a, b) => a.name.localeCompare(b.name));
-    for (const category in newSongsBySheet) {
-        newSongsBySheet[category].sort((a, b) => a.name.localeCompare(b.name));
-    }
-    
-    state.setAllSongs(newAllSongs);
-    state.setSongsBySheet(newSongsBySheet);
-    console.log(`Загружено ${state.allSongs.length} песен.`);
-}
+const loadAllSongsFromFirestore = api.loadAllSongsFromFirestore;
 
 
 // --- VOCALISTS & REPERTOIRE ---
 
 /** Загрузка списка вокалистов */
-async function loadVocalists() {
-    console.log("Загрузка списка вокалистов...");
-    const querySnapshot = await getDocs(vocalistsCollection);
-    const vocalists = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    console.log("Список вокалистов успешно загружен.");
-    return vocalists;
-}
+const loadVocalists = api.loadVocalists;
 
 /** Загрузка репертуара вокалиста с использованием callback для обновления UI */
-function loadRepertoire(vocalistId, onRepertoireUpdate) {
-    if (state.currentRepertoireUnsubscribe) {
-        state.currentRepertoireUnsubscribe();
-    }
-    if (!vocalistId) {
-        onRepertoireUpdate({ data: [], error: null });
-        return;
-    }
-    const repertoireColRef = collection(db, "vocalists", vocalistId, "repertoire");
-    const q = query(repertoireColRef);
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-        if (vocalistId !== state.currentVocalistId) return;
-        const songsData = snapshot.docs.map(doc => ({ ...doc.data(), repertoireDocId: doc.id }));
-        onRepertoireUpdate({ data: songsData, error: null });
-    }, (error) => {
-        console.error(`!!! ОШИБКА Firestore onSnapshot для репертуара ${vocalistId}:`, error);
-        onRepertoireUpdate({ data: [], error });
-    });
-    state.setCurrentRepertoireUnsubscribe(unsubscribe);
-}
+const loadRepertoire = api.loadRepertoire;
 
 /**
  * Добавляет или обновляет песню в репертуаре вокалиста.
@@ -90,42 +37,10 @@ function loadRepertoire(vocalistId, onRepertoireUpdate) {
  * @param {string} preferredKey - Выбранная тональность.
  * @returns {Promise<{status: string, key: string}>}
  */
-async function addToRepertoire(vocalistId, song, preferredKey) {
-    const repertoireCol = collection(db, 'vocalists', vocalistId, 'repertoire');
-    const q = query(repertoireCol, where("name", "==", song.name));
-
-    const querySnapshot = await getDocs(q);
-
-    if (!querySnapshot.empty) {
-        // Песня найдена, проверяем тональность
-        const repertoireDoc = querySnapshot.docs[0];
-        if (repertoireDoc.data().preferredKey !== preferredKey) {
-            // Обновляем тональность
-            await updateDoc(repertoireDoc.ref, { preferredKey: preferredKey });
-            return { status: 'updated', key: preferredKey };
-        } else {
-            return { status: 'exists', key: preferredKey };
-        }
-    } else {
-        // Песня не найдена, добавляем новую
-        // ID документа = ID песни для консистентности
-        const docRef = doc(db, 'vocalists', vocalistId, 'repertoire', song.id);
-        await setDoc(docRef, {
-            name: song.name,
-            sheet: song.sheet,
-            preferredKey: preferredKey,
-            addedAt: serverTimestamp()
-        });
-        return { status: 'added', key: preferredKey };
-    }
-}
+const addToRepertoire = api.addToRepertoire;
 
 /** Удаление песни из репертуара вокалиста */
-async function removeFromRepertoire(vocalistId, repertoireDocId) {
-    if (!vocalistId || !repertoireDocId) return;
-    const docRef = doc(db, 'vocalists', vocalistId, 'repertoire', repertoireDocId);
-    await deleteDoc(docRef);
-}
+const removeFromRepertoire = api.removeFromRepertoire;
 
 // --- SETLISTS ---
 
@@ -133,43 +48,20 @@ async function removeFromRepertoire(vocalistId, repertoireDocId) {
  * Загружает все сетлисты из Firestore.
  * @returns {Promise<Array>} Массив объектов сетлистов.
  */
-async function loadSetlists() {
-    const setlistsCol = collection(db, "worship_setlists");
-    const q = query(setlistsCol, orderBy("createdAt", "desc"));
-    const snapshot = await getDocs(q);
-    if (snapshot.empty) {
-        console.log("No setlists found.");
-        return [];
-    }
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-}
+const loadSetlists = api.loadSetlists;
 
 /**
  * Создает новый сетлист в Firestore.
  * @param {string} name - Название нового сетлиста.
  * @returns {Promise<DocumentReference>} Ссылка на созданный документ.
  */
-async function createSetlist(name) {
-    if (!name || name.trim() === '') {
-        throw new Error("Setlist name cannot be empty.");
-    }
-    const setlistsCol = collection(db, "worship_setlists");
-    return await addDoc(setlistsCol, {
-        name: name.trim(),
-        createdAt: serverTimestamp(),
-        songs: [] // Инициализируем пустым массивом песен
-    });
-}
+const createSetlist = api.createSetlist;
 
 /**
  * Удаляет сетлист из Firestore.
  * @param {string} setlistId - ID удаляемого сетлиста.
  */
-async function deleteSetlist(setlistId) {
-    if (!setlistId) return;
-    const docRef = doc(db, 'worship_setlists', setlistId);
-    await deleteDoc(docRef);
-}
+const deleteSetlist = api.deleteSetlist;
 
 /**
  * Добавляет песню в массив `songs` документа сетлиста или предлагает обновить ключ.
@@ -178,31 +70,7 @@ async function deleteSetlist(setlistId) {
  * @param {string} preferredKey
  * @returns {Promise<{status: string, existingKey?: string, message?: string}>}
  */
-async function addSongToSetlist(setlistId, songId, preferredKey) {
-    const setlistRef = doc(db, "worship_setlists", setlistId);
-    let result = {};
-    await runTransaction(db, async (transaction) => {
-        const setlistDoc = await transaction.get(setlistRef);
-        if (!setlistDoc.exists()) throw new Error("Setlist does not exist!");
-
-        const songs = setlistDoc.data().songs || [];
-        const existingSongIndex = songs.findIndex(s => s.songId === songId);
-
-        if (existingSongIndex > -1) {
-            const existingSong = songs[existingSongIndex];
-            if (existingSong.preferredKey !== preferredKey) {
-                result = { status: 'duplicate_key', existingKey: existingSong.preferredKey };
-            } else {
-                result = { status: 'duplicate_same' };
-            }
-        } else {
-            songs.push({ songId, preferredKey, order: songs.length });
-            transaction.update(setlistRef, { songs });
-            result = { status: 'added' };
-        }
-    });
-    return result;
-}
+const addSongToSetlist = api.addSongToSetlist;
 
 /**
  * Обновляет тональность существующей песни в сетлисте.
@@ -210,84 +78,23 @@ async function addSongToSetlist(setlistId, songId, preferredKey) {
  * @param {string} songId
  * @param {string} newKey
  */
-async function updateSongKeyInSetlist(setlistId, songId, newKey) {
-    const setlistRef = doc(db, "worship_setlists", setlistId);
-     return await runTransaction(db, async (transaction) => {
-        const setlistDoc = await transaction.get(setlistRef);
-        if (!setlistDoc.exists()) throw new Error("Setlist does not exist!");
-        const songs = setlistDoc.data().songs || [];
-        const songIndex = songs.findIndex(s => s.songId === songId);
-        if (songIndex > -1) {
-            songs[songIndex].preferredKey = newKey;
-            transaction.update(setlistRef, { songs });
-        }
-    });
-}
+const updateSongKeyInSetlist = api.updateSongKeyInSetlist;
 
 /**
  * Удаляет песню из массива `songs` в документе сетлиста.
  * @param {string} setlistId
  * @param {string} songIdToRemove
  */
-async function removeSongFromSetlist(setlistId, songIdToRemove) {
-    const setlistRef = doc(db, "worship_setlists", setlistId);
-    return await runTransaction(db, async (transaction) => {
-        const setlistDoc = await transaction.get(setlistRef);
-        if (!setlistDoc.exists()) throw new Error("Setlist does not exist!");
-
-        const songs = setlistDoc.data().songs || [];
-        const updatedSongs = songs.filter(song => song.songId !== songIdToRemove);
-
-        // Пересчитываем `order` для оставшихся песен
-        const reorderedSongs = updatedSongs.map((song, index) => ({ ...song, order: index }));
-
-        transaction.update(setlistRef, { songs: reorderedSongs });
-    });
-}
+const removeSongFromSetlist = api.removeSongFromSetlist;
 
 
 // --- FAVORITES (MY LIST) ---
 
 /** Добавляет или обновляет песню в "Моем списке" */
-async function addToFavorites(songId, preferredKey) {
-    const favoritesDocRef = doc(db, "favorites", "main_list");
-    let result = { status: 'no-change' };
-
-    await runTransaction(db, async (transaction) => {
-        const docSnap = await transaction.get(favoritesDocRef);
-        const existingSongs = docSnap.exists() ? (docSnap.data().songs || []) : [];
-        const existingSongIndex = existingSongs.findIndex(s => s.songId === songId);
-
-        if (existingSongIndex > -1) {
-            const existingEntry = existingSongs[existingSongIndex];
-            if (existingEntry.preferredKey !== preferredKey) {
-                existingSongs[existingSongIndex].preferredKey = preferredKey;
-                result = { status: 'updated', key: preferredKey };
-            } else {
-                result = { status: 'exists', key: preferredKey };
-            }
-        } else {
-            existingSongs.push({ songId, preferredKey });
-            result = { status: 'added', key: preferredKey };
-        }
-        transaction.set(favoritesDocRef, { songs: existingSongs }, { merge: true });
-    });
-    return result;
-}
+const addToFavorites = api.addToFavorites;
 
 /** Удаление песни из избранного */
-async function removeFromFavorites(songIdToRemove) {
-    const favoritesDocRef = doc(db, "favorites", "main_list");
-    await runTransaction(db, async (transaction) => {
-        const docSnap = await transaction.get(favoritesDocRef);
-        if (!docSnap.exists()) return;
-
-        const existingSongs = docSnap.data().songs || [];
-        const updatedSongs = existingSongs.filter(song => song.songId !== songIdToRemove);
-        
-        transaction.set(favoritesDocRef, { songs: updatedSongs }, { merge: true });
-    });
-}
+const removeFromFavorites = api.removeFromFavorites;
 
 
 // --- SONG EDITING ---
@@ -298,84 +105,21 @@ async function removeFromFavorites(songIdToRemove) {
  * @param {string} editedContent - Отредактированный текст с аккордами
  * @returns {Promise<void>}
  */
-async function saveSongEdit(songId, editedContent) {
-    if (!songId || !editedContent) {
-        throw new Error('songId и editedContent обязательны');
-    }
-    
-    const songRef = doc(db, 'songs', songId);
-    
-    try {
-        await updateDoc(songRef, {
-            'Текст и аккорды (edited)': editedContent,
-            'hasWebEdits': true,
-            'lastEditedInApp': serverTimestamp(),
-            'editedBy': 'web-user' // TODO: добавить ID пользователя при авторизации
-        });
-        console.log(`✅ Песня "${songId}" успешно отредактирована`);
-    } catch (error) {
-        console.error(`❌ Ошибка сохранения изменений для "${songId}":`, error);
-        throw error;
-    }
-}
+const saveSongEdit = api.saveSongEdit;
 
 /**
  * Откатывает песню к оригинальному тексту из Google Таблицы
  * @param {string} songId - ID песни
  * @returns {Promise<void>}
  */
-async function revertToOriginal(songId) {
-    if (!songId) {
-        throw new Error('songId обязателен');
-    }
-    
-    const songRef = doc(db, 'songs', songId);
-    
-    try {
-        await updateDoc(songRef, {
-            'hasWebEdits': false,
-            'Текст и аккорды (edited)': deleteField(),
-            'lastEditedInApp': deleteField(),
-            'editedBy': deleteField()
-        });
-        console.log(`🔄 Песня "${songId}" возвращена к оригиналу`);
-    } catch (error) {
-        console.error(`❌ Ошибка отката для "${songId}":`, error);
-        throw error;
-    }
-}
+const revertToOriginal = api.revertToOriginal;
 
 /**
  * Получает статус редактирования песни
  * @param {string} songId - ID песни
  * @returns {Promise<{hasWebEdits: boolean, lastEditedInApp: any, editedBy: string}>}
  */
-async function getSongEditStatus(songId) {
-    if (!songId) {
-        throw new Error('songId обязателен');
-    }
-    
-    const songRef = doc(db, 'songs', songId);
-    
-    try {
-        const docSnap = await getDoc(songRef);
-        if (!docSnap.exists()) {
-            throw new Error(`Песня "${songId}" не найдена`);
-        }
-        
-        const data = docSnap.data();
-        return {
-            hasWebEdits: data.hasWebEdits || false,
-            lastEditedInApp: data.lastEditedInApp || null,
-            editedBy: data.editedBy || null,
-            editedContent: data['Текст и аккорды (edited)'] || null,
-            originalContent: data['Текст и аккорды'] || ''
-        };
-    } catch (error) {
-        console.error(`❌ Ошибка получения статуса для "${songId}":`, error);
-        throw error;
-    }
-}
+const getSongEditStatus = api.getSongEditStatus;
 
 
 export {

@@ -1,18 +1,17 @@
-// Agape Worship App - api/songs.js
-// API для работы с песнями
+// Agape Worship App - API: Songs Module
 
-import { db } from '../../config/firebase.js';
+import { db } from '../../../firebase-config.js';
 import {
     collection, getDocs, updateDoc, doc, setDoc, deleteField, getDoc
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import * as state from '../state/index.js';
+import * as state from '../../../state.js';
 
 const songsCollection = collection(db, "songs");
 
 // --- SONGS ---
 
 /** Загрузка данных со ВСЕХ песен из Firestore */
-export async function loadAllSongsFromFirestore() {
+async function loadAllSongsFromFirestore() {
     console.log("Загрузка всех песен из Firestore...");
     const querySnapshot = await getDocs(songsCollection);
     let newAllSongs = [];
@@ -115,4 +114,8 @@ export async function getSongEditStatus(songId) {
         console.error("Ошибка при получении статуса редактирования:", error);
         throw error;
     }
-} 
+}
+
+export {
+    loadAllSongsFromFirestore
+}; 

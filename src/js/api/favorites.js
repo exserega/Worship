@@ -1,62 +1,52 @@
-// Agape Worship App - api/favorites.js
-// API для работы с избранным
+// Agape Worship App - API: Favorites Module
 
-import * as state from '../state/index.js';
+import { db } from '../../../firebase-config.js';
+import {
+    doc, runTransaction
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-// --- FAVORITES ---
+/** Добавляет или обновляет песню в "Моем списке" */
+async function addToFavorites(songId, preferredKey) {
+    const favoritesDocRef = doc(db, "favorites", "main_list");
+    let result = { status: 'no-change' };
 
-/**
- * Добавляет песню в избранное.
- * @param {string} songId - ID песни.
- * @param {string} preferredKey - Предпочитаемая тональность.
- * @returns {Promise<{status: string}>}
- */
-export async function addToFavorites(songId, preferredKey) {
-    try {
-        const song = state.allSongs.find(s => s.id === songId);
-        if (!song) {
-            throw new Error("Song not found");
-        }
+    await runTransaction(db, async (transaction) => {
+        const docSnap = await transaction.get(favoritesDocRef);
+        const existingSongs = docSnap.exists() ? (docSnap.data().songs || []) : [];
+        const existingSongIndex = existingSongs.findIndex(s => s.songId === songId);
 
-        const existingIndex = state.favorites.findIndex(f => f.songId === songId);
-        
-        if (existingIndex > -1) {
-            // Песня уже в избранном, обновляем тональность
-            state.favorites[existingIndex].preferredKey = preferredKey;
-            state.setFavorites([...state.favorites]);
-            return { status: 'updated' };
+        if (existingSongIndex > -1) {
+            const existingEntry = existingSongs[existingSongIndex];
+            if (existingEntry.preferredKey !== preferredKey) {
+                existingSongs[existingSongIndex].preferredKey = preferredKey;
+                result = { status: 'updated', key: preferredKey };
+            } else {
+                result = { status: 'exists', key: preferredKey };
+            }
         } else {
-            // Добавляем новую песню в избранное
-            const newFavorite = {
-                songId: songId,
-                name: song.name,
-                sheet: song.sheet,
-                preferredKey: preferredKey,
-                addedAt: new Date().toISOString()
-            };
-            
-            const newFavorites = [...state.favorites, newFavorite];
-            state.setFavorites(newFavorites);
-            return { status: 'added' };
+            existingSongs.push({ songId, preferredKey });
+            result = { status: 'added', key: preferredKey };
         }
-    } catch (error) {
-        console.error("Ошибка при добавлении в избранное:", error);
-        throw error;
-    }
+        transaction.set(favoritesDocRef, { songs: existingSongs }, { merge: true });
+    });
+    return result;
 }
 
-/**
- * Удаляет песню из избранного.
- * @param {string} songIdToRemove - ID песни для удаления.
- * @returns {Promise<{status: string}>}
- */
-export async function removeFromFavorites(songIdToRemove) {
-    try {
-        const newFavorites = state.favorites.filter(f => f.songId !== songIdToRemove);
-        state.setFavorites(newFavorites);
-        return { status: 'removed' };
-    } catch (error) {
-        console.error("Ошибка при удалении из избранного:", error);
-        throw error;
-    }
-} 
+/** Удаление песни из избранного */
+async function removeFromFavorites(songIdToRemove) {
+    const favoritesDocRef = doc(db, "favorites", "main_list");
+    await runTransaction(db, async (transaction) => {
+        const docSnap = await transaction.get(favoritesDocRef);
+        if (!docSnap.exists()) return;
+
+        const existingSongs = docSnap.data().songs || [];
+        const updatedSongs = existingSongs.filter(song => song.songId !== songIdToRemove);
+        
+        transaction.set(favoritesDocRef, { songs: updatedSongs }, { merge: true });
+    });
+}
+
+export {
+    addToFavorites,
+    removeFromFavorites
+}; 

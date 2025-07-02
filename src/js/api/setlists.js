@@ -1,18 +1,15 @@
-// Agape Worship App - api/setlists.js
-// API для работы с сет-листами
+// Agape Worship App - API: Setlists Module
 
-import { db } from '../../config/firebase.js';
+import { db } from '../../../firebase-config.js';
 import {
     collection, addDoc, query, orderBy, getDocs, deleteDoc, doc, runTransaction, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
-// --- SETLISTS ---
 
 /**
  * Загружает все сетлисты из Firestore.
  * @returns {Promise<Array>} Массив объектов сетлистов.
  */
-export async function loadSetlists() {
+async function loadSetlists() {
     const setlistsCol = collection(db, "worship_setlists");
     const q = query(setlistsCol, orderBy("createdAt", "desc"));
     const snapshot = await getDocs(q);
@@ -28,7 +25,7 @@ export async function loadSetlists() {
  * @param {string} name - Название нового сетлиста.
  * @returns {Promise<DocumentReference>} Ссылка на созданный документ.
  */
-export async function createSetlist(name) {
+async function createSetlist(name) {
     if (!name || name.trim() === '') {
         throw new Error("Setlist name cannot be empty.");
     }
@@ -44,7 +41,7 @@ export async function createSetlist(name) {
  * Удаляет сетлист из Firestore.
  * @param {string} setlistId - ID удаляемого сетлиста.
  */
-export async function deleteSetlist(setlistId) {
+async function deleteSetlist(setlistId) {
     if (!setlistId) return;
     const docRef = doc(db, 'worship_setlists', setlistId);
     await deleteDoc(docRef);
@@ -57,7 +54,7 @@ export async function deleteSetlist(setlistId) {
  * @param {string} preferredKey
  * @returns {Promise<{status: string, existingKey?: string, message?: string}>}
  */
-export async function addSongToSetlist(setlistId, songId, preferredKey) {
+async function addSongToSetlist(setlistId, songId, preferredKey) {
     const setlistRef = doc(db, "worship_setlists", setlistId);
     let result = {};
     await runTransaction(db, async (transaction) => {
@@ -84,72 +81,51 @@ export async function addSongToSetlist(setlistId, songId, preferredKey) {
 }
 
 /**
- * Обновляет тональность песни в сетлисте.
+ * Обновляет тональность существующей песни в сетлисте.
  * @param {string} setlistId
  * @param {string} songId
  * @param {string} newKey
  */
-export async function updateSongKeyInSetlist(setlistId, songId, newKey) {
+async function updateSongKeyInSetlist(setlistId, songId, newKey) {
     const setlistRef = doc(db, "worship_setlists", setlistId);
-    await runTransaction(db, async (transaction) => {
+     return await runTransaction(db, async (transaction) => {
         const setlistDoc = await transaction.get(setlistRef);
         if (!setlistDoc.exists()) throw new Error("Setlist does not exist!");
-
         const songs = setlistDoc.data().songs || [];
         const songIndex = songs.findIndex(s => s.songId === songId);
-        
         if (songIndex > -1) {
             songs[songIndex].preferredKey = newKey;
             transaction.update(setlistRef, { songs });
-        } else {
-            throw new Error("Song not found in setlist");
         }
     });
 }
 
 /**
- * Удаляет песню из сетлиста.
+ * Удаляет песню из массива `songs` в документе сетлиста.
  * @param {string} setlistId
  * @param {string} songIdToRemove
  */
-export async function removeSongFromSetlist(setlistId, songIdToRemove) {
+async function removeSongFromSetlist(setlistId, songIdToRemove) {
     const setlistRef = doc(db, "worship_setlists", setlistId);
-    await runTransaction(db, async (transaction) => {
+    return await runTransaction(db, async (transaction) => {
         const setlistDoc = await transaction.get(setlistRef);
         if (!setlistDoc.exists()) throw new Error("Setlist does not exist!");
 
         const songs = setlistDoc.data().songs || [];
-        const filteredSongs = songs.filter(s => s.songId !== songIdToRemove);
-        
-        // Обновляем порядок оставшихся песен
-        filteredSongs.forEach((song, index) => {
-            song.order = index;
-        });
-        
-        transaction.update(setlistRef, { songs: filteredSongs });
+        const updatedSongs = songs.filter(song => song.songId !== songIdToRemove);
+
+        // Пересчитываем `order` для оставшихся песен
+        const reorderedSongs = updatedSongs.map((song, index) => ({ ...song, order: index }));
+
+        transaction.update(setlistRef, { songs: reorderedSongs });
     });
 }
 
-/**
- * Сохраняет заметку для песни в сетлисте.
- * @param {string} setlistId
- * @param {string} songDocId
- * @param {string} noteText
- */
-export async function saveNoteForSongInSetlist(setlistId, songDocId, noteText) {
-    const setlistRef = doc(db, "worship_setlists", setlistId);
-    await runTransaction(db, async (transaction) => {
-        const setlistDoc = await transaction.get(setlistRef);
-        if (!setlistDoc.exists()) throw new Error("Setlist does not exist!");
-
-        const songs = setlistDoc.data().songs || [];
-        const songIndex = songs.findIndex(s => s.songId === songDocId);
-        
-        if (songIndex > -1) {
-            songs[songIndex].note = noteText;
-            transaction.update(setlistRef, { songs });
-        } else {
-            throw new Error("Song not found in setlist");
-        }
-    });
-} 
+export {
+    loadSetlists,
+    createSetlist,
+    deleteSetlist,
+    addSongToSetlist,
+    updateSongKeyInSetlist,
+    removeSongFromSetlist
+}; 
