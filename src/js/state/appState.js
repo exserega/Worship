@@ -1,5 +1,4 @@
-// Agape Worship App - state/appState.js
-// Основное состояние приложения
+// Agape Worship App - State: App State Module
 
 // --- GLOBAL STATE ---
 export let allSongs = [];
@@ -16,19 +15,13 @@ export let currentRepertoireViewMode = 'byKey';
 // Functions to update state
 export function setAllSongs(newSongs) { allSongs = newSongs; }
 export function setSongsBySheet(newSongsBySheet) { songsBySheet = newSongsBySheet; }
-export function setFavorites(newFavorites) { 
-    favorites = newFavorites; 
-    try {
-        localStorage.setItem('favorites', JSON.stringify(newFavorites));
-    } catch (e) {
-        console.error("Ошибка сохранения избранного в localStorage:", e);
-    }
-}
+export function setFavorites(newFavorites) { favorites = newFavorites; }
 export function setCurrentVocalistId(id) { currentVocalistId = id; }
 export function setCurrentVocalistName(name) { currentVocalistName = name; }
 export function setCurrentFontSize(size) { currentFontSize = size; }
 export function setAreChordsVisible(visible) {
     areChordsVisible = visible;
+    isPresentationSplit = visible;
 }
 export function setIsChordsOnlyMode(onlyMode) {
     isChordsOnlyMode = onlyMode;

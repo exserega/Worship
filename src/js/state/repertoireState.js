@@ -1,8 +1,7 @@
-// Agape Worship App - state/repertoireState.js
-// Состояние репертуара
+// Agape Worship App - State: Repertoire State Module
 
 // --- REPERTOIRE STATE ---
 export let currentRepertoireUnsubscribe = null;
 
-// Functions to update repertoire state
+// Functions to update state
 export function setCurrentRepertoireUnsubscribe(unsubscribe) { currentRepertoireUnsubscribe = unsubscribe; } 

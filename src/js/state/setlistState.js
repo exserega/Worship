@@ -1,5 +1,4 @@
-// Agape Worship App - state/setlistState.js
-// Состояние сет-листов
+// Agape Worship App - State: Setlist State Module
 
 // --- SETLIST STATE ---
 export let currentSetlistId = null;
@@ -8,7 +7,7 @@ export let currentSetlistSongs = [];
 export let currentSetlistSongsUnsubscribe = null;
 export let setlists = [];
 
-// Functions to update setlist state
+// Functions to update state
 export function setCurrentSetlistId(id) {
     currentSetlistId = id;
     const selectedSetlist = setlists.find(s => s.id === id);
