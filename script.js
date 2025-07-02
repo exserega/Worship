@@ -429,29 +429,6 @@ function setupEventListeners() {
         ui.updateToggleChordsButton();
     });
 
-
-
-    ui.favoriteButton.addEventListener('click', async () => {
-        const songId = ui.songSelect.value;
-        const key = ui.keySelect.value;
-        const songName = state.allSongs.find(s=>s.id === songId)?.name || 'Эту песню';
-        if (!songId) { alert("Пожалуйста, выберите песню."); return; }
-
-        const result = await api.addToFavorites(songId, key);
-        
-        if (result.status === 'added') {
-            alert(`Песня "${songName}" (${result.key}) добавлена в 'Мой список'.`);
-        } else if (result.status === 'updated') {
-            alert(`Тональность песни "${songName}" в 'Моем списке' обновлена на ${result.key}.`);
-        } else if (result.status === 'exists') {
-            alert(`Песня "${songName}" уже есть в 'Моем списке' с той же тональностью.`);
-        }
-    });
-
-    ui.addToSetlistButton.addEventListener('click', handleAddSongToSetlist);
-
-    ui.addToRepertoireButton.addEventListener('click', handleAddToRepertoire);
-
     // --- Переключение темы ---
     ui.themeToggleButton.addEventListener('click', () => {
         const currentTheme = document.body.dataset.theme;
@@ -475,7 +452,6 @@ function setupEventListeners() {
             alert('Не указан или некорректный BPM для запуска метронома.');
         }
     });
-
 
     // --- Боковые панели ---
     ui.toggleFavoritesButton.addEventListener('click', () => {
@@ -712,6 +688,27 @@ function setupEventListeners() {
             ui.closeAllSidePanels();
         }
     });
+
+    ui.favoriteButton.addEventListener('click', async () => {
+        const songId = ui.songSelect.value;
+        const key = ui.keySelect.value;
+        const songName = state.allSongs.find(s=>s.id === songId)?.name || 'Эту песню';
+        if (!songId) { alert("Пожалуйста, выберите песню."); return; }
+
+        const result = await api.addToFavorites(songId, key);
+        
+        if (result.status === 'added') {
+            alert(`Песня "${songName}" (${result.key}) добавлена в 'Мой список'.`);
+        } else if (result.status === 'updated') {
+            alert(`Тональность песни "${songName}" в 'Моем списке' обновлена на ${result.key}.`);
+        } else if (result.status === 'exists') {
+            alert(`Песня "${songName}" уже есть в 'Моем списке' с той же тональностью.`);
+        }
+    });
+
+    ui.addToSetlistButton.addEventListener('click', handleAddSongToSetlist);
+
+    ui.addToRepertoireButton.addEventListener('click', handleAddToRepertoire);
 }
 
 
