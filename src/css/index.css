@@ -1,0 +1,28 @@
+/* ======================================== */
+/* Agape Worship App - Modular CSS         */
+/* ======================================== */
+
+/* Import base styles */
+@import './base/variables.css';
+@import './base/reset.css';
+
+/* Import component styles */
+@import './components/header.css';
+@import './components/controls.css';
+@import './components/buttons.css';
+@import './components/songDisplay.css';
+@import './components/presentation.css';
+@import './components/panels.css';
+@import './components/lists.css';
+@import './components/modals.css';
+@import './components/songBlocks.css';
+@import './components/mobile.css';
+
+/* TODO: Добавить остальные модули по мере создания */
+/* @import './components/presentation.css'; */
+/* @import './components/panels.css'; */
+/* @import './components/lists.css'; */
+/* @import './components/modals.css'; */
+/* @import './components/songBlocks.css'; */
+/* @import './components/mobile.css'; */
+/* @import './layout/responsive.css'; */ 

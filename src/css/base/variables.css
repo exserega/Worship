@@ -1,0 +1,51 @@
+/* ======================================== */
+/* CSS Variables and Theme Configuration   */
+/* ======================================== */
+
+/* --- Theme Variables --- */
+:root {
+    /* Dark Theme (Default) */
+    --primary-color: #22d3ee;
+    --secondary-color: #06b6d4;
+    --background-color: #111827;
+    --container-background-color: #1f2937;
+    --text-color: #e5e7eb;
+    --border-color: #374151;
+    --hover-color: #374151;
+    --shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+    --radius: 8px;
+    --accent-color: #67e8f9;
+    --danger-color: #fb7185;
+    --button-text-color: #111827;
+    --link-color: var(--accent-color);
+    --input-bg-color: #374151;
+    --label-color: #9ca3af;
+    --glow-color: rgba(34, 211, 238, 0.4);
+}
+
+/* --- Light Theme Variables --- */
+body[data-theme="light"] {
+    --primary-color: #339af0;
+    --secondary-color: #1c7ed6;
+    --background-color: #f1f5f9;
+    --container-background-color: #ffffff;
+    --text-color: #1e293b;
+    --border-color: #cbd5e1;
+    --hover-color: #e2e8f0;
+    --shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
+    /* --radius: 8px; */
+    --accent-color: #1c7ed6;
+    --danger-color: #f43f5e;
+    --button-text-color: #ffffff;
+    --link-color: var(--accent-color);
+    --input-bg-color: #ffffff;
+    --label-color: #475569;
+    --glow-color: rgba(28, 126, 214, 0.3);
+}
+
+/* Принудительно убираем фоновые артефакты в светлой теме */
+html[data-theme="light"], 
+body[data-theme="light"] {
+    background-image: none !important;
+    background-attachment: scroll !important;
+} 

@@ -1,0 +1,298 @@
+/* ======================================== */
+/* Button Styles                           */
+/* ======================================== */
+
+/* --- Base Button Styles --- */
+button {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: var(--button-text-color);
+    border: none;
+    border-radius: var(--radius);
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 80px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-sizing: border-box;
+}
+
+button:hover:not(:disabled) { 
+    transform: translateY(-1px); 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), inset 0 1px 1px color-mix(in srgb, white 10%, transparent); 
+}
+
+button:active:not(:disabled) { 
+    transform: translateY(0px); 
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15); 
+}
+
+button:disabled { 
+    opacity: 0.5; 
+    cursor: not-allowed; 
+    background: color-mix(in srgb, var(--border-color) 50%, transparent); 
+    box-shadow: none; 
+    color: color-mix(in srgb, var(--text-color) 50%, transparent) !important; 
+}
+
+/* --- Icon Buttons --- */
+button.icon-button { 
+    padding: 0; 
+    width: 38px; 
+    height: 38px; 
+    font-size: 1rem; 
+    line-height: 1; 
+    flex-shrink: 0; 
+    overflow: hidden; 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+}
+
+button.icon-button.simple { 
+    background: transparent; 
+    box-shadow: none; 
+    border: 1px solid var(--border-color); 
+    color: var(--text-color) !important; /* Явный цвет для темной темы */ 
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease; 
+}
+
+button.icon-button.simple:hover:not(:disabled) { 
+    background: var(--hover-color); 
+    border-color: color-mix(in srgb, var(--border-color) 80%, black); 
+    color: var(--text-color) !important; 
+    transform: none; 
+    box-shadow: none; 
+}
+
+button.icon-button.simple:active:not(:disabled) { 
+    background: var(--primary-color); 
+    color: var(--button-text-color) !important; 
+    border-color: var(--primary-color); 
+    transform: translateY(1px); 
+    box-shadow: none; 
+}
+
+body[data-theme="light"] button.icon-button.simple { 
+    color: var(--label-color) !important; 
+    border-color: var(--border-color); 
+}
+
+body[data-theme="light"] button.icon-button.simple:hover:not(:disabled) { 
+    background: var(--hover-color); 
+    border-color: color-mix(in srgb, var(--border-color) 80%, #475569); 
+    color: var(--text-color) !important; 
+}
+
+body[data-theme="light"] button.icon-button.simple:active:not(:disabled) { 
+    background: var(--primary-color); 
+    color: var(--button-text-color) !important; 
+    border-color: var(--primary-color); 
+}
+
+/* --- Key Select Group --- */
+.control-group:has(#key-select) { 
+    position: relative; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    flex-wrap: wrap; 
+    margin-bottom: 8px; 
+    padding: 8px 12px; 
+    background: linear-gradient(135deg, color-mix(in srgb, var(--primary-color) 10%, transparent), color-mix(in srgb, var(--secondary-color) 10%, transparent)); 
+    border: 1px solid color-mix(in srgb, var(--primary-color) 30%, transparent); 
+    border-radius: var(--radius); 
+    transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.control-group:has(#key-select)::before {
+    content: "🎵";
+    font-size: 1.2rem;
+    margin-right: 4px;
+    filter: grayscale(0.3);
+    transition: filter 0.3s ease;
+}
+
+.control-group:has(#key-select):hover::before {
+    filter: grayscale(0);
+}
+
+.key-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+    position: relative;
+}
+
+.key-group legend {
+    font-size: 0.75rem;
+    color: var(--label-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+    transition: color 0.3s ease;
+}
+
+#key-select { 
+    padding: 0 15px 0 15px; 
+    font-size: 0.9rem; 
+    width: 100%; 
+    min-width: 60px; 
+    text-align: center; 
+    height: 21px; 
+    border: none; 
+    background: transparent; 
+    margin: 0; 
+    flex-shrink: 0; 
+}
+
+/* --- Function Buttons Group --- */
+.function-buttons-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-left: auto;
+}
+
+#split-text-button { /* Кнопка Разделить текст в ОСНОВНОМ окне */ /* Она НЕ simple */ 
+    padding: 0 12px; 
+    height: 38px; 
+    font-size: 0.85rem; 
+    flex-shrink: 0; 
+}
+
+#split-text-button i { 
+    margin-right: 6px; 
+    font-size: 0.9em; 
+}
+
+.font-size-controls { 
+    margin-left: auto; 
+    display: flex; 
+    align-items: center; 
+    gap: 5px; 
+}
+
+/* --- Control Buttons --- */
+.control-buttons { 
+    display: flex; 
+    justify-content: center; 
+    gap: 12px; 
+    margin-top: 20px; 
+    flex-wrap: wrap; 
+    padding-bottom: 20px; 
+    border-bottom: 1px solid var(--border-color); 
+    transition: border-color 0.3s ease;
+}
+
+.control-buttons button { 
+    padding: 8px 14px; 
+    font-size: 0.85rem; 
+    flex: 0 1 auto; 
+}
+
+/* --- Controls Footer --- */
+.controls-footer { 
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: center; 
+    align-items: center; 
+    gap: 15px; 
+    margin-top: 20px; 
+    padding-top: 0;
+}
+
+.bpm-controls { 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+}
+
+.bpm-controls span:not(#bpm-display) { 
+    font-size: 0.8rem; 
+    color: var(--label-color); 
+    text-transform: uppercase; 
+    transition: color 0.3s ease;
+}
+
+.bpm-controls #time-signature { 
+    padding: 8px 10px; 
+    font-size: 0.85rem; 
+    min-width: 65px; 
+    height: 38px; 
+}
+
+.bpm-controls #bpm-display { 
+    padding: 8px 10px; 
+    min-width: 55px; 
+    font-size: 0.9rem; 
+    cursor: text; 
+    border: 1px solid var(--border-color); 
+    background-color: var(--input-bg-color); 
+    border-radius: var(--radius); 
+    text-align: center; 
+    color: var(--text-color); 
+    height: 38px; 
+    line-height: normal; 
+    display: inline-block; 
+    box-sizing: border-box; 
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; 
+}
+
+#metronome-button { 
+    padding: 0 12px; 
+    min-width: auto; 
+    height: 38px; 
+    flex-shrink: 0; 
+    font-size: 0.85rem; 
+}
+
+#metronome-button i { 
+    margin-right: 6px; 
+    font-size: 0.9em; 
+}
+
+#add-to-repertoire-button { 
+    padding: 8px 12px; 
+    height: 38px; 
+    font-size: 0.85rem; 
+}
+
+#holychords-button { 
+    display: inline-flex; 
+    align-items: center; 
+    padding: 0 12px; 
+    height: 38px; 
+    font-size: 0.85rem; 
+    color: var(--link-color); 
+    text-decoration: none; 
+    border: 1px solid var(--link-color); 
+    border-radius: var(--radius); 
+    transition: all 0.3s ease; 
+    background: transparent; 
+    box-shadow: none; 
+    font-weight: 500; 
+    box-sizing: border-box; 
+}
+
+#holychords-button:hover { 
+    background-color: var(--link-color); 
+    color: var(--button-text-color); 
+    transform: none; 
+    box-shadow: none; 
+}
+
+body[data-theme="light"] #holychords-button:hover { 
+    color: #fff; 
+} 

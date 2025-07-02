@@ -1,0 +1,363 @@
+/* ======================================== */
+/* Presentation Styles                     */
+/* ======================================== */
+
+.presentation-overlay { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background-color: var(--background-color); 
+    z-index: 2000; 
+    display: none; 
+    scroll-behavior: smooth; 
+    overflow-y: hidden; 
+    transition: background-color 0.3s ease; 
+}
+
+.presentation-overlay.visible { 
+    display: block; 
+}
+
+.presentation-content { 
+    padding: 20px 15px 70px 15px; 
+    max-width: 950px; 
+    margin: 0 auto; 
+    height: 100%; 
+    overflow-y: auto; 
+    box-sizing: border-box; 
+}
+
+.presentation-content::-webkit-scrollbar { 
+    width: 8px; 
+}
+
+.presentation-content::-webkit-scrollbar-track { 
+    background: var(--hover-color); 
+    border-radius: 4px;
+}
+
+.presentation-content::-webkit-scrollbar-thumb { 
+    background: var(--primary-color); 
+    border-radius: 4px;
+}
+
+.presentation-song { 
+    margin-bottom: 0; 
+    border-bottom: none; 
+}
+
+.presentation-song h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--text-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
+    transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.presentation-notes {
+    background-color: var(--input-bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 15px;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--text-color);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.presentation-notes i.fas {
+    color: var(--primary-color);
+    margin-right: 8px;
+    font-size: 0.9em;
+    transition: color 0.3s ease;
+}
+
+body[data-theme="light"] .presentation-notes {
+    background-color: var(--input-bg-color);
+    border-color: var(--border-color);
+}
+
+body[data-theme="light"] .presentation-notes i.fas {
+    color: var(--accent-color);
+}
+
+.presentation-song pre {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 0;
+    padding: 20px;
+    background-color: var(--container-background-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.presentation-song .chord {
+    color: var(--primary-color);
+    font-weight: bold;
+    background-color: color-mix(in srgb, var(--primary-color) 10%, transparent);
+    padding: 2px 4px;
+    border-radius: 3px;
+    margin-right: 2px;
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+body[data-theme="light"] .presentation-song .chord {
+    color: var(--accent-color);
+    background-color: color-mix(in srgb, var(--accent-color) 15%, transparent);
+}
+
+.presentation-close-btn { 
+    position: fixed; 
+    top: 15px; 
+    right: 15px; 
+    z-index: 2003; 
+    background: rgba(80, 80, 80, 0.8); 
+    color: #fff; 
+    border: 1px solid rgba(255, 255, 255, 0.3); 
+    border-radius: 50%; 
+    width: 38px; 
+    height: 38px; 
+    font-size: 1.4rem; 
+    line-height: 1; 
+    padding: 0; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    box-shadow: none; 
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease; 
+}
+
+.presentation-close-btn:hover { 
+    background-color: rgba(100, 100, 100, 0.9); 
+    border-color: rgba(255, 255, 255, 0.5); 
+}
+
+.presentation-close-btn:active { 
+    background-color: rgba(60, 60, 60, 0.9); 
+}
+
+.presentation-control-btn { 
+    position: fixed; 
+    top: 15px; 
+    z-index: 2001; 
+    background: rgba(80, 80, 80, 0.8); 
+    color: #fff; 
+    border: 1px solid rgba(255, 255, 255, 0.3); 
+    border-radius: 50%; 
+    width: 38px; 
+    height: 38px; 
+    font-size: 1rem; 
+    line-height: 1; 
+    padding: 0; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    box-shadow: none; 
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease; 
+}
+
+.presentation-control-btn:hover { 
+    background-color: rgba(100, 100, 100, 0.9); 
+    border-color: rgba(255, 255, 255, 0.5); 
+}
+
+.presentation-control-btn:active { 
+    background-color: rgba(60, 60, 60, 0.9); 
+}
+
+#pres-split-text-btn { 
+    right: 63px; 
+}
+
+body[data-theme="light"] .presentation-close-btn,
+body[data-theme="light"] .presentation-control-btn {
+    background: rgba(120, 120, 120, 0.8);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+body[data-theme="light"] .presentation-close-btn:hover,
+body[data-theme="light"] .presentation-control-btn:hover {
+    background: rgba(140, 140, 140, 0.9);
+    border-color: rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme="light"] .presentation-close-btn:active,
+body[data-theme="light"] .presentation-control-btn:active {
+    background: rgba(100, 100, 100, 0.9);
+}
+
+.presentation-controls { 
+    position: fixed; 
+    bottom: 0; 
+    left: 0; 
+    width: 100%; 
+    background-color: rgba(20, 20, 20, 0.9); 
+    backdrop-filter: none; 
+    padding: 8px 15px; 
+    box-sizing: border-box; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    z-index: 2002; 
+    border-top: 1px solid #444; 
+    opacity: 1; 
+    transition: opacity 0.5s ease-in-out; 
+    pointer-events: auto; 
+}
+
+.presentation-controls.controls-hidden { 
+    opacity: 0; 
+    pointer-events: none; 
+}
+
+.presentation-nav-btn { 
+    background: none; 
+    border: none; 
+    color: #f0f0f0; 
+    font-size: 1.8rem; 
+    padding: 5px 15px; 
+    cursor: pointer; 
+    transition: color 0.2s ease; 
+    line-height: 1; 
+    border-radius: 4px; 
+}
+
+.presentation-nav-btn:hover:not(:disabled) { 
+    color: var(--accent-color); 
+}
+
+.presentation-nav-btn:disabled { 
+    color: #666; 
+    cursor: not-allowed; 
+}
+
+.presentation-counter { 
+    color: #ddd; 
+    font-size: 0.9rem; 
+    text-align: center; 
+}
+
+.presentation-loading { 
+    padding: 50px 20px; 
+    text-align: center; 
+    font-size: 1.1rem; 
+    color: var(--label-color); 
+}
+
+/* Split columns for presentation */
+#presentation-content.split-columns .presentation-song pre {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+#presentation-content.split-columns .presentation-song pre::before {
+    content: '';
+    grid-column: 1 / -1;
+    height: 0;
+}
+
+#presentation-content.split-columns .column-1,
+#presentation-content.split-columns .column-2 {
+    background-color: var(--container-background-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 15px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+#presentation-content.split-columns .song-block {
+    margin-bottom: 15px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+#presentation-content.split-columns .song-block-content {
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+#presentation-content.split-columns .presentation-song pre > *:not(.song-block):not(.column-1):not(.column-2) {
+    grid-column: 1 / -1;
+    margin-bottom: 10px;
+}
+
+/* Mobile responsive for presentation */
+@media (max-width: 480px) {
+    .presentation-content {
+        padding: 15px 10px 60px 10px;
+    }
+
+    .presentation-song h2 {
+        font-size: 1.4rem;
+        margin-bottom: 15px;
+    }
+
+    .presentation-notes {
+        font-size: 0.9rem;
+        padding: 12px;
+        margin-bottom: 15px;
+    }
+
+    .presentation-notes i.fas {
+        font-size: 0.8em;
+    }
+
+    .presentation-song pre {
+        font-size: 1rem;
+        padding: 15px;
+    }
+
+    .presentation-close-btn { 
+        width: 36px; 
+        height: 36px; 
+        font-size: 1.3rem; 
+    }
+
+    .presentation-control-btn { 
+        width: 36px; 
+        height: 36px; 
+        font-size: 0.9rem; 
+    }
+
+    #pres-split-text-btn { 
+        right: 58px; 
+    }
+
+    .presentation-controls { 
+        padding: 6px 10px; 
+    }
+
+    .presentation-nav-btn { 
+        font-size: 1.5rem; 
+        padding: 4px 10px; 
+    }
+
+    .presentation-counter { 
+        font-size: 0.8rem; 
+    }
+
+    #presentation-content.split-columns .column-1,
+    #presentation-content.split-columns .column-2 {
+        grid-column: 1 / -1;
+    }
+} 
