@@ -93,19 +93,19 @@
     <fieldset id="song-content">
         <legend id="song-title">
             <span class="song-title-text">Выберите песню</span>
-            <button id="edit-song-button" class="icon-button simple legend-button" title="Редактировать песню" style="display: none;">
+            <div class="song-title-actions">
+                <button id="favorite-button" class="title-action-btn" aria-label="Добавить в Мой список" title="Добавить в Мой список">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <button id="add-to-setlist-button" class="title-action-btn" aria-label="Добавить в сет-лист" title="Добавить в сет-лист">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </legend>
+        <div class="song-controls">
+            <button id="edit-song-button" class="icon-button simple" title="Редактировать песню" style="display: none;">
                 <i class="fas fa-edit"></i>
             </button>
-        </legend>
-        <div class="song-quick-actions">
-            <button id="favorite-button" class="quick-action-btn" aria-label="Добавить в Мой список" title="Добавить в Мой список">
-                <i class="fas fa-heart"></i>
-            </button>
-            <button id="add-to-setlist-button" class="quick-action-btn" aria-label="Добавить в сет-лист" title="Добавить в сет-лист">
-                <i class="fas fa-plus"></i>
-            </button>
-        </div>
-        <div class="song-controls">
             <button id="copy-text-button" class="icon-button simple" title="Копировать текст песни" style="display: none;">
                 <i class="far fa-copy"></i>
             </button>

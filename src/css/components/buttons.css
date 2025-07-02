@@ -184,21 +184,19 @@ body[data-theme="light"] button.icon-button.simple:active:not(:disabled) {
     gap: 5px; 
 }
 
-/* --- Quick Action Buttons --- */
-.song-quick-actions {
+/* --- Title Action Buttons --- */
+.song-title-actions {
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 12px;
-    margin: 15px 0;
-    padding: 8px 0;
+    gap: 8px;
+    margin-left: 12px;
 }
 
-.quick-action-btn {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    border: 2px solid var(--border-color);
+.title-action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
     background: var(--surface-color);
     color: var(--text-color);
     display: flex;
@@ -208,10 +206,10 @@ body[data-theme="light"] button.icon-button.simple:active:not(:disabled) {
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 2px 8px var(--shadow-color);
+    box-shadow: 0 1px 3px var(--shadow-color);
 }
 
-.quick-action-btn::before {
+.title-action-btn::before {
     content: '';
     position: absolute;
     top: 0;
@@ -221,32 +219,32 @@ body[data-theme="light"] button.icon-button.simple:active:not(:disabled) {
     background: var(--gradient-primary);
     opacity: 0;
     transition: opacity 0.3s ease;
-    border-radius: 50%;
+    border-radius: 6px;
 }
 
-.quick-action-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px var(--shadow-color);
+.title-action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px var(--shadow-color);
     border-color: var(--primary-color);
 }
 
-.quick-action-btn:hover::before {
+.title-action-btn:hover::before {
     opacity: 0.1;
 }
 
-.quick-action-btn:active {
+.title-action-btn:active {
     transform: translateY(0);
-    box-shadow: 0 2px 8px var(--shadow-color);
+    box-shadow: 0 1px 3px var(--shadow-color);
 }
 
-.quick-action-btn i {
-    font-size: 1.2rem;
+.title-action-btn i {
+    font-size: 0.9rem;
     position: relative;
     z-index: 1;
     transition: transform 0.3s ease, color 0.3s ease;
 }
 
-.quick-action-btn:hover i {
+.title-action-btn:hover i {
     transform: scale(1.1);
     color: var(--primary-color);
 }
@@ -290,42 +288,42 @@ body[data-theme="light"] button.icon-button.simple:active:not(:disabled) {
 }
 
 /* Light theme adjustments */
-body[data-theme="light"] .quick-action-btn {
+body[data-theme="light"] .title-action-btn {
     background: var(--surface-color);
     border-color: var(--border-color);
-    box-shadow: 0 2px 8px var(--shadow-light);
+    box-shadow: 0 1px 3px var(--shadow-light);
 }
 
-body[data-theme="light"] .quick-action-btn:hover {
-    box-shadow: 0 4px 16px var(--shadow-color);
+body[data-theme="light"] .title-action-btn:hover {
+    box-shadow: 0 3px 8px var(--shadow-color);
 }
 
 /* Mobile adjustments */
 @media (max-width: 768px) {
-    .song-quick-actions {
-        gap: 16px;
-        margin: 12px 0;
+    .song-title-actions {
+        gap: 10px;
+        margin-left: 10px;
     }
     
-    .quick-action-btn {
-        width: 48px;
-        height: 48px;
+    .title-action-btn {
+        width: 36px;
+        height: 36px;
     }
     
-    .quick-action-btn i {
-        font-size: 1.3rem;
+    .title-action-btn i {
+        font-size: 1rem;
     }
 }
 
 /* Animation for button press */
-@keyframes quickActionPress {
+@keyframes titleActionPress {
     0% { transform: scale(1); }
     50% { transform: scale(0.95); }
     100% { transform: scale(1); }
 }
 
-.quick-action-btn:active {
-    animation: quickActionPress 0.2s ease;
+.title-action-btn:active {
+    animation: titleActionPress 0.2s ease;
 }
 
 /* Pulse animation for active favorite */
@@ -340,12 +338,12 @@ body[data-theme="light"] .quick-action-btn:hover {
 }
 
 /* Loading state */
-.quick-action-btn.loading {
+.title-action-btn.loading {
     pointer-events: none;
     opacity: 0.7;
 }
 
-.quick-action-btn.loading i {
+.title-action-btn.loading i {
     animation: spin 1s linear infinite;
 }
 
@@ -355,32 +353,32 @@ body[data-theme="light"] .quick-action-btn:hover {
 }
 
 /* Success state */
-.quick-action-btn.success {
+.title-action-btn.success {
     background: var(--success-color);
     border-color: var(--success-color);
     color: #fff;
 }
 
-.quick-action-btn.success i {
+.title-action-btn.success i {
     color: #fff;
 }
 
 /* Tooltip styles */
-.quick-action-btn {
+.title-action-btn {
     position: relative;
 }
 
-.quick-action-btn::after {
+.title-action-btn::after {
     content: attr(title);
     position: absolute;
-    bottom: -40px;
+    bottom: -35px;
     left: 50%;
     transform: translateX(-50%);
     background: var(--surface-color);
     color: var(--text-color);
-    padding: 6px 10px;
+    padding: 4px 8px;
     border-radius: 4px;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     white-space: nowrap;
     opacity: 0;
     visibility: hidden;
@@ -390,10 +388,10 @@ body[data-theme="light"] .quick-action-btn:hover {
     z-index: 1000;
 }
 
-.quick-action-btn:hover::after {
+.title-action-btn:hover::after {
     opacity: 1;
     visibility: visible;
-    transform: translateX(-50%) translateY(-5px);
+    transform: translateX(-50%) translateY(-3px);
 }
 
 /* --- Control Buttons (Legacy) --- */
