@@ -2849,24 +2849,24 @@ body[data-theme="light"] .repertoire-view-button.active {
     margin-top: 8px; /* Уменьшили с 12px */
 }
 
-/* Legend как часть границы - МАЛЕНЬКИЙ текст */
+/* Legend как часть границы - фон контейнера для закрытия границы */
 .song-legend-action::before {
     content: attr(data-legend);
     position: absolute;
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    background: transparent;
+    background: var(--container-background-color); /* Фон как у основного контейнера */
     color: var(--label-color);
-    font-size: 0.55rem; /* Сильно уменьшили с 0.7rem */
+    font-size: 0.45rem; /* Еще больше уменьшили с 0.55rem */
     font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 0.3px; /* Уменьшили с 0.5px */
-    padding: 1px 4px; /* Уменьшили с 2px 8px */
+    letter-spacing: 0.2px; /* Уменьшили с 0.3px */
+    padding: 1px 6px; /* Увеличили боковые отступы для лучшего закрытия границы */
     white-space: nowrap;
     z-index: 1;
     transition: color 0.2s ease;
-    max-width: 50px; /* Ограничили ширину */
+    max-width: 50px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
