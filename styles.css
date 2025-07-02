@@ -2577,49 +2577,58 @@ body[data-theme="light"] .repertoire-view-button.active {
     column-count: unset; /* Отключаем старый column-count */
     position: relative;
     align-items: start; /* Выравниваем колонки по верху */
+    overflow: hidden; /* Запрещаем выход за пределы контейнера */
 }
 
-/* Добавляем разделительную полосу между колонками */
+/* Убираем старую центральную линию */
 #song-content.split-columns pre::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 10px;
-    bottom: 10px;
-    width: 1px;
-    background: color-mix(in srgb, var(--border-color) 60%, transparent);
-    transform: translateX(-50%);
-    z-index: 1;
+    display: none;
 }
 
-/* Стили для первой и второй колонки */
+/* Стили для колонок */
 #song-content.split-columns .column-1,
 #song-content.split-columns .column-2 {
     display: flex;
     flex-direction: column;
-    gap: 0;
-    margin: 0;
-    padding: 0;
+    gap: 8px; /* Отступы между блоками внутри колонки */
     width: 100%;
-}
-
-/* Размещение блоков в колонках */
-#song-content.split-columns .song-block {
-    break-inside: avoid;
-    width: 100%;
-    margin: 5px 0;
+    max-width: 100%; /* Строго ограничиваем ширину */
     box-sizing: border-box;
+    overflow: hidden; /* Запрещаем выход за пределы */
 }
 
-/* Убираем лишние отступы внутри блоков при split */
+/* Каждый блок занимает всю ширину своей колонки и не выходит за границы */
+#song-content.split-columns .song-block {
+    break-inside: avoid; /* Запрещаем разрыв блока */
+    page-break-inside: avoid; /* Для старых браузеров */
+    display: block;
+    width: 100%;
+    max-width: 100%; /* Строго ограничиваем ширину */
+    box-sizing: border-box;
+    overflow: hidden; /* Запрещаем выход за пределы */
+    margin-bottom: 0; /* Убираем стандартные отступы - используем gap */
+}
+
+/* Содержимое блока должно переносится */
 #song-content.split-columns .song-block-content {
-    margin: 0;
-    padding: 5px 8px;
+    word-wrap: break-word !important; /* Принудительный перенос длинных слов */
+    word-break: break-word !important; /* Разрываем слова если нужно */
+    overflow-wrap: break-word !important; /* Современный стандарт */
+    white-space: pre-wrap !important; /* Сохраняем пробелы но разрешаем перенос */
+    max-width: 100% !important; /* Строго ограничиваем ширину */
+    overflow: hidden !important; /* Запрещаем выход за пределы */
 }
 
-/* Скрываем все прочие элементы (включая текст вне блоков) в режиме split */
+/* Блоки без fieldset (текст до первого маркера) тоже не разрываем */
 #song-content.split-columns pre > *:not(.song-block):not(.column-1):not(.column-2) {
-    display: none;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: pre-wrap !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
 }
 
 /* ============================================ */
@@ -2630,73 +2639,60 @@ body[data-theme="light"] .repertoire-view-button.active {
 #presentation-content.split-columns .presentation-song pre {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 15px; /* Чуть больше для презентации */
     column-count: unset;
     position: relative;
     align-items: start;
+    overflow: hidden;
 }
 
-/* Разделительная полоса для презентации */
 #presentation-content.split-columns .presentation-song pre::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 10px;
-    bottom: 10px;
-    width: 1px;
-    background: color-mix(in srgb, var(--border-color) 60%, transparent);
-    transform: translateX(-50%);
-    z-index: 1;
+    display: none;
 }
 
 #presentation-content.split-columns .column-1,
 #presentation-content.split-columns .column-2 {
     display: flex;
     flex-direction: column;
-    gap: 0;
-    margin: 0;
-    padding: 0;
+    gap: 10px; /* Отступы между блоками в презентации */
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 #presentation-content.split-columns .song-block {
     break-inside: avoid;
+    page-break-inside: avoid;
+    display: block;
     width: 100%;
-    margin: 5px 0;
+    max-width: 100%;
     box-sizing: border-box;
+    overflow: hidden;
+    margin-bottom: 0;
 }
 
 #presentation-content.split-columns .song-block-content {
-    margin: 0;
-    padding: 5px 8px;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: pre-wrap !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
 }
 
 #presentation-content.split-columns .presentation-song pre > *:not(.song-block):not(.column-1):not(.column-2) {
-    display: none;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: pre-wrap !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
 }
 
-/* ============================================ */
-/* MOBILE SPLIT MODE                          */
-/* ============================================ */
 
-@media (max-width: 480px) {
-    #song-content.split-columns pre {
-        grid-template-columns: 1fr;
-        gap: 5px;
-    }
-    #song-content.split-columns .column-1,
-    #song-content.split-columns .column-2 {
-        width: 100%;
-    }
-    #presentation-content.split-columns .presentation-song pre {
-        grid-template-columns: 1fr;
-        gap: 5px;
-    }
-    #presentation-content.split-columns .column-1,
-    #presentation-content.split-columns .column-2 {
-        width: 100%;
-    }
-}
 
 /* ============================================ */
 /* SONG EDITOR                                */
@@ -2902,5 +2898,26 @@ body[data-theme="light"] .repertoire-view-button.active {
         height: 36px;
         font-size: 1.1rem;
         border-radius: 6px;
+    }
+}
+
+/* АДАПТИВНОСТЬ для мобильных */
+@media (max-width: 480px) {
+    #song-content.split-columns pre {
+        gap: 8px; /* Меньше на мобильных */
+    }
+    
+    #song-content.split-columns .column-1,
+    #song-content.split-columns .column-2 {
+        gap: 6px; /* Меньше отступы между блоками на мобильных */
+    }
+    
+    #presentation-content.split-columns .presentation-song pre {
+        gap: 10px;
+    }
+    
+    #presentation-content.split-columns .column-1,
+    #presentation-content.split-columns .column-2 {
+        gap: 8px;
     }
 }
