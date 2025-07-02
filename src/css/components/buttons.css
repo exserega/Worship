@@ -184,7 +184,219 @@ body[data-theme="light"] button.icon-button.simple:active:not(:disabled) {
     gap: 5px; 
 }
 
-/* --- Control Buttons --- */
+/* --- Quick Action Buttons --- */
+.song-quick-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin: 15px 0;
+    padding: 8px 0;
+}
+
+.quick-action-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    background: var(--surface-color);
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.quick-action-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--gradient-primary);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 50%;
+}
+
+.quick-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px var(--shadow-color);
+    border-color: var(--primary-color);
+}
+
+.quick-action-btn:hover::before {
+    opacity: 0.1;
+}
+
+.quick-action-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.quick-action-btn i {
+    font-size: 1.2rem;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.quick-action-btn:hover i {
+    transform: scale(1.1);
+    color: var(--primary-color);
+}
+
+/* Favorite button specific styles */
+#favorite-button {
+    border-color: var(--accent-color);
+}
+
+#favorite-button:hover {
+    border-color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color) 10%, var(--surface-color));
+}
+
+#favorite-button:hover i {
+    color: var(--accent-color);
+}
+
+#favorite-button.active {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #fff;
+}
+
+#favorite-button.active i {
+    color: #fff;
+}
+
+/* Setlist button specific styles */
+#add-to-setlist-button {
+    border-color: var(--success-color);
+}
+
+#add-to-setlist-button:hover {
+    border-color: var(--success-color);
+    background: color-mix(in srgb, var(--success-color) 10%, var(--surface-color));
+}
+
+#add-to-setlist-button:hover i {
+    color: var(--success-color);
+}
+
+/* Light theme adjustments */
+body[data-theme="light"] .quick-action-btn {
+    background: var(--surface-color);
+    border-color: var(--border-color);
+    box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+body[data-theme="light"] .quick-action-btn:hover {
+    box-shadow: 0 4px 16px var(--shadow-color);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .song-quick-actions {
+        gap: 16px;
+        margin: 12px 0;
+    }
+    
+    .quick-action-btn {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .quick-action-btn i {
+        font-size: 1.3rem;
+    }
+}
+
+/* Animation for button press */
+@keyframes quickActionPress {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+
+.quick-action-btn:active {
+    animation: quickActionPress 0.2s ease;
+}
+
+/* Pulse animation for active favorite */
+@keyframes favoritePulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+#favorite-button.active {
+    animation: favoritePulse 0.3s ease;
+}
+
+/* Loading state */
+.quick-action-btn.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.quick-action-btn.loading i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Success state */
+.quick-action-btn.success {
+    background: var(--success-color);
+    border-color: var(--success-color);
+    color: #fff;
+}
+
+.quick-action-btn.success i {
+    color: #fff;
+}
+
+/* Tooltip styles */
+.quick-action-btn {
+    position: relative;
+}
+
+.quick-action-btn::after {
+    content: attr(title);
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--surface-color);
+    color: var(--text-color);
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px var(--shadow-color);
+    z-index: 1000;
+}
+
+.quick-action-btn:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-5px);
+}
+
+/* --- Control Buttons (Legacy) --- */
 .control-buttons { 
     display: flex; 
     justify-content: center; 
