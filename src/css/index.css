@@ -5,6 +5,7 @@
 /* Import all CSS modules */
 @import './variables.css';
 @import './base.css';
+@import './components.css';
 
 /* Import base styles */
 @import './base/variables.css';
