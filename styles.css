@@ -2829,9 +2829,9 @@ body[data-theme="light"] .repertoire-view-button.active {
     display: inline-block;
 }
 
-/* Сама кнопка */
+/* Сама кнопка - расширенная для текста */
 .legend-icon-btn {
-    width: 50px;
+    width: 80px; /* Расширили для текста */
     height: 50px;
     border: 1.5px solid var(--border-color);
     background: transparent;
@@ -2846,17 +2846,17 @@ body[data-theme="light"] .repertoire-view-button.active {
     box-shadow: none;
     padding: 0;
     margin: 0;
-    margin-top: 10px; /* Отступ сверху для legend */
+    margin-top: 12px; /* Увеличили отступ сверху для legend */
 }
 
-/* Legend как часть границы - псевдоэлемент */
+/* Legend как часть границы - ПРОЗРАЧНЫЙ фон */
 .song-legend-action::before {
     content: attr(data-legend);
     position: absolute;
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    background: var(--background-color);
+    background: transparent; /* ПРОЗРАЧНЫЙ фон */
     color: var(--label-color);
     font-size: 0.7rem;
     font-weight: 500;
@@ -2865,7 +2865,7 @@ body[data-theme="light"] .repertoire-view-button.active {
     padding: 2px 8px;
     white-space: nowrap;
     z-index: 1;
-    transition: color 0.2s ease, background-color 0.3s ease;
+    transition: color 0.2s ease;
 }
 
 .legend-icon-btn:hover {
@@ -2936,10 +2936,10 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     
     .legend-icon-btn {
-        width: 44px;
+        width: 70px; /* Чуть меньше на планшетах */
         height: 44px;
         font-size: 1.2rem;
-        margin-top: 8px;
+        margin-top: 10px;
     }
     
     .song-legend-action::before {
@@ -2955,14 +2955,14 @@ body[data-theme="light"] .repertoire-view-button.active {
     }
     
     .legend-icon-btn {
-        width: 40px;
+        width: 60px; /* Компактнее на телефонах */
         height: 40px;
         font-size: 1.1rem;
-        margin-top: 7px;
+        margin-top: 8px;
     }
     
     .song-legend-action::before {
         font-size: 0.6rem;
-        padding: 1px 5px;
+        padding: 1px 4px;
     }
 }
