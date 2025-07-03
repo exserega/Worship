@@ -667,36 +667,23 @@ body[data-theme="light"] #holychords-button:hover {
     }
 }
 
-/* --- Song Actions Legend Row (минималистичные кнопки с рамками) --- */
+/* --- Song Actions Legend Row (компактные кнопки с границами как fieldset) --- */
 .song-actions-legend-row {
     display: flex;
     justify-content: center;
-    align-items: flex-end;
+    align-items: center;
     gap: 20px;
-    margin: 18px 0 22px 0;
+    margin: 12px 0 16px 0;
 }
 
 .song-legend-action {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 60px;
+    position: relative;
+    display: inline-block;
 }
 
-.song-legend-label {
-    font-size: 0.75rem;
-    color: var(--label-color);
-    font-weight: 500;
-    margin-bottom: 6px;
-    text-align: center;
-    user-select: none;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    opacity: 0.8;
-}
-
+/* Сама кнопка - компактная */
 .legend-icon-btn {
-    width: 40px;
+    width: 60px;
     height: 40px;
     border: 1.5px solid var(--border-color);
     background: transparent;
@@ -704,13 +691,36 @@ body[data-theme="light"] #holychords-button:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
-    font-size: 1.2rem;
+    border-radius: 6px;
+    font-size: 1.1rem;
     transition: all 0.2s ease;
     cursor: pointer;
     box-shadow: none;
     padding: 0;
     margin: 0;
+    margin-top: 8px;
+}
+
+/* Legend как часть границы - фон контейнера для закрытия границы */
+.song-legend-action::before {
+    content: attr(data-legend);
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--container-background-color);
+    color: var(--label-color);
+    font-size: 0.45rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+    padding: 1px 6px;
+    white-space: nowrap;
+    z-index: 1;
+    transition: color 0.2s ease;
+    max-width: 50px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .legend-icon-btn:hover {
@@ -719,6 +729,11 @@ body[data-theme="light"] #holychords-button:hover {
     background: var(--hover-color);
     transform: translateY(-1px);
     box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.legend-icon-btn:hover + .song-legend-action::before,
+.song-legend-action:hover::before {
+    color: var(--primary-color);
 }
 
 .legend-icon-btn:focus {
@@ -741,37 +756,70 @@ body[data-theme="light"] #holychords-button:hover {
 .legend-icon-btn.heart.active {
     color: #e74c3c;
     border-color: #e74c3c;
+    background: color-mix(in srgb, #e74c3c 10%, transparent);
 }
 
 .legend-icon-btn.setlist.active {
     color: #27ae60;
     border-color: #27ae60;
+    background: color-mix(in srgb, #27ae60 10%, transparent);
 }
 
 .legend-icon-btn.mic.active {
     color: #7c4dff;
     border-color: #7c4dff;
+    background: color-mix(in srgb, #7c4dff 10%, transparent);
+}
+
+/* Активные состояния для legend */
+.song-legend-action.heart.active::before {
+    color: #e74c3c;
+}
+
+.song-legend-action.setlist.active::before {
+    color: #27ae60;
+}
+
+.song-legend-action.mic.active::before {
+    color: #7c4dff;
 }
 
 @media (max-width: 768px) {
     .song-actions-legend-row {
         gap: 15px;
-        margin: 12px 0 16px 0;
-    }
-    
-    .song-legend-action {
-        min-width: 50px;
-    }
-    
-    .song-legend-label {
-        font-size: 0.7rem;
-        margin-bottom: 5px;
+        margin: 10px 0 14px 0;
     }
     
     .legend-icon-btn {
-        width: 36px;
+        width: 55px;
         height: 36px;
-        font-size: 1.1rem;
-        border-radius: 6px;
+        font-size: 1rem;
+        margin-top: 7px;
+    }
+    
+    .song-legend-action::before {
+        font-size: 0.5rem;
+        padding: 1px 3px;
+        max-width: 45px;
+    }
+}
+
+@media (max-width: 480px) {
+    .song-actions-legend-row {
+        gap: 12px;
+        margin: 8px 0 12px 0;
+    }
+    
+    .legend-icon-btn {
+        width: 50px;
+        height: 32px;
+        font-size: 0.9rem;
+        margin-top: 6px;
+    }
+    
+    .song-legend-action::before {
+        font-size: 0.45rem;
+        padding: 1px 2px;
+        max-width: 40px;
     }
 } 
