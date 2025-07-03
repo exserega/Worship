@@ -1,24 +1,24 @@
 /* ======================================== */
-/* Header Styles                           */
+/* Header and Navigation Styles            */
 /* ======================================== */
 
 /* --- Header --- */
 header {
-    display: flex; 
-    justify-content: center; 
+    display: flex;
+    justify-content: center;
     align-items: center;
-    position: relative; 
-    padding: 8px 20px; 
+    position: relative;
+    padding: 8px 20px;
     margin-bottom: 8px;
 }
 
 h1 {
-    text-align: center; 
-    color: var(--text-color); 
+    text-align: center;
+    color: var(--text-color);
     margin: 0;
     font-size: 1.3rem;
     font-weight: 600;
-    text-transform: uppercase; 
+    text-transform: uppercase;
     letter-spacing: 1.5px;
     animation: glow 3s infinite alternate;
     transition: color 0.3s ease;
@@ -114,8 +114,8 @@ body[data-theme="light"] .theme-icon.moon {
     opacity: 0.4;
 }
 
-/* --- Song Title --- */
-#song-title { 
+/* --- Headings --- */
+#song-title {
     font-size: 1.0rem;
     font-weight: 600;
     color: var(--text-color);
@@ -149,7 +149,7 @@ body[data-theme="light"] .theme-icon.moon {
     opacity: 1;
 }
 
-/* --- Section Headings --- */
+/* Заголовки секций в панелях (h3) */
 .list-section h3, #repertoire-panel .panel-header {
     text-align: center;
     font-size: 1.1rem;
@@ -167,17 +167,18 @@ body[data-theme="light"] .theme-icon.moon {
     color: var(--primary-color);
 }
 
+/* Заголовок текущего сет-листа */
 #current-setlist-title {
-    text-align: center; 
-    font-size: 1.1rem; 
+    text-align: center;
+    font-size: 1.1rem;
     font-weight: 600;
-    color: var(--text-color); 
+    color: var(--text-color);
     margin-bottom: 10px;
-    padding: 5px; 
+    padding: 5px;
     border-bottom: none;
-    background-color: var(--input-bg-color); 
+    background-color: var(--input-bg-color);
     border-radius: var(--radius);
-    white-space: normal; 
-    overflow-wrap: break-word; 
+    white-space: normal;
+    overflow-wrap: break-word;
     word-break: break-word;
 } 
