@@ -42,77 +42,77 @@ body[data-theme="light"] h1 {
     transform: translateY(-50%);
     width: 60px;
     height: 30px;
-    background: var(--border-color);
+    background: #3a4250;
     border: none;
     border-radius: 15px;
     cursor: pointer;
-    padding: 3px;
+    padding: 0;
     transition: background-color 0.3s ease;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     font-size: 0.8rem;
-    overflow: hidden;
+    overflow: visible;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.18);
 }
 
-#theme-toggle-button:hover {
-    background: color-mix(in srgb, var(--border-color) 80%, var(--text-color));
-}
-
-.theme-toggle-slider {
+.theme-toggle-bg {
     position: absolute;
-    width: 24px;
-    height: 24px;
-    background: var(--primary-color);
-    border-radius: 50%;
-    transition: transform 0.3s ease;
+    left: 0; top: 0; width: 100%; height: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
-    color: var(--button-text-color);
-    font-size: 0.7rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-body[data-theme="dark"] .theme-toggle-slider {
-    transform: translateX(0);
-}
-
-body[data-theme="light"] .theme-toggle-slider {
-    transform: translateX(30px);
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 1;
 }
 
 .theme-icon {
+    font-size: 1.1rem;
+    opacity: 0.6;
+    transition: opacity 0.3s;
+    position: static;
+}
+.theme-icon.moon { margin-left: 10px; color: #1de9ff; }
+.theme-icon.sun { margin-right: 10px; color: #fbbf24; }
+
+body[data-theme="dark"] .theme-icon.moon { opacity: 1; }
+body[data-theme="dark"] .theme-icon.sun { opacity: 0.4; }
+body[data-theme="light"] .theme-icon.sun { opacity: 1; }
+body[data-theme="light"] .theme-icon.moon { opacity: 0.4; }
+
+.theme-toggle-slider {
     position: absolute;
-    font-size: 0.7rem;
-    transition: opacity 0.3s ease;
+    left: 3px;
+    top: 3px;
+    width: 24px;
+    height: 24px;
+    background: #1de9ff;
+    border-radius: 50%;
+    transition: transform 0.3s cubic-bezier(.4,2,.6,1), background 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #111;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    z-index: 2;
 }
-
-.theme-icon.moon {
-    left: 8px;
-    color: #60a5fa;
+body[data-theme="light"] .theme-toggle-slider {
+    transform: translateX(30px);
+    background: #fbbf24;
+    color: #fff;
 }
-
-.theme-icon.sun {
-    right: 8px;
-    color: #fbbf24;
+body[data-theme="dark"] .theme-toggle-slider {
+    transform: translateX(0);
+    background: #1de9ff;
+    color: #111;
 }
-
-body[data-theme="dark"] .theme-icon.sun {
-    opacity: 0.4;
+.theme-toggle-slider i {
+    font-size: 1.1rem;
+    color: inherit;
 }
-
-body[data-theme="dark"] .theme-icon.moon {
-    opacity: 1;
-}
-
-body[data-theme="light"] .theme-icon.sun {
-    opacity: 1;
-}
-
-body[data-theme="light"] .theme-icon.moon {
-    opacity: 0.4;
-}
+body[data-theme="light"] .theme-toggle-slider i { content: "\f185"; /* sun */ }
+body[data-theme="dark"] .theme-toggle-slider i { content: "\f186"; /* moon */ }
 
 /* --- Headings --- */
 #song-title {
