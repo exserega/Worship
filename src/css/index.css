@@ -5,4 +5,9 @@
 @import "./components/controls.css";
 @import "./components/songDisplay.css";
 @import "./components/panels.css";
-@import "./components/modals.css"; 
+@import "./components/modals.css";
+@import "./components/presentation.css";
+@import "./components/mobile.css";
+@import "./components/songBlocks.css";
+@import "./components/lists.css";
+@import "./themes.css"; 
