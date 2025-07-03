@@ -1,0 +1,343 @@
+/* ======================================== */
+/* Side Panels Styles                      */
+/* ======================================== */
+
+.side-panel {
+    position: fixed;
+    top: 0;
+    width: 320px;
+    height: 100vh;
+    background: var(--container-background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+    box-shadow: none;
+    z-index: 1000;
+    overflow: hidden;
+    transition: transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+}
+
+#setlists-panel,
+.setlists-panel {
+    left: -320px;
+    transform: translateX(0);
+}
+
+#setlists-panel.open,
+.setlists-panel.open {
+    transform: translateX(320px);
+}
+
+#repertoire-panel {
+    right: -320px;
+    transform: translateX(0);
+}
+
+#repertoire-panel.open {
+    transform: translateX(-320px);
+}
+
+.side-panel-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    z-index: 10;
+    box-shadow: none;
+    padding: 0;
+    min-width: auto;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+.side-panel-close-btn:hover {
+    background: var(--hover-color);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    transform: none;
+    box-shadow: none;
+}
+
+.side-panel-close-btn:active {
+    background: var(--primary-color);
+    color: var(--button-text-color);
+    border-color: var(--primary-color);
+    transform: translateY(1px);
+    box-shadow: none;
+}
+
+.side-panel-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    z-index: 10;
+    box-shadow: none;
+    padding: 0;
+    min-width: auto;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+#setlists-panel .side-panel-close-btn,
+.setlists-panel .side-panel-close-btn {
+    right: 15px;
+}
+
+#repertoire-panel .side-panel-close-btn {
+    left: 15px;
+    right: auto;
+}
+
+.list-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background: var(--background-color);
+    margin: 10px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.list-container::-webkit-scrollbar { 
+    width: 6px; 
+}
+
+.list-container::-webkit-scrollbar-track { 
+    background: var(--border-color); 
+    border-radius: 3px;
+}
+
+.list-container::-webkit-scrollbar-thumb { 
+    background: var(--primary-color); 
+    border-radius: 3px;
+}
+
+#my-list-panel .list-section { 
+    margin-bottom: 0; 
+}
+
+#my-list-panel #favorites-list { 
+    max-height: none; 
+    flex-grow: 1; 
+}
+
+#setlists-panel .setlist-section {
+    margin-bottom: 20px;
+}
+
+#setlists-panel .create-setlist-form {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 8px;
+}
+
+#setlists-panel #new-setlist-name-input {
+    flex: 1;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    height: 36px;
+    box-sizing: border-box;
+}
+
+#setlists-panel #create-setlist-button {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    height: 36px;
+    white-space: nowrap;
+}
+
+#setlists-panel .current-setlist-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+#setlists-panel #current-setlist-songs-container {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background: var(--background-color);
+    padding: 8px;
+    margin-top: 10px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+#setlists-panel .current-setlist-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background: var(--input-bg-color);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+#setlists-panel .current-setlist-controls button {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    height: 32px;
+    flex: 1;
+    min-width: 0;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+#setlists-panel .current-setlist-controls button i {
+    margin-right: 4px;
+    font-size: 0.8em;
+}
+
+#setlists-panel #delete-setlist-button {
+    background: linear-gradient(135deg, var(--danger-color), color-mix(in srgb, var(--danger-color) 80%, black));
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    height: 32px;
+    flex: 1;
+    min-width: 0;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+#setlists-panel #delete-setlist-button:hover {
+    background: var(--danger-color);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.favorite-item, .setlist-item, .repertoire-item, .setlist-song-item {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.favorite-item:last-child, .setlist-item:last-child,
+.repertoire-item:last-child, .setlist-song-item:last-child {
+    border-bottom: none;
+}
+
+.favorite-item:hover, .setlist-item:hover,
+.repertoire-item:hover, .setlist-song-item:hover {
+    background-color: var(--hover-color);
+}
+
+.song-name {
+    flex: 1;
+    color: var(--text-color);
+    transition: color 0.3s ease;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.setlist-item span.setlist-name-display {
+    flex: 1;
+    color: var(--text-color);
+    transition: color 0.3s ease;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.empty-message { 
+    padding: 15px; 
+    text-align: center; 
+    color: var(--label-color); 
+    font-style: italic; 
+    font-size: 0.9rem; 
+    transition: color 0.3s ease;
+}
+
+.empty-message.small { 
+    font-size: 0.8rem; 
+    padding: 8px; 
+}
+
+.remove-button, .delete-button, .edit-setlist-song-note-button {
+    background: none !important;
+    border: none !important;
+    color: var(--danger-color) !important;
+    box-shadow: none !important;
+    padding: 4px 6px !important;
+    margin: 0 !important;
+    font-size: 0.8rem !important;
+    line-height: 1 !important;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s ease, color 0.2s ease !important;
+    min-width: auto !important;
+    height: auto !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+
+.remove-button, .delete-button {
+    color: var(--danger-color) !important;
+}
+
+.remove-button:hover, .delete-button:hover {
+    opacity: 1 !important;
+    color: var(--danger-color) !important;
+    background: color-mix(in srgb, var(--danger-color) 10%, transparent) !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.delete-song-from-setlist-button { 
+    margin-left: 5px; 
+    font-size: 0.9rem !important; 
+}
+
+.edit-setlist-song-note-button {
+    color: var(--label-color) !important;
+    margin-left: 5px;
+}
+
+.edit-setlist-song-note-button.has-note i {
+    color: var(--accent-color) !important;
+}
+
+.edit-setlist-song-note-button:hover i {
+    color: var(--primary-color) !important;
+} 

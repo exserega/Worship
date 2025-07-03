@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "visual:screenshot": "node visual-regression.js",
-    "visual:test": "npm run visual:screenshot && reg-suit run"
+    "visual:test": "npm run visual:screenshot && reg-suit run",
+    "test:visual": "node visual-test.js"
   },
   "repository": {
     "type": "git",

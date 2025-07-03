@@ -1,0 +1,284 @@
+/* ======================================== */
+/* Controls and Form Styles                */
+/* ======================================== */
+
+.controls { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 8px; 
+    margin-bottom: 8px; 
+} /* Уменьшили gap и margin с 12px до 8px */
+
+.control-group { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    flex-wrap: wrap; 
+}
+
+.control-group label { 
+    font-size: 0.8rem; 
+    color: var(--label-color); 
+    margin-bottom: 4px; 
+    flex-basis: 100%; 
+    text-transform: uppercase; 
+    letter-spacing: 0.5px; 
+    transition: color 0.3s ease;
+}
+
+.select-filters-container { 
+    display: flex; 
+    gap: 12px; 
+    flex-wrap: nowrap !important; 
+    flex-direction: row !important; 
+    margin-bottom: 0px; 
+} /* Увеличили gap с 8px до 12px для лучшего разделения панелей */
+
+.filter-group { 
+    flex: 1; 
+    min-width: 0; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 4px; 
+}
+
+.select-filters-container .filter-group select {
+    width: 100%; 
+    padding: 10px 14px; 
+    padding-right: 35px; 
+    font-size: 0.95rem; 
+    background-color: var(--input-bg-color); 
+    border: 1px solid var(--border-color); 
+    border-radius: var(--radius); 
+    color: var(--text-color); 
+    cursor: pointer; 
+    height: 42px; 
+    box-sizing: border-box; 
+    transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease; 
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e"); 
+    background-repeat: no-repeat; 
+    background-position: right 12px center; 
+    background-size: 16px; 
+    appearance: none; 
+    -webkit-appearance: none; 
+    -moz-appearance: none;
+}
+
+select, input[type="text"] { 
+    width: 100%; 
+    padding: 10px 14px; 
+    font-size: 0.95rem; 
+    background-color: var(--input-bg-color); 
+    border: 1px solid var(--border-color); 
+    border-radius: var(--radius); 
+    color: var(--text-color); 
+    transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease; 
+    box-sizing: border-box; 
+    height: 42px; 
+}
+
+.select-filters-container .filter-group select {
+    padding-right: 35px; 
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e"); 
+    background-repeat: no-repeat; 
+    background-position: right 12px center; 
+    background-size: 16px; 
+    appearance: none; 
+    -webkit-appearance: none; 
+    -moz-appearance: none;
+}
+
+select { 
+    cursor: pointer; 
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e"); 
+    background-repeat: no-repeat; 
+    background-position: right 12px center; 
+    background-size: 16px; 
+    appearance: none; 
+    -webkit-appearance: none; 
+    -moz-appearance: none;
+}
+
+body[data-theme="light"] select { 
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23475569' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e"); 
+}
+
+select:disabled { 
+    opacity: 0.6; 
+    cursor: not-allowed; 
+}
+
+input:focus, select:focus { 
+    outline: none; 
+    border-color: var(--primary-color); 
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 20%, transparent); 
+}
+
+#sheet-select, #song-select { 
+    width: auto; 
+    flex-grow: 1; 
+    min-width: 140px;
+}
+
+/* --- Search Group --- */
+.search-group {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 12px;
+    background: var(--input-bg-color);
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.search-group legend {
+    font-size: 0.8rem;
+    color: var(--label-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0 8px;
+    margin-bottom: 8px;
+    transition: color 0.3s ease;
+}
+
+.search-group #search-input {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    color: var(--text-color);
+    transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    box-sizing: border-box;
+    height: 42px;
+}
+
+#search-results {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background: var(--background-color);
+    display: none;
+}
+
+#search-results:not(:empty) {
+    display: block;
+}
+
+#search-results::-webkit-scrollbar { 
+    width: 6px; 
+}
+
+#search-results::-webkit-scrollbar-track { 
+    background: var(--input-bg-color); 
+    border-radius: 3px;
+}
+
+#search-results::-webkit-scrollbar-thumb { 
+    background: var(--primary-color); 
+    border-radius: 3px;
+}
+
+.search-result {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.search-result:last-child { 
+    border-bottom: none; 
+    border-bottom-left-radius: var(--radius); 
+    border-bottom-right-radius: var(--radius); 
+}
+
+.search-result:hover { 
+    background-color: var(--hover-color); 
+}
+
+/* --- Key Group and Control Groups --- */
+/* Ряд Тональность/Разделить/Масштаб */
+.control-group:has(#key-select) { 
+    align-items: center; 
+    min-height: 38px; 
+    gap: 12px; 
+    margin-bottom: -3px;
+    margin-top: 25px;
+    padding-top: 15px;
+    position: relative;
+}
+
+/* Элегантная тонкая линия разделения */
+.control-group:has(#key-select)::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right, 
+        transparent 0%, 
+        var(--border-color) 20%, 
+        var(--primary-color) 50%, 
+        var(--border-color) 80%, 
+        transparent 100%);
+    opacity: 0.6;
+}
+
+/* Fieldset для тональности */
+.key-group {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    background: var(--input-bg-color);
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+    flex-shrink: 0;
+}
+
+.key-group legend {
+    font-size: 0.7rem;
+    color: var(--label-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0 6px;
+    margin-bottom: 4px;
+    transition: color 0.3s ease;
+}
+
+#key-select { 
+    padding: 0 15px 0 15px; 
+    font-size: 0.9rem; 
+    width: 100%; 
+    min-width: 60px; 
+    text-align: center; 
+    height: 21px; 
+    border: none; 
+    background: transparent; 
+    margin: 0; 
+    flex-shrink: 0; 
+}
+
+.function-buttons-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.control-buttons { 
+    display: flex; 
+    justify-content: center; 
+    gap: 12px; 
+    margin-top: 20px; 
+    flex-wrap: wrap; 
+    padding-bottom: 20px; 
+    border-bottom: 1px solid var(--border-color); 
+    transition: border-color 0.3s ease;
+}
+
+.control-buttons button { 
+    padding: 8px 14px; 
+    font-size: 0.85rem; 
+    flex: 0 1 auto; 
+} 
