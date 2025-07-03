@@ -7,34 +7,38 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    background: var(--container-background-color);
+    height: 60px;
+    background-color: var(--container-background-color);
     border-top: 1px solid var(--border-color);
-    padding: 8px 0;
-    z-index: 1001;
-    display: none;
+    box-shadow: none;
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+    z-index: 1000;
+    padding: 0;
+    box-sizing: border-box;
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .mobile-nav-button {
-    flex: 1;
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 5px;
+    margin: 0;
+    font-size: 0.7rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 8px 4px;
-    background: transparent;
-    border: none;
-    color: var(--label-color);
+    flex-grow: 1;
+    max-width: 33.33%;
+    height: 100%;
     cursor: pointer;
-    transition: all 0.2s ease;
-    text-decoration: none;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    min-width: auto;
-    box-shadow: none;
-    text-transform: none;
-    letter-spacing: normal;
+    transition: background-color 0.2s ease;
+    border-radius: 0;
+    background-image: none !important;
+    position: relative;
 }
 
 .mobile-nav-button i { 
@@ -49,12 +53,14 @@
 
 nav.mobile-bottom-nav .mobile-nav-button i,
 nav.mobile-bottom-nav .mobile-nav-button span {
-    color: var(--label-color);
+    color: #e5e7eb !important;
 }
 
 nav.mobile-bottom-nav .mobile-nav-button:hover i,
-nav.mobile-bottom-nav .mobile-nav-button:hover span {
-    color: var(--primary-color);
+nav.mobile-bottom-nav .mobile-nav-button:hover span,
+nav.mobile-bottom-nav .mobile-nav-button:active i,
+nav.mobile-bottom-nav .mobile-nav-button:active span {
+    color: var(--accent-color) !important;
 }
 
 nav.mobile-bottom-nav .mobile-nav-button:hover { 
@@ -67,12 +73,14 @@ nav.mobile-bottom-nav .mobile-nav-button:active {
 
 body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button i,
 body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button span {
-    color: var(--label-color);
+    color: #475569 !important;
 }
 
 body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:hover i,
-body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:hover span {
-    color: var(--primary-color);
+body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:hover span,
+body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active i,
+body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active span {
+    color: var(--accent-color) !important;
 }
 
 body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:hover { 
@@ -83,16 +91,17 @@ body[data-theme="light"] nav.mobile-bottom-nav .mobile-nav-button:active {
     background-color: var(--border-color); 
 }
 
-#toggle-my-list { 
+#toggle-my-list {
+    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+    transition: border-color 0.3s ease;
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: var(--button-text-color);
-    border: none;
     padding: 8px 12px;
     border-radius: var(--radius);
     font-size: 0.8rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
     box-shadow: var(--shadow);
     text-transform: uppercase;
     letter-spacing: 0.5px;

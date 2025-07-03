@@ -2,127 +2,120 @@
 /* Side Panels Styles                      */
 /* ======================================== */
 
+/* БАЗОВЫЕ СТИЛИ ПАНЕЛЕЙ */
 .side-panel {
-    position: fixed;
-    top: 0;
-    width: 320px;
-    height: 100vh;
-    background: var(--container-background-color);
-    border: 1px solid var(--border-color);
-    border-radius: 0;
+    /* КРИТИЧЕСКИ ВАЖНЫЕ РАЗМЕРЫ И ПОЗИЦИОНИРОВАНИЕ */
+    position: fixed !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: 320px !important;
+    max-width: 85vw !important;
+    height: 100vh !important;
+    
+    /* ОФОРМЛЕНИЕ */
+    background-color: var(--container-background-color);
     box-shadow: none;
-    z-index: 1000;
-    overflow: hidden;
-    transition: transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+    border: 1px solid var(--border-color);
+    
+    /* АНИМАЦИЯ */
+    transition: transform 0.3s ease-in-out;
+    
+    /* СОДЕРЖИМОЕ */
     display: flex;
     flex-direction: column;
-    margin: 0;
-    padding: 0;
+    padding: 15px;
+    gap: 10px;
+    box-sizing: border-box;
+    overflow: hidden;
+    
+    /* Z-INDEX */
+    z-index: 1000;
 }
 
+/* ЛЕВЫЕ ПАНЕЛИ */
 #setlists-panel,
-.setlists-panel {
-    left: -320px;
-    transform: translateX(0);
+#my-list-panel {
+    left: 0 !important;
+    right: auto !important;
+    transform: translateX(-100%) !important;
+    border-right: 2px solid var(--primary-color) !important;
+    border-left: none !important;
 }
 
 #setlists-panel.open,
-.setlists-panel.open {
-    transform: translateX(320px);
+#my-list-panel.open {
+    transform: translateX(0) !important;
 }
 
+/* ПРАВАЯ ПАНЕЛЬ */
 #repertoire-panel {
-    right: -320px;
-    transform: translateX(0);
+    right: 0 !important;
+    left: auto !important;
+    transform: translateX(100%) !important;
+    border-left: 2px solid var(--primary-color) !important;
+    border-right: none !important;
 }
 
 #repertoire-panel.open {
-    transform: translateX(-320px);
+    transform: translateX(0) !important;
 }
 
+/* --- Кнопки закрытия панелей --- */
 .side-panel-close-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
     width: 32px;
     height: 32px;
-    background: transparent;
-    border: 1px solid var(--border-color);
-    border-radius: 50%;
-    color: var(--text-color);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
-    z-index: 10;
-    box-shadow: none;
-    padding: 0;
-    min-width: auto;
-    text-transform: none;
-    letter-spacing: normal;
+    font-size: 1rem;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: var(--container-background-color) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-color) !important;
+    border-radius: 50% !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.2s ease !important;
 }
 
 .side-panel-close-btn:hover {
-    background: var(--hover-color);
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-    transform: none;
-    box-shadow: none;
+    background: var(--hover-color) !important;
+    border-color: var(--primary-color) !important;
+    color: var(--primary-color) !important;
+    transform: scale(1.1) !important;
 }
 
 .side-panel-close-btn:active {
-    background: var(--primary-color);
-    color: var(--button-text-color);
-    border-color: var(--primary-color);
-    transform: translateY(1px);
-    box-shadow: none;
+    background: var(--primary-color) !important;
+    color: var(--button-text-color) !important;
+    transform: scale(0.95) !important;
 }
 
 .side-panel-close-btn {
     position: absolute;
-    top: 15px;
-    right: 15px;
-    width: 32px;
-    height: 32px;
-    background: transparent;
-    border: 1px solid var(--border-color);
-    border-radius: 50%;
-    color: var(--text-color);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
+    top: 8px;
     z-index: 10;
-    box-shadow: none;
-    padding: 0;
-    min-width: auto;
-    text-transform: none;
-    letter-spacing: normal;
 }
 
 #setlists-panel .side-panel-close-btn,
-.setlists-panel .side-panel-close-btn {
-    right: 15px;
+#my-list-panel .side-panel-close-btn {
+    right: 8px;
 }
 
 #repertoire-panel .side-panel-close-btn {
-    left: 15px;
-    right: auto;
+    left: 8px;
 }
 
+/* --- Содержимое панелей --- */
+/* Общие стили для контейнеров списков */
 .list-container {
-    flex: 1;
     overflow-y: auto;
-    padding: 10px;
+    overflow-x: hidden;
+    margin-bottom: 10px;
+    padding: 5px;
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
-    background: var(--background-color);
-    margin: 10px;
+    background: var(--background-color); /* Фон как у body для контраста */
     transition: background-color 0.3s ease, border-color 0.3s ease;
+    word-wrap: break-word; /* Переносим длинные слова */
+    word-break: break-word; /* Принудительно разбиваем слова если нужно */
 }
 
 .list-container::-webkit-scrollbar { 
@@ -139,6 +132,7 @@
     border-radius: 3px;
 }
 
+/* Секция "Мой список" (теперь в #my-list-panel) */
 #my-list-panel .list-section { 
     margin-bottom: 0; 
 }
@@ -148,95 +142,94 @@
     flex-grow: 1; 
 }
 
-#setlists-panel .setlist-section {
-    margin-bottom: 20px;
+/* Секции внутри панели Сет-листов (#setlists-panel) */
+#setlists-panel .setlist-section { /* Секция со списком сет-листов */
+    flex-shrink: 0; /* Не сжимается */
 }
 
-#setlists-panel .create-setlist-form {
-    margin-bottom: 15px;
+#setlists-panel .create-setlist-form { /* Добавили класс форме в HTML? Если нет, стилизуем по-другому */
     display: flex;
-    gap: 8px;
+    gap: 10px;
+    margin-bottom: 15px; /* Отступ после формы */
 }
 
 #setlists-panel #new-setlist-name-input {
-    flex: 1;
-    padding: 8px 12px;
-    font-size: 0.9rem;
-    height: 36px;
-    box-sizing: border-box;
+    flex-grow: 1; /* Поле ввода занимает доступное место */
 }
 
 #setlists-panel #create-setlist-button {
-    padding: 8px 12px;
-    font-size: 0.8rem;
-    height: 36px;
-    white-space: nowrap;
+    flex-shrink: 0; /* Кнопка не сжимается */
 }
 
-#setlists-panel .current-setlist-section {
-    flex: 1;
+#setlists-panel .current-setlist-section { /* Секция с выбранным сет-листом */
+    flex-grow: 1; /* Занимает оставшееся место */
     display: flex;
     flex-direction: column;
-    min-height: 0;
+    border-top: 1px solid var(--border-color);
+    margin-top: 15px;
+    padding-top: 10px;
+    min-height: 150px;
 }
 
-#setlists-panel #current-setlist-songs-container {
-    flex: 1;
-    overflow-y: auto;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    background: var(--background-color);
-    padding: 8px;
-    margin-top: 10px;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+#setlists-panel #current-setlist-songs-container { /* Контейнер песен */
+    flex-grow: 1;
+    max-height: none; /* Снимаем ограничение */
 }
 
+/* ================================================================ */
+/* === СТИЛИ ДЛЯ КНОПОК "Презентация" и "Удалить" (ВЕРСИЯ 2) === */
+/* ================================================================ */
+
+/* Контейнер для кнопок "Презентация" и "Удалить" */
 #setlists-panel .current-setlist-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-    margin-top: 10px;
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    background: var(--input-bg-color);
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+    display: flex !important;      /* Включаем Flexbox (с !important для надежности) */
+    flex-wrap: wrap;             /* Позволяем переноситься */
+    gap: 10px;                   /* Отступ между кнопками */
+    margin-top: 10px;            /* Отступ сверху от заголовка */
+    margin-bottom: 15px;         /* Отступ снизу до списка песен */
+    justify-content: flex-start; /* Выравнивание по левому краю */
+    width: 100%;                 /* Контейнер занимает всю ширину */
+    box-sizing: border-box;
 }
 
+/* Стили для САМИХ кнопок внутри этого контейнера */
 #setlists-panel .current-setlist-controls button {
-    padding: 6px 10px;
-    font-size: 0.8rem;
-    height: 32px;
-    flex: 1;
-    min-width: 0;
-    text-transform: none;
-    letter-spacing: normal;
+    flex-grow: 0 !important;       /* Запрещаем растягиваться */
+    flex-shrink: 0;                /* Запрещаем сжиматься */
+    width: auto !important;        /* Ширина по контенту */
+    max-width: calc(50% - 5px);    /* Макс. ширина ~половина (на случай переноса) */
+    padding: 8px 15px !important;  /* Внутренние отступы (можно настроить) */
+    font-size: 0.85em !important;  /* Размер шрифта (можно настроить) */
+    margin: 0 !important;          /* Убираем внешние отступы от базовых стилей */
+    /* Наследует border-radius и базовый градиент, если не переопределено ниже */
 }
 
 #setlists-panel .current-setlist-controls button i {
-    margin-right: 4px;
-    font-size: 0.8em;
+    margin-right: 6px; /* Отступ между иконкой и текстом. Можете поменять на 5px или 8px по вкусу. */
+    /* vertical-align: middle; */ /* Можно добавить для выравнивания иконки по центру текста, если нужно */
 }
 
+/* Стили для кнопки "Презентация" - использует базовые стили */
+
+/* Стили для кнопки "Удалить", чтобы выделить ее */
 #setlists-panel #delete-setlist-button {
-    background: linear-gradient(135deg, var(--danger-color), color-mix(in srgb, var(--danger-color) 80%, black));
-    color: white;
-    border: none;
-    padding: 6px 10px;
-    font-size: 0.8rem;
-    height: 32px;
-    flex: 1;
-    min-width: 0;
-    text-transform: none;
-    letter-spacing: normal;
+    background: var(--danger-color) !important; /* Ярко-красный фон */
+    border: none !important;                 /* Убираем границу, если есть */
+    color: white !important;                 /* Белый текст */
+    /* Убираем тень, если она есть у базовой кнопки и мешает */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
 }
 
 #setlists-panel #delete-setlist-button:hover {
-    background: var(--danger-color);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    background: color-mix(in srgb, var(--danger-color) 85%, black) !important; /* Чуть темнее при наведении */
+    color: white !important;
+    transform: none !important; /* Отключаем подпрыгивание, если не нужно */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3) !important; /* Небольшая тень при наведении */
 }
+
+/* ================================================================ */
+/* === КОНЕЦ СТИЛЕЙ ДЛЯ КНОПОК СЕТ-ЛИСТА === */
+/* ================================================================ */
 
 .favorite-item, .setlist-item, .repertoire-item, .setlist-song-item {
     padding: 10px 12px;
