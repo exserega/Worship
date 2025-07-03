@@ -37,12 +37,18 @@
 } /* Увеличили gap с 8px до 12px для лучшего разделения панелей */
 
 .filter-group { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 4px; 
     flex: 1; 
     min-width: 0; 
-    position: relative; 
+    border: 1px solid var(--border-color); 
+    border-radius: var(--radius); 
+    padding: 8px 12px;
+    margin: 0; 
+    background: var(--input-bg-color);
+    transition: border-color 0.3s ease, background-color 0.3s ease; 
+    height: 38px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
 }
 
 .filter-group label { 
@@ -55,47 +61,45 @@
 }
 
 .select-filters-container .filter-group select {
-    width: 100%; 
-    padding: 10px 14px; 
-    padding-right: 35px; 
-    font-size: 0.9rem; 
-    background-color: var(--input-bg-color); 
-    border: 1px solid var(--border-color); 
-    border-radius: var(--radius); 
-    color: var(--text-color); 
-    cursor: pointer; 
-    height: 38px; 
-    box-sizing: border-box; 
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e"); 
-    background-position: right 8px center; 
-    background-repeat: no-repeat; 
-    background-size: 16px; 
-    transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    width: 100%;
+    height: 100%;
+    padding: 0 4px;
+    padding-right: 18px;
+    border: none;
+    background: transparent;
+    font-size: 1rem;
+    outline: none;
 }
 
 /* --- Form Elements --- */
 select, input[type="text"] {
-    font-family: inherit;
+    padding: 8px 12px; 
+    font-size: 0.95rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius); 
+    transition: all 0.2s ease; 
     outline: none;
-    transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
-}
-
-.select-filters-container .filter-group select {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
+    appearance: none; 
+    background: var(--input-bg-color); 
+    color: var(--text-color);
+    width: 100%; 
+    box-sizing: border-box;
+    height: 38px;
 }
 
 select {
-    background-color: var(--input-bg-color);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    color: var(--text-color);
-    transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    /* Стрелка для темной темы */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23e5e7eb'%3E%3Cpath fill-rule='evenodd' d='M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z' clip-rule='evenodd' /%3E%3C/svg%3E");
+    background-repeat: no-repeat; 
+    background-position: right 8px center;
+    background-size: 14px; 
+    padding-right: 30px; 
+    cursor: pointer;
 }
 
+/* Стрелка select в светлой теме */
 body[data-theme="light"] select {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23475569' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23475569'%3E%3Cpath fill-rule='evenodd' d='M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z' clip-rule='evenodd' /%3E%3C/svg%3E");
 }
 
 select:disabled { 
@@ -105,7 +109,7 @@ select:disabled {
 
 input:focus, select:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-color) 20%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 25%, transparent);
 }
 
 /* --- Specific Selects --- */
@@ -117,34 +121,32 @@ input:focus, select:focus {
 
 /* --- Search Group --- */
 .search-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    flex: 1;
-    min-width: 0;
     position: relative;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 4px 8px 8px 8px;
+    margin: 0 0 -3px 0;
+    background: transparent;
+    transition: border-color 0.3s ease;
 }
 
 .search-group legend {
     font-size: 0.75rem;
     color: var(--label-color);
+    font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-bottom: 2px;
+    padding: 0 12px;
+    background: var(--container-background-color);
+    border-radius: 2px;
     transition: color 0.3s ease;
 }
 
 .search-group #search-input {
     width: 100%;
-    padding: 10px 14px;
-    font-size: 0.9rem;
-    background-color: var(--input-bg-color);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    color: var(--text-color);
-    height: 38px;
-    box-sizing: border-box;
-    transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    max-width: none;
+    min-width: 0;
+    margin-bottom: 0;
 }
 
 /* --- Search Results --- */
