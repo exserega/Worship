@@ -1,0 +1,31 @@
+{
+  "name": "song-archiv-main",
+  "version": "1.0.0",
+  "description": "",
+  "main": "api.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "visual:screenshot": "node visual-regression.js",
+    "visual:test": "npm run visual:screenshot && reg-suit run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/exserega/Worship.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/exserega/Worship/issues"
+  },
+  "homepage": "https://github.com/exserega/Worship#readme",
+  "devDependencies": {
+    "puppeteer": "^24.11.2",
+    "reg-cli": "^0.18.10",
+    "reg-keygen-git-hash-plugin": "^0.14.3",
+    "reg-notify-github-plugin": "^0.14.4",
+    "reg-publish-s3-plugin": "^0.14.4",
+    "reg-suit": "^0.14.4"
+  }
+}
