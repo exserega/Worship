@@ -199,4 +199,32 @@ body[data-theme="light"] #song-content .chord {
 
 .song-legend-action.mic.active::before {
     color: var(--accent-color);
+}
+
+/* --- Song Structure Markers --- */
+/* Стили для маркеров структуры песни (Куплет, Припев и т.д.) */
+.song-structure {
+    display: block; /* Занимает всю строку */
+    font-weight: bold; /* Жирный шрифт */
+    color: var(--secondary-color); /* Или var(--primary-color) */
+    margin-top: 0.8em; /* Отступ сверху перед маркером */
+    margin-bottom: 0.3em; /* Небольшой отступ снизу после маркера */
+    text-transform: uppercase; /* Можно сделать большими буквами */
+    letter-spacing: 0.5px; /* Небольшое разрежение букв */
+    font-size: 0.9em; /* Чуть меньше основного текста, если нужно */
+}
+/* Убираем лишний отступ у самого первого маркера в тексте */
+pre > .song-structure:first-child {
+    margin-top: 0;
+}
+
+/* В режиме презентации можно сделать их чуть заметнее */
+.presentation-song .song-structure {
+     color: var(--primary-color); /* Другой цвет в презентации */
+     font-size: 0.85em;
+     margin-top: 1em;
+     margin-bottom: 0.4em;
+}
+body[data-theme="light"] .presentation-song .song-structure {
+     color: var(--secondary-color); /* Цвет для светлой темы в презентации */
 } 

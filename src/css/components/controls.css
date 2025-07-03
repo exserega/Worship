@@ -281,4 +281,38 @@ input:focus, select:focus {
     padding: 8px 14px; 
     font-size: 0.85rem; 
     flex: 0 1 auto; 
+}
+
+/* --- Кнопка Копировать текст --- */
+#copy-text-button {
+    position: absolute;    /* АБСОЛЮТНОЕ позиционирование внутри контейнера */
+    top: 8px;              /* Отступ сверху */
+    right: 8px;            /* Отступ справа */
+    z-index: 10;           /* Поверх содержимого песни */
+    width: 28px;           /* Компактный размер */
+    height: 28px;
+    font-size: 0.8rem;     /* Компактная иконка */
+    /* Добавляем границу */
+    background: var(--container-background-color) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    opacity: 0.8;          /* Хорошо видимая */
+    transition: opacity 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    display: none;         /* По умолчанию скрыта, пока не выбрана песня */
+    transform: none;       /* Убираем transform */
+}
+#copy-text-button:hover {
+    opacity: 1;            /* Полностью видимая при наведении */
+}
+/* Стиль для состояния "Скопировано" */
+#copy-text-button.copied {
+     background-color: var(--secondary-color) !important;
+     border-color: var(--secondary-color) !important;
+     color: var(--button-text-color) !important;
+     opacity: 1;
+}
+body[data-theme="light"] #copy-text-button.copied {
+     background-color: var(--secondary-color) !important;
+     border-color: var(--secondary-color) !important;
+     color: white !important;
 } 

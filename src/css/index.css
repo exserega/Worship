@@ -10,4 +10,6 @@
 @import "./components/mobile.css";
 @import "./components/songBlocks.css";
 @import "./components/lists.css";
+@import "./components/editor.css";
+@import "./components/legendActions.css";
 @import "./themes.css"; 
