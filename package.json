@@ -4,10 +4,7 @@
   "description": "",
   "main": "api.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "visual:screenshot": "node visual-regression.js",
-    "visual:test": "npm run visual:screenshot && reg-suit run",
-    "test:visual": "node visual-test.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -20,13 +17,5 @@
   "bugs": {
     "url": "https://github.com/exserega/Worship/issues"
   },
-  "homepage": "https://github.com/exserega/Worship#readme",
-  "devDependencies": {
-    "puppeteer": "^24.11.2",
-    "reg-cli": "^0.18.10",
-    "reg-keygen-git-hash-plugin": "^0.14.3",
-    "reg-notify-github-plugin": "^0.14.4",
-    "reg-publish-s3-plugin": "^0.14.4",
-    "reg-suit": "^0.14.4"
-  }
+  "homepage": "https://github.com/exserega/Worship#readme"
 }
